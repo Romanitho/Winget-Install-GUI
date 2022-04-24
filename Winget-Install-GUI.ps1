@@ -39,7 +39,7 @@ function Get-WingetAppInfo ($SearchApp){
     }
 
     #Split winget output to lines
-    $lines = $AppResult.replace("¦ ","").Split([Environment]::NewLine) | Where-Object {$_}
+    $lines = $AppResult.replace("Â¦ ","").Split([Environment]::NewLine) | Where-Object {$_}
 
     # Find the line that starts with "------"
     $fl = 0
@@ -231,3 +231,5 @@ Write-Host "Selected Apps to install : $AppToInstall"
 foreach ($App in $AppToInstall){
     & $Winget install -e --id $App -h --accept-package-agreements --accept-source-agreements
 }
+
+Timeout 10
