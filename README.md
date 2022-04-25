@@ -1,6 +1,6 @@
 # Winget-Install-GUI (WiGui)
 
-![image](https://user-images.githubusercontent.com/96626929/165000963-2ca0d05c-e2f9-430b-9833-66464eeed787.png)
+![image](https://user-images.githubusercontent.com/96626929/165112188-845e6965-6dc1-4ae2-afd9-7ab6c8153f34.png)
 
 Download project, unzip and run "Run.bat".
 
