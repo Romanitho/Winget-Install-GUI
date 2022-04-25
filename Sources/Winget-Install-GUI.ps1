@@ -279,7 +279,7 @@ function Get-InstallGUI {
     $WAUCheckBox.TabIndex = 16
     $WAUCheckBox.Text = "Install WAU"
     $WAUCheckBox.UseVisualStyleBackColor = $true
-    $WAUCheckBox.Checked = $true
+    $WAUCheckBox.Checked = $false
     #
     # WiguiForm
     #
