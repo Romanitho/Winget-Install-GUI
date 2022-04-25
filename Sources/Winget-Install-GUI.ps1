@@ -369,6 +369,9 @@ function Get-InstallGUI {
 #Temp folder
 $Location = "$env:ProgramData\WiGui_Temp"
 
+#Check if Winget is installed, and install if not
+Get-WingetStatus
+
 #Run WiGui
 $Script:AppToInstall = $null
 $Script:InstallWAU = $null
@@ -376,10 +379,6 @@ Get-InstallGUI
 
 #If user click "Cancel" of close window, quit
 if ($FormReturn -eq "Cancel") {Break}
-
-#Check if Winget is installed, and install if not
-Get-WingetStatus
-
 
 ## WAU PART ##
 
