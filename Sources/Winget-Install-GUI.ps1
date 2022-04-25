@@ -347,6 +347,7 @@ function Get-InstallGUI {
     })
 
     $CancelButton.add_click({
+        $WiguiForm.DialogResult = [System.Windows.Forms.DialogResult]::Cancel
         $WiguiForm.Close()
     })
 
@@ -354,11 +355,12 @@ function Get-InstallGUI {
         if ($AppListBox.Items -or $WAUCheckBox.Checked){
             $Script:AppToInstall = $AppListBox.Items -join ","
             $Script:InstallWAU = $WAUCheckBox.Checked
+            $WiguiForm.DialogResult = [System.Windows.Forms.DialogResult]::OK
             $WiguiForm.Close()
         }
     })
 
-    $WiguiForm.ShowDialog() | Out-Null
+    $Script:FormReturn = $WiguiForm.ShowDialog()
 }
 
 
@@ -371,6 +373,9 @@ $Location = "$env:ProgramData\WiGui_Temp"
 $Script:AppToInstall = $null
 $Script:InstallWAU = $null
 Get-InstallGUI
+
+#If user click "Cancel" of close window, quit
+if ($FormReturn -eq "Cancel") {Break}
 
 #Check if Winget is installed, and install if not
 Get-WingetStatus
