@@ -72,55 +72,60 @@ function Get-WingetAppInfo ($SearchApp){
 }
 
 function Get-InstallGUI {
+    
+    ## FORM ##
+
     Add-Type -AssemblyName System.Windows.Forms
     Add-Type -AssemblyName System.Drawing
 
-    $AppSelect = New-Object System.Windows.Forms.Form
+    $WiguiForm = New-Object System.Windows.Forms.Form
 
-    $Cancel = New-Object System.Windows.Forms.Button
-    $OK = New-Object System.Windows.Forms.Button
-    $Search = New-Object System.Windows.Forms.Button
-    $SearchText = New-Object System.Windows.Forms.TextBox
+    $CancelButton = New-Object System.Windows.Forms.Button
+    $InstallButton = New-Object System.Windows.Forms.Button
+    $SearchButton = New-Object System.Windows.Forms.Button
+    $SearchTextBox = New-Object System.Windows.Forms.TextBox
     $SearchLabel = New-Object System.Windows.Forms.Label
-    $SearchResult = New-Object System.Windows.Forms.ComboBox
-    $Submit = New-Object System.Windows.Forms.Button
+    $SubmitComboBox = New-Object System.Windows.Forms.ComboBox
+    $SubmitButton = New-Object System.Windows.Forms.Button
     $SubmitLabel = New-Object System.Windows.Forms.Label
-    $AppList = New-Object System.Windows.Forms.ListBox
     $AppListLabel = New-Object System.Windows.Forms.Label
+    $AppListBox = New-Object System.Windows.Forms.ListBox
+    $RemoveButton = New-Object System.Windows.Forms.Button
+    $SaveListButton = New-Object System.Windows.Forms.Button
     #
-    # Cancel
+    # CancelButton
     #
-    $Cancel.Location = New-Object System.Drawing.Point(397, 526)
-    $Cancel.Name = "Cancel"
-    $Cancel.Size = New-Object System.Drawing.Size(75, 23)
-    $Cancel.TabIndex = 0
-    $Cancel.Text = "Cancel"
-    $Cancel.UseVisualStyleBackColor = $true
+    $CancelButton.Location = New-Object System.Drawing.Point(397, 526)
+    $CancelButton.Name = "CancelButton"
+    $CancelButton.Size = New-Object System.Drawing.Size(75, 23)
+    $CancelButton.TabIndex = 0
+    $CancelButton.Text = "Cancel"
+    $CancelButton.UseVisualStyleBackColor = $true
     #
-    # OK
+    # InstallButton
     #
-    $OK.Location = New-Object System.Drawing.Point(316, 526)
-    $OK.Name = "OK"
-    $OK.Size = New-Object System.Drawing.Size(75, 23)
-    $OK.TabIndex = 1
-    $OK.Text = "OK"
-    $OK.UseVisualStyleBackColor = $true
+    $InstallButton.Location = New-Object System.Drawing.Point(316, 526)
+    $InstallButton.Name = "InstallButton"
+    $InstallButton.Size = New-Object System.Drawing.Size(75, 23)
+    $InstallButton.TabIndex = 1
+    $InstallButton.Text = "Install"
+    $InstallButton.UseVisualStyleBackColor = $true
     #
-    # Search
+    # SearchButton
     #
-    $Search.Location = New-Object System.Drawing.Point(397, 34)
-    $Search.Name = "Search"
-    $Search.Size = New-Object System.Drawing.Size(75, 23)
-    $Search.TabIndex = 2
-    $Search.Text = "Search"
-    $Search.UseVisualStyleBackColor = $true
+    $SearchButton.Location = New-Object System.Drawing.Point(397, 34)
+    $SearchButton.Name = "SearchButton"
+    $SearchButton.Size = New-Object System.Drawing.Size(75, 23)
+    $SearchButton.TabIndex = 2
+    $SearchButton.Text = "Search"
+    $SearchButton.UseVisualStyleBackColor = $true
     #
-    # SearchText
+    # SearchTextBox
     #
-    $SearchText.Location = New-Object System.Drawing.Point(12, 36)
-    $SearchText.Name = "SearchText"
-    $SearchText.Size = New-Object System.Drawing.Size(379, 20)
-    $SearchText.TabIndex = 3
+    $SearchTextBox.Location = New-Object System.Drawing.Point(12, 36)
+    $SearchTextBox.Name = "SearchTextBox"
+    $SearchTextBox.Size = New-Object System.Drawing.Size(379, 20)
+    $SearchTextBox.TabIndex = 3
     #
     # SearchLabel
     #
@@ -131,22 +136,22 @@ function Get-InstallGUI {
     $SearchLabel.TabIndex = 4
     $SearchLabel.Text = "Search an app:"
     #
-    # SearchResult
+    # SubmitComboBox
     #
-    $SearchResult.FormattingEnabled = $true
-    $SearchResult.Location = New-Object System.Drawing.Point(13, 91)
-    $SearchResult.Name = "SearchResult"
-    $SearchResult.Size = New-Object System.Drawing.Size(378, 21)
-    $SearchResult.TabIndex = 5
+    $SubmitComboBox.FormattingEnabled = $true
+    $SubmitComboBox.Location = New-Object System.Drawing.Point(13, 91)
+    $SubmitComboBox.Name = "SubmitComboBox"
+    $SubmitComboBox.Size = New-Object System.Drawing.Size(378, 21)
+    $SubmitComboBox.TabIndex = 5
     #
-    # Submit
+    # SubmitButton
     #
-    $Submit.Location = New-Object System.Drawing.Point(397, 90)
-    $Submit.Name = "Submit"
-    $Submit.Size = New-Object System.Drawing.Size(75, 23)
-    $Submit.TabIndex = 6
-    $Submit.Text = "Submit"
-    $Submit.UseVisualStyleBackColor = $true
+    $SubmitButton.Location = New-Object System.Drawing.Point(397, 90)
+    $SubmitButton.Name = "SubmitButton"
+    $SubmitButton.Size = New-Object System.Drawing.Size(75, 23)
+    $SubmitButton.TabIndex = 6
+    $SubmitButton.Text = "Submit"
+    $SubmitButton.UseVisualStyleBackColor = $true
     #
     # SubmitLabel
     #
@@ -157,13 +162,6 @@ function Get-InstallGUI {
     $SubmitLabel.TabIndex = 7
     $SubmitLabel.Text = "Select the matching Winget AppID:"
     #
-    # AppList
-    #
-    $AppList.Location = New-Object System.Drawing.Point(12, 152)
-    $AppList.Name = "AppList"
-    $AppList.Size = New-Object System.Drawing.Size(460, 368)
-    $AppList.TabIndex = 8
-    #
     # AppListLabel
     #
     $AppListLabel.AutoSize = $true
@@ -173,63 +171,116 @@ function Get-InstallGUI {
     $AppListLabel.TabIndex = 9
     $AppListLabel.Text = "Current Application list:"
     #
-    # AppSelect
+    # AppListBox
     #
-    $AppSelect.ClientSize = New-Object System.Drawing.Size(484, 561)
-    $AppSelect.Controls.Add($AppListLabel)
-    $AppSelect.Controls.Add($AppList)
-    $AppSelect.Controls.Add($SubmitLabel)
-    $AppSelect.Controls.Add($Submit)
-    $AppSelect.Controls.Add($SearchResult)
-    $AppSelect.Controls.Add($SearchLabel)
-    $AppSelect.Controls.Add($SearchText)
-    $AppSelect.Controls.Add($Search)
-    $AppSelect.Controls.Add($OK)
-    $AppSelect.Controls.Add($Cancel)
-    $AppSelect.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedSingle
-    $AppSelect.Name = "AppSelect"
-    $AppSelect.Text = "Winget-Install"
+    $AppListBox.FormattingEnabled = $true
+    $AppListBox.Location = New-Object System.Drawing.Point(12, 152)
+    $AppListBox.Name = "AppListBox"
+    $AppListBox.Size = New-Object System.Drawing.Size(379, 355)
+    $AppListBox.TabIndex = 11
+    #
+    # RemoveButton
+    #
+    $RemoveButton.Location = New-Object System.Drawing.Point(397, 151)
+    $RemoveButton.Name = "RemoveButton"
+    $RemoveButton.Size = New-Object System.Drawing.Size(75, 23)
+    $RemoveButton.TabIndex = 12
+    $RemoveButton.Text = "Remove"
+    $RemoveButton.UseVisualStyleBackColor = $true
+    #
+    # SaveListButton
+    #
+    $SaveListButton.Location = New-Object System.Drawing.Point(12, 526)
+    $SaveListButton.Name = "SaveListButton"
+    $SaveListButton.Size = New-Object System.Drawing.Size(130, 23)
+    $SaveListButton.TabIndex = 13
+    $SaveListButton.Text = "Save list to File"
+    $SaveListButton.UseVisualStyleBackColor = $true
+    #
+    # WiguiForm
+    #
+    $WiguiForm.ClientSize = New-Object System.Drawing.Size(484, 561)
+    $WiguiForm.Controls.Add($SaveListButton)
+    $WiguiForm.Controls.Add($RemoveButton)
+    $WiguiForm.Controls.Add($AppListBox)
+    $WiguiForm.Controls.Add($AppListLabel)
+    $WiguiForm.Controls.Add($SubmitLabel)
+    $WiguiForm.Controls.Add($SubmitButton)
+    $WiguiForm.Controls.Add($SubmitComboBox)
+    $WiguiForm.Controls.Add($SearchLabel)
+    $WiguiForm.Controls.Add($SearchTextBox)
+    $WiguiForm.Controls.Add($SearchButton)
+    $WiguiForm.Controls.Add($InstallButton)
+    $WiguiForm.Controls.Add($CancelButton)
+    $WiguiForm.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedSingle
+    $WiguiForm.Name = "WiguiForm"
+    $WiguiForm.ShowIcon = $false
+    $WiguiForm.Text = "Winget-Install-GUI (WiGui v1.1.0)"
 
+
+
+    ## ACTIONS ##
 
     # On clicks
-    $Search.add_click({
-        $SearchResult.Items.Clear()
-        $List = Get-WingetAppInfo $SearchText.Text
+
+    $SearchButton.add_click({
+        $SubmitComboBox.Items.Clear()
+        $List = Get-WingetAppInfo $SearchTextBox.Text
         foreach ($L in $List){
-                $SearchResult.Items.Add($L.ID)
+                $SubmitComboBox.Items.Add($L.ID)
         }
-        $SearchResult.SelectedIndex = 0
+        $SubmitComboBox.SelectedIndex = 0
     })
 
-    $Submit.add_click({
-        $AddAppToList = $SearchResult.Text
-        $AppList.Items
-        if ($AddAppToList -ne "" -and $AppList.Items -notcontains $AddAppToList){
-            $AppList.Items.Add($AddAppToList)
+    $SubmitButton.add_click({
+        $AddAppToList = $SubmitComboBox.Text
+        if ($AddAppToList -ne "" -and $AppListBox.Items -notcontains $AddAppToList){
+            $AppListBox.Items.Add($AddAppToList)
         }  
     })
 
-    $Cancel.add_click({
-        $AppSelect.Close()
+    $RemoveButton.add_click({
+        $RemoveAppFromList = $AppListBox.SelectedItem
+        $AppListBox.Items.Remove($RemoveAppFromList)
     })
 
-    $OK.add_click({
-        $Script:AppToInstall = $AppList.Items
-        $AppSelect.Close()
+    $SaveListButton.add_click({
+        Add-Type -AssemblyName System.Windows.Forms
+        $SaveFileDialog = New-Object System.Windows.Forms.SaveFileDialog
+        $SaveFileDialog.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*"
+        $response = $SaveFileDialog.ShowDialog( ) # $response can return OK or Cancel
+        if ( $response -eq 'OK' ) {
+            $AppListBox.Items | Out-File $SaveFileDialog.FileName -Append
+            Write-Host 'File saved:' $SaveFileDialog.FileName
+        }
     })
 
-    $AppSelect.ShowDialog() | Out-Null
+    $CancelButton.add_click({
+        $WiguiForm.Close()
+    })
+
+    $InstallButton.add_click({
+        if ($AppListBox.Items){
+            $Script:AppToInstall = $AppListBox.Items
+            $WiguiForm.Close()
+        }
+    })
+
+    $WiguiForm.ShowDialog() | Out-Null
 }
 
 
 ## Main ##
+$Script:AppToInstall = $null
 
 Get-InstallGUI
 
-Write-Host "Selected Apps to install : $AppToInstall"
+if ($AppToInstall){
 
-foreach ($App in $AppToInstall){
-    & $Winget install -e --id $App -h --accept-package-agreements --accept-source-agreements
+    Write-Host "Selected Apps to install : $AppToInstall"
+
+    foreach ($App in $AppToInstall){
+        & $Winget install -e --id $App -h --accept-package-agreements --accept-source-agreements
+    }
+
 }
-
-Timeout 10
