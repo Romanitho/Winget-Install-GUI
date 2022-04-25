@@ -1,4 +1,66 @@
-## Funtions ##
+<#
+.SYNOPSIS
+Install apps with Winget-Install and configure Winget-AutoUpdate
+
+.DESCRIPTION
+This script will:
+ - Install Winget if not present
+ - Install apps with Winget from a custom list file (apps.txt) or directly from popped up default list.
+ - Install Winget-AutoUpdate to get apps daily updated
+https://github.com/Romanitho/Winget-AllinOne
+#>
+
+
+<# FUNCTIONS #>
+
+function Get-GithubRepository { 
+    param( 
+       [Parameter()] [string] $Url,
+       [Parameter()] [string] $Location
+    ) 
+     
+    # Force to create a zip file 
+    $ZipFile = "$Location\temp.zip"
+    New-Item $ZipFile -ItemType File -Force | Out-Null
+
+    # Download the zip 
+    Invoke-RestMethod -Uri $Url -OutFile $ZipFile
+
+    # Extract Zip File
+    Expand-Archive -Path $ZipFile -DestinationPath $Location -Force
+    Get-ChildItem -Path $Location -Recurse | Unblock-File
+     
+    # remove the zip file
+    Remove-Item -Path $ZipFile -Force
+}
+
+function Get-WingetStatus{
+    
+    $hasAppInstaller = Get-AppXPackage -Name 'Microsoft.DesktopAppInstaller'
+    [Version]$AppInstallerVers = $hasAppInstaller.version
+    
+    if (!($AppInstallerVers -gt "1.18.0.0")){
+
+        #installing dependencies
+        $ProgressPreference = 'SilentlyContinue'
+        
+        if (!(Get-AppxPackage -Name 'Microsoft.UI.Xaml.2.7')){
+            $UiXamlUrl = "https://www.nuget.org/api/v2/package/Microsoft.UI.Xaml/2.7.0"
+            Invoke-RestMethod -Uri $UiXamlUrl -OutFile ".\Microsoft.UI.XAML.2.7.zip"
+            Expand-Archive -Path ".\Microsoft.UI.XAML.2.7.zip" -DestinationPath ".\extracted" -Force
+            Add-AppxPackage -Path ".\extracted\tools\AppX\x64\Release\Microsoft.UI.Xaml.2.7.appx"
+            Remove-Item -Path ".\Microsoft.UI.XAML.2.7.zip" -Force
+            Remove-Item -Path ".\extracted" -Force -Recurse
+        }
+
+        Add-AppxPackage -Path https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx
+
+        #installin Winget
+        Add-AppxPackage -Path https://github.com/microsoft/winget-cli/releases/download/v1.3.431/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle
+    
+    }
+
+}
 
 function Get-WingetAppInfo ($SearchApp){
     class Software {
@@ -77,7 +139,6 @@ function Get-InstallGUI {
 
     Add-Type -AssemblyName System.Windows.Forms
     Add-Type -AssemblyName System.Drawing
-
     $WiguiForm = New-Object System.Windows.Forms.Form
 
     $CancelButton = New-Object System.Windows.Forms.Button
@@ -92,12 +153,14 @@ function Get-InstallGUI {
     $AppListBox = New-Object System.Windows.Forms.ListBox
     $RemoveButton = New-Object System.Windows.Forms.Button
     $SaveListButton = New-Object System.Windows.Forms.Button
+    $MoreInfoLabel = New-Object System.Windows.Forms.LinkLabel
+    $WAUCheckBox = New-Object System.Windows.Forms.CheckBox
     #
     # CancelButton
     #
     $CancelButton.Location = New-Object System.Drawing.Point(397, 526)
     $CancelButton.Name = "CancelButton"
-    $CancelButton.Size = New-Object System.Drawing.Size(75, 23)
+    $CancelButton.Size = New-Object System.Drawing.Size(75, 24)
     $CancelButton.TabIndex = 0
     $CancelButton.Text = "Cancel"
     $CancelButton.UseVisualStyleBackColor = $true
@@ -106,7 +169,7 @@ function Get-InstallGUI {
     #
     $InstallButton.Location = New-Object System.Drawing.Point(316, 526)
     $InstallButton.Name = "InstallButton"
-    $InstallButton.Size = New-Object System.Drawing.Size(75, 23)
+    $InstallButton.Size = New-Object System.Drawing.Size(75, 24)
     $InstallButton.TabIndex = 1
     $InstallButton.Text = "Install"
     $InstallButton.UseVisualStyleBackColor = $true
@@ -190,16 +253,39 @@ function Get-InstallGUI {
     #
     # SaveListButton
     #
-    $SaveListButton.Location = New-Object System.Drawing.Point(12, 526)
+    $SaveListButton.Location = New-Object System.Drawing.Point(200, 526)
     $SaveListButton.Name = "SaveListButton"
-    $SaveListButton.Size = New-Object System.Drawing.Size(130, 23)
+    $SaveListButton.Size = New-Object System.Drawing.Size(110, 24)
     $SaveListButton.TabIndex = 13
     $SaveListButton.Text = "Save list to File"
     $SaveListButton.UseVisualStyleBackColor = $true
     #
+    # MoreInfoLabel
+    #
+    $MoreInfoLabel.AutoSize = $true
+    $MoreInfoLabel.Location = New-Object System.Drawing.Point(92, 532)
+    $MoreInfoLabel.Name = "MoreInfoLabel"
+    $MoreInfoLabel.Size = New-Object System.Drawing.Size(52, 13)
+    $MoreInfoLabel.TabIndex = 15
+    $MoreInfoLabel.TabStop = $true
+    $MoreInfoLabel.Text = "More Info"
+    #
+    # WAUCheckBox
+    #
+    $WAUCheckBox.AutoSize = $true
+    $WAUCheckBox.Location = New-Object System.Drawing.Point(15, 530)
+    $WAUCheckBox.Name = "WAUCheckBox"
+    $WAUCheckBox.Size = New-Object System.Drawing.Size(82, 17)
+    $WAUCheckBox.TabIndex = 16
+    $WAUCheckBox.Text = "Install WAU"
+    $WAUCheckBox.UseVisualStyleBackColor = $true
+    $WAUCheckBox.Checked = $true
+    #
     # WiguiForm
     #
     $WiguiForm.ClientSize = New-Object System.Drawing.Size(484, 561)
+    $WiguiForm.Controls.Add($MoreInfoLabel)
+    $WiguiForm.Controls.Add($WAUCheckBox)
     $WiguiForm.Controls.Add($SaveListButton)
     $WiguiForm.Controls.Add($RemoveButton)
     $WiguiForm.Controls.Add($AppListBox)
@@ -215,13 +301,18 @@ function Get-InstallGUI {
     $WiguiForm.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedSingle
     $WiguiForm.Name = "WiguiForm"
     $WiguiForm.ShowIcon = $false
-    $WiguiForm.Text = "Winget-Install-GUI (WiGui v1.1.0)"
+    $WiguiForm.StartPosition = [System.Windows.Forms.FormStartPosition]::CenterScreen
+    $WiguiForm.Text = "WiGui (Winget-Install-GUI) 1.2.0"
 
 
 
     ## ACTIONS ##
 
     # On clicks
+
+    $MoreInfoLabel.add_click({
+        [System.Diagnostics.Process]::Start("https://github.com/Romanitho/Winget-AutoUpdate")
+    })
 
     $SearchButton.add_click({
         $SubmitComboBox.Items.Clear()
@@ -260,8 +351,9 @@ function Get-InstallGUI {
     })
 
     $InstallButton.add_click({
-        if ($AppListBox.Items){
-            $Script:AppToInstall = $AppListBox.Items
+        if ($AppListBox.Items -or $WAUCheckBox.Checked){
+            $Script:AppToInstall = $AppListBox.Items -join ","
+            $Script:InstallWAU = $WAUCheckBox.Checked
             $WiguiForm.Close()
         }
     })
@@ -270,17 +362,45 @@ function Get-InstallGUI {
 }
 
 
-## Main ##
-$Script:AppToInstall = $null
+<# MAIN #>
 
+#Temp folder
+$Location = "$env:ProgramData\WiGui_Temp"
+
+#Run WiGui
+$Script:AppToInstall = $null
+$Script:InstallWAU = $null
 Get-InstallGUI
 
-if ($AppToInstall){
+#Check if Winget is installed, and install if not
+Get-WingetStatus
 
-    Write-Host "Selected Apps to install : $AppToInstall"
 
-    foreach ($App in $AppToInstall){
-        & $Winget install -e --id $App -h --accept-package-agreements --accept-source-agreements
-    }
+## WAU PART ##
 
+if ($InstallWAU){
+    #Download and install Winget-AutoUpdate if box is checked
+    Get-GithubRepository "https://github.com/Romanitho/Winget-AutoUpdate/archive/refs/tags/v1.8.0.zip" $Location
+
+    #Install Winget-Autoupdate
+    $WAUInstallFile = (Resolve-Path "$Location\*Winget-AutoUpdate*\Winget-AutoUpdate-Install.ps1").Path
+    Start-Process "powershell.exe" -Argument "-ExecutionPolicy Bypass -WindowStyle Maximized -Command `"$WAUInstallFile -Silent -DoNotUpdate`"" -Wait -Verb RunAs
 }
+
+## WINGET INSTALL PART ##
+
+if ($AppToInstall){
+    #Download Winget-Install
+    Get-GithubRepository "https://github.com/Romanitho/Winget-Install/archive/refs/tags/v1.5.0.zip" $Location
+
+    #Run Winget-Install
+    $InstallFile = (Resolve-Path "$Location\*Winget-Install*\winget-install.ps1").Path
+    Start-Process "powershell.exe" -Argument "-ExecutionPolicy Bypass -WindowStyle Maximized -Command `"$InstallFile -AppIDs $AppToInstall`"" -Wait -Verb RunAs
+}
+
+#Run WAU
+if ($InstallWAU){
+    Get-ScheduledTask -TaskName "Winget-AutoUpdate" -ErrorAction SilentlyContinue | Start-ScheduledTask -ErrorAction SilentlyContinue
+}
+
+Remove-Item -Path $Location -Force -Recurse
