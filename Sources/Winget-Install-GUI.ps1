@@ -13,11 +13,7 @@ https://github.com/Romanitho/Winget-AllinOne
 
 <# FUNCTIONS #>
 
-function Get-GithubRepository { 
-    param( 
-       [Parameter()] [string] $Url,
-       [Parameter()] [string] $Location
-    ) 
+function Get-GithubRepository ($Url) {
      
     # Force to create a zip file 
     $ZipFile = "$Location\temp.zip"
@@ -47,10 +43,10 @@ function Get-WingetStatus{
         if (!(Get-AppxPackage -Name 'Microsoft.UI.Xaml.2.7')){
             $UiXamlUrl = "https://www.nuget.org/api/v2/package/Microsoft.UI.Xaml/2.7.0"
             Invoke-RestMethod -Uri $UiXamlUrl -OutFile ".\Microsoft.UI.XAML.2.7.zip"
-            Expand-Archive -Path ".\Microsoft.UI.XAML.2.7.zip" -DestinationPath ".\extracted" -Force
-            Add-AppxPackage -Path ".\extracted\tools\AppX\x64\Release\Microsoft.UI.Xaml.2.7.appx"
-            Remove-Item -Path ".\Microsoft.UI.XAML.2.7.zip" -Force
-            Remove-Item -Path ".\extracted" -Force -Recurse
+            Expand-Archive -Path "$Location\Microsoft.UI.XAML.2.7.zip" -DestinationPath "$Location\extracted" -Force
+            Add-AppxPackage -Path "$Location\extracted\tools\AppX\x64\Release\Microsoft.UI.Xaml.2.7.appx"
+            Remove-Item -Path "$Location\Microsoft.UI.XAML.2.7.zip" -Force
+            Remove-Item -Path "$Location\extracted" -Force -Recurse
         }
 
         if (!(Get-AppxPackage -Name 'Microsoft.VCLibs.140.00')){
@@ -90,6 +86,7 @@ function Get-WingetAppInfo ($SearchApp){
         $Script:Winget = "$WingetPath\winget.exe"
     }
     else{
+        Write-Host "WinGet is not installed. It is mandatory to run WiGui"
         break
     }
 
@@ -137,13 +134,19 @@ function Get-WingetAppInfo ($SearchApp){
 
 function Get-InstallGUI {
     
+    ## VARIABLES ##
+
+    $Script:AppToInstall = $null
+    $Script:InstallWAU = $null
+
+
     ## FORM ##
 
     Add-Type -AssemblyName System.Windows.Forms
     Add-Type -AssemblyName System.Drawing
     $WiguiForm = New-Object System.Windows.Forms.Form
 
-    $CancelButton = New-Object System.Windows.Forms.Button
+    $CloseButton = New-Object System.Windows.Forms.Button
     $InstallButton = New-Object System.Windows.Forms.Button
     $SearchButton = New-Object System.Windows.Forms.Button
     $SearchTextBox = New-Object System.Windows.Forms.TextBox
@@ -158,14 +161,14 @@ function Get-InstallGUI {
     $MoreInfoLabel = New-Object System.Windows.Forms.LinkLabel
     $WAUCheckBox = New-Object System.Windows.Forms.CheckBox
     #
-    # CancelButton
+    # CloseButton
     #
-    $CancelButton.Location = New-Object System.Drawing.Point(397, 526)
-    $CancelButton.Name = "CancelButton"
-    $CancelButton.Size = New-Object System.Drawing.Size(75, 24)
-    $CancelButton.TabIndex = 0
-    $CancelButton.Text = "Cancel"
-    $CancelButton.UseVisualStyleBackColor = $true
+    $CloseButton.Location = New-Object System.Drawing.Point(397, 526)
+    $CloseButton.Name = "CloseButton"
+    $CloseButton.Size = New-Object System.Drawing.Size(75, 24)
+    $CloseButton.TabIndex = 0
+    $CloseButton.Text = "Close"
+    $CloseButton.UseVisualStyleBackColor = $true
     #
     # InstallButton
     #
@@ -299,7 +302,7 @@ function Get-InstallGUI {
     $WiguiForm.Controls.Add($SearchTextBox)
     $WiguiForm.Controls.Add($SearchButton)
     $WiguiForm.Controls.Add($InstallButton)
-    $WiguiForm.Controls.Add($CancelButton)
+    $WiguiForm.Controls.Add($CloseButton)
     $WiguiForm.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedSingle
     $WiguiForm.Name = "WiguiForm"
     $WiguiForm.ShowIcon = $false
@@ -307,10 +310,7 @@ function Get-InstallGUI {
     $WiguiForm.Text = "WiGui (Winget-Install-GUI) 1.2.0"
 
 
-
     ## ACTIONS ##
-
-    # On clicks
 
     $MoreInfoLabel.add_click({
         [System.Diagnostics.Process]::Start("https://github.com/Romanitho/Winget-AutoUpdate")
@@ -350,7 +350,7 @@ function Get-InstallGUI {
         }
     })
 
-    $CancelButton.add_click({
+    $CloseButton.add_click({
         $WiguiForm.DialogResult = [System.Windows.Forms.DialogResult]::Cancel
         $WiguiForm.Close()
     })
@@ -359,56 +359,67 @@ function Get-InstallGUI {
         if ($AppListBox.Items -or $WAUCheckBox.Checked){
             $Script:AppToInstall = $AppListBox.Items -join ","
             $Script:InstallWAU = $WAUCheckBox.Checked
-            $WiguiForm.DialogResult = [System.Windows.Forms.DialogResult]::OK
-            $WiguiForm.Close()
+            Start-Installations
+            #$WiguiForm.DialogResult = [System.Windows.Forms.DialogResult]::OK
         }
     })
 
+
+    ## RETURNS ##
+
     $Script:FormReturn = $WiguiForm.ShowDialog()
+
 }
+
+function Start-Installations {
+    
+    ## WAU PART ##
+
+    #Download and install Winget-AutoUpdate if box is checked
+    if ($InstallWAU){
+        
+        #Check if WAU already downloaded
+        $TestPath = "$Location\*Winget-AutoUpdate*\Winget-AutoUpdate-Install.ps1"
+        if (!(Test-Path $TestPath)){
+            #If not, download
+            Get-GithubRepository "https://github.com/Romanitho/Winget-AutoUpdate/archive/refs/tags/v1.8.0.zip"
+        }
+
+        #Install Winget-Autoupdate
+        $WAUInstallFile = (Resolve-Path $TestPath)[0].Path
+        Start-Process "powershell.exe" -Argument "-NoProfile -ExecutionPolicy Bypass -WindowStyle Maximized -Command `"$WAUInstallFile -Silent -DoNotUpdate`"" -Wait -Verb RunAs
+    }
+
+    ## WINGET INSTALL PART ##
+
+    if ($AppToInstall){
+        #Check if Winget-Install already downloaded
+        $TestPath = "$Location\*Winget-Install*\winget-install.ps1"
+        if (!(Test-Path $TestPath)){
+            #If not, download
+            Get-GithubRepository "https://github.com/Romanitho/Winget-Install/archive/refs/tags/v1.5.0.zip"
+        }
+
+        #Run Winget-Install
+        $WIInstallFile = (Resolve-Path $TestPath)[0].Path
+        Start-Process "powershell.exe" -Argument "-NoProfile -ExecutionPolicy Bypass -WindowStyle Maximized -Command `"$WIInstallFile -AppIDs $AppToInstall`"" -Wait -Verb RunAs
+    }
+
+}
+
+
 
 
 <# MAIN #>
 
 #Temp folder
-$Location = "$env:ProgramData\WiGui_Temp"
+$Script:Location = "$env:ProgramData\WiGui_Temp"
 
 #Check if Winget is installed, and install if not
 Get-WingetStatus
 
 #Run WiGui
-$Script:AppToInstall = $null
-$Script:InstallWAU = $null
 Get-InstallGUI
 
-#If user click "Cancel" of close window, quit
-if ($FormReturn -eq "Cancel") {Break}
-
-## WAU PART ##
-
-if ($InstallWAU){
-    #Download and install Winget-AutoUpdate if box is checked
-    Get-GithubRepository "https://github.com/Romanitho/Winget-AutoUpdate/archive/refs/tags/v1.8.0.zip" $Location
-
-    #Install Winget-Autoupdate
-    $WAUInstallFile = (Resolve-Path "$Location\*Winget-AutoUpdate*\Winget-AutoUpdate-Install.ps1").Path
-    Start-Process "powershell.exe" -Argument "-ExecutionPolicy Bypass -WindowStyle Maximized -Command `"$WAUInstallFile -Silent -DoNotUpdate`"" -Wait -Verb RunAs
-}
-
-## WINGET INSTALL PART ##
-
-if ($AppToInstall){
-    #Download Winget-Install
-    Get-GithubRepository "https://github.com/Romanitho/Winget-Install/archive/refs/tags/v1.5.0.zip" $Location
-
-    #Run Winget-Install
-    $InstallFile = (Resolve-Path "$Location\*Winget-Install*\winget-install.ps1").Path
-    Start-Process "powershell.exe" -Argument "-ExecutionPolicy Bypass -WindowStyle Maximized -Command `"$InstallFile -AppIDs $AppToInstall`"" -Wait -Verb RunAs
-}
-
-#Run WAU
-if ($InstallWAU){
-    Get-ScheduledTask -TaskName "Winget-AutoUpdate" -ErrorAction SilentlyContinue | Start-ScheduledTask -ErrorAction SilentlyContinue
-}
-
+#Remove temp items
 Remove-Item -Path $Location -Force -Recurse
