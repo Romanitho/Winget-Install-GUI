@@ -53,7 +53,9 @@ function Get-WingetStatus{
             Remove-Item -Path ".\extracted" -Force -Recurse
         }
 
-        Add-AppxPackage -Path https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx
+        if (!(Get-AppxPackage -Name 'Microsoft.VCLibs.140.00')){
+            Add-AppxPackage -Path https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx
+        }
 
         #installin Winget
         Add-AppxPackage -Path https://github.com/microsoft/winget-cli/releases/download/v1.3.431/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle
@@ -96,7 +98,7 @@ function Get-WingetAppInfo ($SearchApp){
 
     #Start Convertion of winget format to an array. Check if "-----" exists
     if (!($AppResult -match "-----")){
-        Write-Host "Nothing to display"
+        Write-Host "No application found."
         return
     }
 
@@ -320,7 +322,9 @@ function Get-InstallGUI {
         foreach ($L in $List){
                 $SubmitComboBox.Items.Add($L.ID)
         }
-        $SubmitComboBox.SelectedIndex = 0
+        if ($List){
+            $SubmitComboBox.SelectedIndex = 0
+        }
     })
 
     $SubmitButton.add_click({
