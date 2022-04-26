@@ -53,7 +53,9 @@ function Get-WingetStatus{
             Remove-Item -Path ".\extracted" -Force -Recurse
         }
 
-        Add-AppxPackage -Path https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx
+        if (!(Get-AppxPackage -Name 'Microsoft.VCLibs.140.00')){
+            Add-AppxPackage -Path https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx
+        }
 
         #installin Winget
         Add-AppxPackage -Path https://github.com/microsoft/winget-cli/releases/download/v1.3.431/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle
