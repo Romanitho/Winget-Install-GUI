@@ -98,7 +98,7 @@ function Get-WingetAppInfo ($SearchApp){
 
     #Start Convertion of winget format to an array. Check if "-----" exists
     if (!($AppResult -match "-----")){
-        Write-Host "Nothing to display"
+        Write-Host "No application found."
         return
     }
 
@@ -322,7 +322,9 @@ function Get-InstallGUI {
         foreach ($L in $List){
                 $SubmitComboBox.Items.Add($L.ID)
         }
-        $SubmitComboBox.SelectedIndex = 0
+        if ($List){
+            $SubmitComboBox.SelectedIndex = 0
+        }
     })
 
     $SubmitButton.add_click({
