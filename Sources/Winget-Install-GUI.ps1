@@ -676,8 +676,15 @@ $Script:stream = [System.IO.MemoryStream]::new($IconBase64, 0, $IconBase64.Lengt
 #Check if WiGui is uptodate
 Get-WiGuiLatestVersion
 
-#Check if Winget is installed, and install if not
-Get-WingetStatus
+#Check if Winget is installed, and install if not (not in WSB!)
+$WhoAmI = & whoami
+if ($WhoAmI -eq 'nt authority\system' -or $WhoAmI -like '*wdagutilityaccount') {
+    Write-Host "You are System or running as Admin in WSB (and can't install this)!"
+    Write-Host "Install WAU via WiGui, please.. ..and then as System search for and install apps in WiGui"
+}
+else {
+    Get-WingetStatus
+}
 
 #Run WiGui
 Get-InstallGUI
