@@ -140,7 +140,9 @@ function Get-InstallGUI {
 
     $Script:AppToInstall = $null
     $Script:InstallWAU = $null
-
+    $IconBase64 = "AAABAAEAEBAAAAAAAABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAQAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAUKEUwPHjCLECAzkRAgM5EQIDORECAzkRAgM5EQIDORECAzkRAgM5EPHjCOBQoRXwAAABQAAAAAAAAAABUoPpAyYZv9NWaj/zVmpP81ZqT/NWak/zVmpP81ZqT/NWak/zVmpP81ZqT/NWaj/zJgmv0TJDmtAAAAFAkQGC01ZZ/9MGWh/yFfl/8oY5z/IV+X/y5loP81aKT/W4S1/8XKz/+5vcL/ub3C/7m9wv99lLH/KU56/QYKD1wgOVZcOGyn/zFpov8eX5X/Lmeg/x5flf8vaKH/OGyn/2GKuf+2trb/n5+f/5+fn/+Tk5P/Z3uS/ypTf/8QHi2LJURjXzpxqv85cKn/Kmie/zlxqv8raJ//OHCo/zpxqv9Tg7X/obbM/5uxxv+QobP/d4eX/1Z0kv8sVoL/EiEwjCdHZl88daz/PHWs/zx1rP88daz/PHWs/zx1rP88daz/PHWs/zx1rP82apv/LlqE/y5ZhP8uWYT/LlmE/xMjMosrTGpfPnqv/z56r/8+eq//Pnqv/z56r/8+eq//Pnqv/z56r/84bp7/L12G/y9dhv8vXYb/L12G/y9dhv8VJTSKL1FtX0B/sv9Af7L/QH+y/0B/sv9Af7L/QH+y/0B/sv86cqD/MWGI/zFhiP8xYYj/MWGI/zFhiP8xYYj/Fyc1iTNWcF9DhLX/Q4S1/0OEtf9DhLX/Q4S1/0OEtf88dqL/M2SK/zNkiv8zZIr/M2SK/zNkiv8zZIr/M2SK/xkqN4g4WnJfRYi3/0WIt/9FiLf/RYi3/0WIt/9Girj/U5i3/1edu/83a4//NWiM/zVojP81aIz/NWiM/zdulP8fNUSHPF91X0eNuv9Hjbr/R426/0eNuv9Hjbr/SI67/1igvv9cpsP/OW+R/zZsjv82bI7/NmyO/zlylv9Girb/IzpIhUBjd19Jkb3/SZG9/0mRvf9Jkb3/SZG9/0uTvf9Yob7/XafD/zpyk/84b5D/OG+Q/zt1mP9Ij7n/SZG9/yU8SoRHaHpbS5a//0uWv/9Llr//S5a//0uWv/9Nl8D/WaO//12oxP88dpX/OXOS/z15mv9Kk7v/S5a//0uWv/8oPUl9QFRfIVuixvtOm8L/TpvC/06bwv9Om8L/T5zC/1mkwP9eqcX/PXmX/z58nP9Ml77/TpvC/06bwv9ZoMT8ExkdPwAAAAB4obZsY6jK+0+dw/9OnMP/TpzD/1Cdw/9apMD/XqnF/0GBn/9Nmb//TpzD/0+dw/9hpcf8OlFchQAAAAIAAAAAAAAAAEpdZyFhfIlbYXyKX2F8il9ifYpfZX+JX2eBil9he4hfYnyKX2J8il9bc39cHiYqKQAAAAAAAAAAgAEAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAwAMAAA=="
+    $IconBytes = [Convert]::FromBase64String($IconBase64)
+    $Script:stream = [System.IO.MemoryStream]::new($iconBytes, 0, $iconBytes.Length)
 
     ## FORM ##
 
@@ -331,10 +333,11 @@ function Get-InstallGUI {
     $WiguiForm.Controls.Add($CloseButton)
     $WiguiForm.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedSingle
     $WiguiForm.Name = "WiguiForm"
-    $WiguiForm.ShowIcon = $false
+    $WiguiForm.ShowIcon = $true
+    $WiguiForm.Icon = [System.Drawing.Icon]::FromHandle(([System.Drawing.Bitmap]::new($stream).GetHIcon()))
     $WiguiForm.StartPosition = [System.Windows.Forms.FormStartPosition]::CenterScreen
     $WiguiForm.AcceptButton = $SearchButton
-    $WiguiForm.Text = "WiGui (Winget-Install-GUI) $WiGiiVersion"
+    $WiguiForm.Text = "WiGui $WiGiiVersion"
 
 
     ## ACTIONS ##
@@ -371,7 +374,7 @@ function Get-InstallGUI {
         $response = $SaveFileDialog.ShowDialog() # $response can return OK or Cancel
         if ( $response -eq 'OK' ) {
             $AppListBox.Items | Out-File $SaveFileDialog.FileName -Append
-            Write-Host 'File saved:' $SaveFileDialog.FileName
+            Write-Host "File saved to:`n$($SaveFileDialog.FileName)"
         }
     })
 
@@ -444,6 +447,11 @@ function Start-Installations {
 
 }
 
+function Get-WiGuiLatestVersion {
+    #Get latest stable info
+    $WiGuiURL = 'https://api.github.com/repos/Romanitho/Winget-Install-GUI/releases/latest'
+    $WiGuiLatestVersion = ((Invoke-WebRequest $WiGuiURL -UseBasicParsing | ConvertFrom-Json)[0].tag_name).Replace("v","")
+}
 
 
 
