@@ -42,7 +42,7 @@ function Get-WingetStatus{
         
         if (!(Get-AppxPackage -Name 'Microsoft.UI.Xaml.2.7')){
             $UiXamlUrl = "https://www.nuget.org/api/v2/package/Microsoft.UI.Xaml/2.7.0"
-            Invoke-RestMethod -Uri $UiXamlUrl -OutFile ".\Microsoft.UI.XAML.2.7.zip"
+            Invoke-RestMethod -Uri $UiXamlUrl -OutFile "$Location\Microsoft.UI.XAML.2.7.zip"
             Expand-Archive -Path "$Location\Microsoft.UI.XAML.2.7.zip" -DestinationPath "$Location\extracted" -Force
             Add-AppxPackage -Path "$Location\extracted\tools\AppX\x64\Release\Microsoft.UI.Xaml.2.7.appx"
             Remove-Item -Path "$Location\Microsoft.UI.XAML.2.7.zip" -Force
@@ -449,6 +449,11 @@ function Start-Installations {
 
 #Temp folder
 $Script:Location = "$env:ProgramData\WiGui_Temp"
+#Create Temp folder
+if (!(Test-Path $Location)){
+    New-Item -ItemType Directory -Force -Path $Location
+}
+
 
 #Check if Winget is installed, and install if not
 Get-WingetStatus
