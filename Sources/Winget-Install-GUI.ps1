@@ -66,9 +66,6 @@ function Get-WingetAppInfo ($SearchApp){
         [string]$Id
     }
 
-    #Config console output encoding
-    [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-
     #Get WinGet Path (if admin context)
     $ResolveWingetPath = Resolve-Path "C:\Program Files\WindowsApps\Microsoft.DesktopAppInstaller_*_x64__8wekyb3d8bbwe"
     if ($ResolveWingetPath){
