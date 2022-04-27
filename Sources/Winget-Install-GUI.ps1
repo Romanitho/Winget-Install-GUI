@@ -66,6 +66,9 @@ function Get-WingetAppInfo ($SearchApp){
         [string]$Id
     }
 
+    #Config console output encoding
+    [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+
     #Get WinGet Path (if admin context)
     $ResolveWingetPath = Resolve-Path "C:\Program Files\WindowsApps\Microsoft.DesktopAppInstaller_*_x64__8wekyb3d8bbwe"
     if ($ResolveWingetPath){
@@ -91,7 +94,7 @@ function Get-WingetAppInfo ($SearchApp){
     }
 
     #Get list of available upgrades on winget format
-    $AppResult = & $Winget search $SearchApp --accept-source-agreements --source winget
+    $AppResult = & $Winget search $SearchApp --accept-source-agreements --source winget | Out-String
 
     #Start Convertion of winget format to an array. Check if "-----" exists
     if (!($AppResult -match "-----")){
@@ -121,7 +124,7 @@ function Get-WingetAppInfo ($SearchApp){
     $upgradeList = @()
     For ($i = $fl + 2; $i -le $lines.Length; $i++){
         $line = $lines[$i]
-        if ($line.Length -gt ($sourceStart+5) -and -not $line.Contains("--include-unknown")){
+        if ($line.Length -gt ($sourceStart+5)){
             $software = [Software]::new()
             $software.Name = $line.Substring(0, $idStart).TrimEnd()
             $software.Id = $line.Substring($idStart, $versionStart - $idStart).TrimEnd()
@@ -211,6 +214,7 @@ function Get-InstallGUI {
     $SubmitComboBox.Name = "SubmitComboBox"
     $SubmitComboBox.Size = New-Object System.Drawing.Size(378, 21)
     $SubmitComboBox.TabIndex = 5
+    $SubmitComboBox.DropDownStyle = [System.Windows.Forms.ComboBoxStyle]::DropDownList
     #
     # SubmitButton
     #
@@ -246,6 +250,7 @@ function Get-InstallGUI {
     $AppListBox.Name = "AppListBox"
     $AppListBox.Size = New-Object System.Drawing.Size(379, 355)
     $AppListBox.TabIndex = 11
+    $AppListBox.SelectionMode = 'MultiExtended'
     #
     # RemoveButton
     #
@@ -307,6 +312,7 @@ function Get-InstallGUI {
     $WiguiForm.Name = "WiguiForm"
     $WiguiForm.ShowIcon = $false
     $WiguiForm.StartPosition = [System.Windows.Forms.FormStartPosition]::CenterScreen
+    $WiguiForm.AcceptButton = $SearchButton
     $WiguiForm.Text = "WiGui (Winget-Install-GUI) 1.2.0"
 
 
@@ -318,11 +324,11 @@ function Get-InstallGUI {
 
     $SearchButton.add_click({
         $SubmitComboBox.Items.Clear()
-        $List = Get-WingetAppInfo $SearchTextBox.Text
-        foreach ($L in $List){
+        if ($SearchTextBox.Text){
+            $List = Get-WingetAppInfo $SearchTextBox.Text
+            foreach ($L in $List){
                 $SubmitComboBox.Items.Add($L.ID)
-        }
-        if ($List){
+            }
             $SubmitComboBox.SelectedIndex = 0
         }
     })
@@ -335,8 +341,9 @@ function Get-InstallGUI {
     })
 
     $RemoveButton.add_click({
-        $RemoveAppFromList = $AppListBox.SelectedItem
-        $AppListBox.Items.Remove($RemoveAppFromList)
+        while($AppListBox.SelectedItems) {
+            $AppListBox.Items.Remove($AppListBox.SelectedItems[0])
+        }
     })
 
     $SaveListButton.add_click({
@@ -422,4 +429,4 @@ Get-WingetStatus
 Get-InstallGUI
 
 #Remove temp items
-Remove-Item -Path $Location -Force -Recurse
+Remove-Item -Path $Location -Force -Recurse -ErrorAction SilentlyContinue
