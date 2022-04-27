@@ -12,7 +12,7 @@ GUI to search, select and install Apps at once with Winget package manager behin
 4. Once the list is complete, click "Install" to launch the installations or "Save list to File" if you want to create app list that can be used with WAU for example
 5. Optionally, you can install WAU in the same time (with default configuration at the moment).
 
-## Functionnalities
+## Functionalities
 
 - Install Apps at Once
 - Install [WAU](https://github.com/Romanitho/Winget-AutoUpdate)
