@@ -10,6 +10,8 @@ This script will:
 https://github.com/Romanitho/Winget-AllinOne
 #>
 
+<# APP INFO #>
+$WiGiiVersion = "1.3.1"
 
 <# FUNCTIONS #>
 
@@ -332,7 +334,7 @@ function Get-InstallGUI {
     $WiguiForm.ShowIcon = $false
     $WiguiForm.StartPosition = [System.Windows.Forms.FormStartPosition]::CenterScreen
     $WiguiForm.AcceptButton = $SearchButton
-    $WiguiForm.Text = "WiGui (Winget-Install-GUI) 1.3.0"
+    $WiguiForm.Text = "WiGui (Winget-Install-GUI) $WiGiiVersion"
 
 
     ## ACTIONS ##
@@ -451,7 +453,7 @@ function Start-Installations {
 $Script:Location = "$env:ProgramData\WiGui_Temp"
 #Create Temp folder
 if (!(Test-Path $Location)){
-    New-Item -ItemType Directory -Force -Path $Location
+    New-Item -ItemType Directory -Force -Path $Location | Out-Null
 }
 
 
