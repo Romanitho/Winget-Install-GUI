@@ -11,7 +11,7 @@ https://github.com/Romanitho/Winget-AllinOne
 #>
 
 <# APP INFO #>
-$WiGuiVersion = "1.3.0"
+$WiGuiVersion = "1.4.0"
 
 <# FUNCTIONS #>
 
