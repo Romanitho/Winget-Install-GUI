@@ -542,110 +542,113 @@ function Start-Installations {
 }
 
 function Get-WiGuiLatestVersion {
+    
     #Get latest stable info
     $WiGuiURL = 'https://api.github.com/repos/Romanitho/Winget-Install-GUI/releases/latest'
     $WiGuiLatestVersion = ((Invoke-WebRequest $WiGuiURL -UseBasicParsing | ConvertFrom-Json)[0].tag_name).Replace("v","")
+    
     if ([version]$WiGuiVersion -lt [version]$WiGuiLatestVersion){
 
-    }
-
-    ## FORM ##
-    #
-    # Begin
-    #
-    $WiGuiUpdate = New-Object System.Windows.Forms.Form
-    $SkipButton = New-Object System.Windows.Forms.Button
-    $DownloadButton = New-Object System.Windows.Forms.Button
-    $GithubButton = New-Object System.Windows.Forms.Button
-    $TextLabel = New-Object System.Windows.Forms.Label
-    $WiGuiSaveFile = New-Object System.Windows.Forms.SaveFileDialog
-    #
-    # SkipButton
-    #
-    $SkipButton.Location = New-Object System.Drawing.Point(224, 64)
-    $SkipButton.Name = "SkipButton"
-    $SkipButton.Size = New-Object System.Drawing.Size(100, 23)
-    $SkipButton.TabIndex = 0
-    $SkipButton.Text = "Skip"
-    $SkipButton.UseVisualStyleBackColor = $true
-    #
-    # DownloadButton
-    #
-    $DownloadButton.Location = New-Object System.Drawing.Point(118, 64)
-    $DownloadButton.Name = "DownloadButton"
-    $DownloadButton.Size = New-Object System.Drawing.Size(100, 23)
-    $DownloadButton.TabIndex = 1
-    $DownloadButton.Text = "Download"
-    $DownloadButton.UseVisualStyleBackColor = $true
-    #
-    # GithubButton
-    #
-    $GithubButton.Location = New-Object System.Drawing.Point(12, 64)
-    $GithubButton.Name = "GithubButton"
-    $GithubButton.Size = New-Object System.Drawing.Size(100, 23)
-    $GithubButton.TabIndex = 2
-    $GithubButton.Text = "See on GitHub"
-    $GithubButton.UseVisualStyleBackColor = $true
-    #
-    # TextLabel
-    #
-    $TextLabel.Location = New-Object System.Drawing.Point(12, 9)
-    $TextLabel.Name = "TextLabel"
-    $TextLabel.RightToLeft = [System.Windows.Forms.RightToLeft]::No
-    $TextLabel.Size = New-Object System.Drawing.Size(312, 52)
-    $TextLabel.TabIndex = 3
-    $TextLabel.Text = "A New WiGui version is available. Version $WiGuiLatestVersion"
-    $TextLabel.TextAlign = [System.Drawing.ContentAlignment]::MiddleCenter
-    #
-    # WiGuiSaveFile
-    #
-    $WiGuiSaveFile.Filter = "Exe file (*.exe)|*.exe"
-    $WiGuiSaveFile.FileName = "WiGui.exe"
-    #
-    # WiGuiUpdate
-    #
-    $WiGuiUpdate.ClientSize = New-Object System.Drawing.Size(338, 99)
-    $WiGuiUpdate.Controls.Add($TextLabel)
-    $WiGuiUpdate.Controls.Add($GithubButton)
-    $WiGuiUpdate.Controls.Add($DownloadButton)
-    $WiGuiUpdate.Controls.Add($SkipButton)
-    $WiGuiUpdate.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedSingle
-    $WiGuiUpdate.MaximizeBox = $false
-    $WiGuiUpdate.MinimizeBox = $false
-    $WiGuiUpdate.Name = "WiGuiUpdate"
-    $WiGuiUpdate.StartPosition = [System.Windows.Forms.FormStartPosition]::CenterScreen
-    $WiGuiUpdate.Text = "WiGui $WiGuiVersion - Update available"
-    $WiGuiUpdate.Icon = [System.Drawing.Icon]::FromHandle(([System.Drawing.Bitmap]::new($stream).GetHIcon()))
+        ## FORM ##
+        #
+        # Begin
+        #
+        $WiGuiUpdate = New-Object System.Windows.Forms.Form
+        $SkipButton = New-Object System.Windows.Forms.Button
+        $DownloadButton = New-Object System.Windows.Forms.Button
+        $GithubButton = New-Object System.Windows.Forms.Button
+        $TextLabel = New-Object System.Windows.Forms.Label
+        $WiGuiSaveFile = New-Object System.Windows.Forms.SaveFileDialog
+        #
+        # SkipButton
+        #
+        $SkipButton.Location = New-Object System.Drawing.Point(224, 64)
+        $SkipButton.Name = "SkipButton"
+        $SkipButton.Size = New-Object System.Drawing.Size(100, 23)
+        $SkipButton.TabIndex = 0
+        $SkipButton.Text = "Skip"
+        $SkipButton.UseVisualStyleBackColor = $true
+        #
+        # DownloadButton
+        #
+        $DownloadButton.Location = New-Object System.Drawing.Point(118, 64)
+        $DownloadButton.Name = "DownloadButton"
+        $DownloadButton.Size = New-Object System.Drawing.Size(100, 23)
+        $DownloadButton.TabIndex = 1
+        $DownloadButton.Text = "Download"
+        $DownloadButton.UseVisualStyleBackColor = $true
+        #
+        # GithubButton
+        #
+        $GithubButton.Location = New-Object System.Drawing.Point(12, 64)
+        $GithubButton.Name = "GithubButton"
+        $GithubButton.Size = New-Object System.Drawing.Size(100, 23)
+        $GithubButton.TabIndex = 2
+        $GithubButton.Text = "See on GitHub"
+        $GithubButton.UseVisualStyleBackColor = $true
+        #
+        # TextLabel
+        #
+        $TextLabel.Location = New-Object System.Drawing.Point(12, 9)
+        $TextLabel.Name = "TextLabel"
+        $TextLabel.RightToLeft = [System.Windows.Forms.RightToLeft]::No
+        $TextLabel.Size = New-Object System.Drawing.Size(312, 52)
+        $TextLabel.TabIndex = 3
+        $TextLabel.Text = "A New WiGui version is available. Version $WiGuiLatestVersion"
+        $TextLabel.TextAlign = [System.Drawing.ContentAlignment]::MiddleCenter
+        #
+        # WiGuiSaveFile
+        #
+        $WiGuiSaveFile.Filter = "Exe file (*.exe)|*.exe"
+        $WiGuiSaveFile.FileName = "WiGui.exe"
+        #
+        # WiGuiUpdate
+        #
+        $WiGuiUpdate.ClientSize = New-Object System.Drawing.Size(338, 99)
+        $WiGuiUpdate.Controls.Add($TextLabel)
+        $WiGuiUpdate.Controls.Add($GithubButton)
+        $WiGuiUpdate.Controls.Add($DownloadButton)
+        $WiGuiUpdate.Controls.Add($SkipButton)
+        $WiGuiUpdate.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedSingle
+        $WiGuiUpdate.MaximizeBox = $false
+        $WiGuiUpdate.MinimizeBox = $false
+        $WiGuiUpdate.Name = "WiGuiUpdate"
+        $WiGuiUpdate.StartPosition = [System.Windows.Forms.FormStartPosition]::CenterScreen
+        $WiGuiUpdate.Text = "WiGui $WiGuiVersion - Update available"
+        $WiGuiUpdate.Icon = [System.Drawing.Icon]::FromHandle(([System.Drawing.Bitmap]::new($stream).GetHIcon()))
 
 
-    ## ACTIONS ##
+        ## ACTIONS ##
 
-    $GithubButton.add_click({
-        [System.Diagnostics.Process]::Start("https://github.com/Romanitho/Winget-Install-GUI/releases")
-    })
+        $GithubButton.add_click({
+            [System.Diagnostics.Process]::Start("https://github.com/Romanitho/Winget-Install-GUI/releases")
+        })
 
-    $DownloadButton.add_click({
-        $response = $WiGuiSaveFile.ShowDialog() # $response can return OK or Cancel
-        if ( $response -eq 'OK' ) {
-            $WiGuiDlLink = "https://github.com/Romanitho/Winget-Install-GUI/releases/download/v$WiGuiLatestVersion/WiGui.exe"
-            Invoke-WebRequest -Uri $WiGuiDlLink -OutFile $WiGuiSaveFile.FileName
+        $DownloadButton.add_click({
+            $response = $WiGuiSaveFile.ShowDialog() # $response can return OK or Cancel
+            if ( $response -eq 'OK' ) {
+                $WiGuiDlLink = "https://github.com/Romanitho/Winget-Install-GUI/releases/download/v$WiGuiLatestVersion/WiGui.exe"
+                Invoke-WebRequest -Uri $WiGuiDlLink -OutFile $WiGuiSaveFile.FileName
+                $WiGuiUpdate.Close()
+                $WiGuiUpdate.DialogResult = [System.Windows.Forms.DialogResult]::OK
+            }
+        })
+
+        $SkipButton.add_click({
+            $WiGuiUpdate.DialogResult = [System.Windows.Forms.DialogResult]::Cancel
             $WiGuiUpdate.Close()
-            $WiGuiUpdate.DialogResult = [System.Windows.Forms.DialogResult]::OK
+        })
+
+
+        ## RETURNS ##
+        $WiGuiUpdRespond = $WiGuiUpdate.ShowDialog()
+
+        if ($WiGuiUpdRespond -eq "OK"){
+            Break
         }
-    })
 
-    $SkipButton.add_click({
-        $WiGuiUpdate.DialogResult = [System.Windows.Forms.DialogResult]::Cancel
-        $WiGuiUpdate.Close()
-    })
-
-
-    ## RETURNS ##
-    $WiGuiUpdRespond = $WiGuiUpdate.ShowDialog()
-
-    if ($WiGuiUpdRespond -eq "OK"){
-        Break
     }
+
 }
 
 
