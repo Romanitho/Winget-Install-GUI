@@ -205,7 +205,7 @@ function Get-InstallGUI {
     $SearchLabel.Name = "SearchLabel"
     $SearchLabel.Size = New-Object System.Drawing.Size(80, 13)
     $SearchLabel.TabIndex = 4
-    $SearchLabel.Text = "Search an app:"
+    $SearchLabel.Text = "Search for an app:"
     #
     # SubmitComboBox
     #
