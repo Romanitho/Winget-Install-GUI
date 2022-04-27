@@ -335,7 +335,7 @@ function Get-InstallGUI {
     $WiguiForm.ShowIcon = $false
     $WiguiForm.StartPosition = [System.Windows.Forms.FormStartPosition]::CenterScreen
     $WiguiForm.AcceptButton = $SearchButton
-    $WiguiForm.Text = "WiGui (Winget-Install-GUI) 1.2.0"
+    $WiguiForm.Text = "WiGui (Winget-Install-GUI) 1.3.0"
 
 
     ## ACTIONS ##
