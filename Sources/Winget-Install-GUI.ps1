@@ -161,8 +161,11 @@ function Get-InstallGUI {
     $AppListBox = New-Object System.Windows.Forms.ListBox
     $RemoveButton = New-Object System.Windows.Forms.Button
     $SaveListButton = New-Object System.Windows.Forms.Button
+    $OpenListButton = New-Object System.Windows.Forms.Button
     $MoreInfoLabel = New-Object System.Windows.Forms.LinkLabel
     $WAUCheckBox = New-Object System.Windows.Forms.CheckBox
+    $SaveFileDialog = New-Object System.Windows.Forms.SaveFileDialog
+    $OpenFileDialog = New-Object System.Windows.Forms.OpenFileDialog
     #
     # CloseButton
     #
@@ -270,6 +273,15 @@ function Get-InstallGUI {
     $SaveListButton.Text = "Save list to File"
     $SaveListButton.UseVisualStyleBackColor = $true
     #
+    # OpenListButton
+    #
+    $OpenListButton.Location = New-Object System.Drawing.Point(397, 181)
+    $OpenListButton.Name = "OpenListButton"
+    $OpenListButton.Size = New-Object System.Drawing.Size(75, 23)
+    $OpenListButton.TabIndex = 13
+    $OpenListButton.Text = "Open list"
+    $OpenListButton.UseVisualStyleBackColor = $true
+    #
     # MoreInfoLabel
     #
     $MoreInfoLabel.AutoSize = $true
@@ -291,12 +303,22 @@ function Get-InstallGUI {
     $WAUCheckBox.UseVisualStyleBackColor = $true
     $WAUCheckBox.Checked = $false
     #
+    # SaveFileDialog
+    #
+    $SaveFileDialog.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*"
+    #
+    # OpenFileDialog
+    #
+    $OpenFileDialog.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*"
+    $OpenFileDialog.Multiselect = $false
+    #
     # WiguiForm
     #
     $WiguiForm.ClientSize = New-Object System.Drawing.Size(484, 561)
     $WiguiForm.Controls.Add($MoreInfoLabel)
     $WiguiForm.Controls.Add($WAUCheckBox)
     $WiguiForm.Controls.Add($SaveListButton)
+    $WiguiForm.Controls.Add($OpenListButton)
     $WiguiForm.Controls.Add($RemoveButton)
     $WiguiForm.Controls.Add($AppListBox)
     $WiguiForm.Controls.Add($AppListLabel)
@@ -347,13 +369,22 @@ function Get-InstallGUI {
     })
 
     $SaveListButton.add_click({
-        Add-Type -AssemblyName System.Windows.Forms
-        $SaveFileDialog = New-Object System.Windows.Forms.SaveFileDialog
-        $SaveFileDialog.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*"
-        $response = $SaveFileDialog.ShowDialog( ) # $response can return OK or Cancel
+        $response = $SaveFileDialog.ShowDialog() # $response can return OK or Cancel
         if ( $response -eq 'OK' ) {
             $AppListBox.Items | Out-File $SaveFileDialog.FileName -Append
             Write-Host 'File saved:' $SaveFileDialog.FileName
+        }
+    })
+
+    $OpenListButton.add_click({
+        $response = $OpenFileDialog.ShowDialog() # $response can return OK or Cancel
+        if ( $response -eq 'OK' ) {
+            $FileContent = Get-Content $OpenFileDialog.FileName
+            foreach($App in $FileContent){
+                if ($App -ne "" -and $AppListBox.Items -notcontains $App){
+                    $AppListBox.Items.Add($App)
+                } 
+            }
         }
     })
 
