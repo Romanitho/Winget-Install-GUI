@@ -651,6 +651,23 @@ function Get-WiGuiLatestVersion {
 
 }
 
+function Get-AdvancedRun ($Url) {
+     
+    # Force to create a zip file 
+    $ZipFile = "$Location\temp.zip"
+    New-Item $ZipFile -ItemType File -Force | Out-Null
+
+    # Download the zip 
+    Invoke-RestMethod -Uri $Url -OutFile $ZipFile
+
+    # Extract Zip File
+    Expand-Archive -Path $ZipFile -DestinationPath $Location"\advancedrun" -Force
+    Get-ChildItem -Path $Location -Recurse | Unblock-File
+     
+    # remove the zip file
+    Remove-Item -Path $ZipFile -Force
+}
+
 
 
 <# MAIN #>
@@ -676,16 +693,16 @@ $Script:stream = [System.IO.MemoryStream]::new($IconBase64, 0, $IconBase64.Lengt
 #Check if WiGui is uptodate
 Get-WiGuiLatestVersion
 
-#Check if Winget is installed, and install if not (not in WSB!)
+#Check if Winget is installed, and install if not (and download NirSoft AdvancedRun WSB)
 $WhoAmI = & whoami
-if ($WhoAmI -eq 'nt authority\system' -or $WhoAmI -like '*wdagutilityaccount') {
-    Write-Host "You are System or running as Admin in WSB (and can't install this)!"
-    Write-Host "Install WAU via WiGui, please.. ..and then as System search for and install apps in WiGui"
-    if ($WhoAmI -like '*wdagutilityaccount') {
-        $AdvancedRunUrl = "https://www.nirsoft.net/utils/advancedrun-x64.zip"
-        Invoke-RestMethod -Uri $AdvancedRunUrl -OutFile "$Location\advancedrun-x64.zip"
-        Expand-Archive -Path "$Location\advancedrun-x64.zip" -DestinationPath "$Location\ADVR" -Force
+if ($WhoAmI -like '*wdagutilityaccount') {
+    #Check if AdvancedRun already downloaded
+    $TestPath = "$Location\advancedrun"
+    if (!(Test-Path $TestPath)){
+        #If not, download
+        Get-AdvancedRun "https://www.nirsoft.net/utils/advancedrun-x64.zip"
     }
+    Get-WingetStatus
 }
 else {
     Get-WingetStatus
