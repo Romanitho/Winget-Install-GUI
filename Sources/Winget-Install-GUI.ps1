@@ -676,8 +676,20 @@ $Script:stream = [System.IO.MemoryStream]::new($IconBase64, 0, $IconBase64.Lengt
 #Check if WiGui is uptodate
 Get-WiGuiLatestVersion
 
-#Check if Winget is installed, and install if not
-Get-WingetStatus
+#Check if Winget is installed, and install if not (not in WSB!)
+$WhoAmI = & whoami
+if ($WhoAmI -eq 'nt authority\system' -or $WhoAmI -like '*wdagutilityaccount') {
+    Write-Host "You are System or running as Admin in WSB (and can't install this)!"
+    Write-Host "Install WAU via WiGui, please.. ..and then as System search for and install apps in WiGui"
+    if ($WhoAmI -like '*wdagutilityaccount') {
+        $AdvancedRunUrl = "https://www.nirsoft.net/utils/advancedrun-x64.zip"
+        Invoke-RestMethod -Uri $AdvancedRunUrl -OutFile "$Location\advancedrun-x64.zip"
+        Expand-Archive -Path "$Location\advancedrun-x64.zip" -DestinationPath "$Location\ADVR" -Force
+    }
+}
+else {
+    Get-WingetStatus
+}
 
 #Run WiGui
 Get-InstallGUI
