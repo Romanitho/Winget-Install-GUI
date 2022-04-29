@@ -661,7 +661,7 @@ function Get-AdvancedRun ($Url) {
     Invoke-RestMethod -Uri $Url -OutFile $ZipFile
 
     # Extract Zip File
-    Expand-Archive -Path $ZipFile -DestinationPath $Location"\advancedrun" -Force
+    Expand-Archive -Path $ZipFile -DestinationPath "$Location\advancedrun" -Force
     Get-ChildItem -Path $Location -Recurse | Unblock-File
      
     # remove the zip file
@@ -697,14 +697,13 @@ Get-WiGuiLatestVersion
 $WhoAmI = & whoami
 if ($WhoAmI -like '*wdagutilityaccount') {
     #Check if AdvancedRun already downloaded
-    $TestPath = "$Location\advancedrun"
-    if (!(Test-Path $TestPath)){
+    if (!(Test-Path "$Location\advancedrun")){
         #If not, download
         Get-AdvancedRun "https://www.nirsoft.net/utils/advancedrun-x64.zip"
     }
     #WindowsApps folder
     $Script:AppsLocation = "$env:ProgramFiles\WindowsApps"
-    if (!(Test-Path $AppsLocation"\WSB.fix")) {
+    if (!(Test-Path "$AppsLocation\WSB.fix")) {
         & C:\Windows\System32\takeown.exe /F $AppsLocation /R /A /D Y
         & C:\Windows\System32\icacls.exe $AppsLocation --% /inheritance:r /grant:r Administrators:(OI)(CI)F /T /C
         New-Item -ItemType File -Force -Path $AppsLocation"\WSB.fix" | Out-Null
