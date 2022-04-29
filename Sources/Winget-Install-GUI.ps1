@@ -693,7 +693,7 @@ $Script:stream = [System.IO.MemoryStream]::new($IconBase64, 0, $IconBase64.Lengt
 #Check if WiGui is uptodate
 Get-WiGuiLatestVersion
 
-#Check if Winget is installed, and install if not (and download NirSoft AdvancedRun WSB)
+#Check if Winget is installed, and install if not (download NirSoft AdvancedRun if in WSB)
 $WhoAmI = & whoami
 if ($WhoAmI -like '*wdagutilityaccount') {
     #Check if AdvancedRun already downloaded
@@ -701,6 +701,13 @@ if ($WhoAmI -like '*wdagutilityaccount') {
     if (!(Test-Path $TestPath)){
         #If not, download
         Get-AdvancedRun "https://www.nirsoft.net/utils/advancedrun-x64.zip"
+    }
+    #WindowsApps folder
+    $Script:AppsLocation = "$env:ProgramFiles\WindowsApps"
+    if (!(Test-Path $AppsLocation"\WSB.fix")) {
+        & C:\Windows\System32\takeown.exe /F $AppsLocation /R /A /D Y
+        & C:\Windows\System32\icacls.exe $AppsLocation --% /inheritance:r /grant:r Administrators:(OI)(CI)F /T /C
+        New-Item -ItemType File -Force -Path $AppsLocation"\WSB.fix" | Out-Null
     }
     Get-WingetStatus
 }
