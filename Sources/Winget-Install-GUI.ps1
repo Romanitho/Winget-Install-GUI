@@ -15,7 +15,7 @@ $WiGuiVersion = "1.4.0"
 
 <# FUNCTIONS #>
 
-function Get-GithubRepository ($Url) {
+function Get-Tools ($Url, $Path) {
      
     # Force to create a zip file 
     $ZipFile = "$Location\temp.zip"
@@ -25,8 +25,14 @@ function Get-GithubRepository ($Url) {
     Invoke-RestMethod -Uri $Url -OutFile $ZipFile
 
     # Extract Zip File
-    Expand-Archive -Path $ZipFile -DestinationPath $Location -Force
-    Get-ChildItem -Path $Location -Recurse | Unblock-File
+    if ($Path){
+        Expand-Archive -Path $ZipFile -DestinationPath "$Path" -Force
+        Get-ChildItem -Path $Path -Recurse | Unblock-File
+    }
+    else{
+        Expand-Archive -Path $ZipFile -DestinationPath $Location -Force
+        Get-ChildItem -Path $Location -Recurse | Unblock-File
+    }
      
     # remove the zip file
     Remove-Item -Path $ZipFile -Force
@@ -102,7 +108,7 @@ function Get-WingetAppInfo ($SearchApp){
     }
 
     #Split winget output to lines
-    $lines = $AppResult.replace("¦ ","").Split([Environment]::NewLine) | Where-Object {$_}
+    $lines = $AppResult.replace("Â¦ ","").Split([Environment]::NewLine) | Where-Object {$_}
 
     # Find the line that starts with "------"
     $fl = 0
@@ -511,7 +517,7 @@ function Start-Installations {
         $TestPath = "$Location\*Winget-AutoUpdate*\Winget-AutoUpdate-Install.ps1"
         if (!(Test-Path $TestPath)){
             #If not, download
-            Get-GithubRepository "https://github.com/Romanitho/Winget-AutoUpdate/archive/refs/tags/v1.8.0.zip"
+            Get-Tools "https://github.com/Romanitho/Winget-AutoUpdate/archive/refs/tags/v1.8.0.zip" ""
         }
 
         #Configure parameters
@@ -531,7 +537,7 @@ function Start-Installations {
         $TestPath = "$Location\*Winget-Install*\winget-install.ps1"
         if (!(Test-Path $TestPath)){
             #If not, download
-            Get-GithubRepository "https://github.com/Romanitho/Winget-Install/archive/refs/tags/v1.5.0.zip"
+            Get-Tools "https://github.com/Romanitho/Winget-Install/archive/refs/tags/v1.5.0.zip" ""
         }
 
         #Run Winget-Install
@@ -651,24 +657,6 @@ function Get-WiGuiLatestVersion {
 
 }
 
-function Get-AdvancedRun ($Url) {
-     
-    # Force to create a zip file 
-    $ZipFile = "$Location\temp.zip"
-    New-Item $ZipFile -ItemType File -Force | Out-Null
-
-    # Download the zip 
-    Invoke-RestMethod -Uri $Url -OutFile $ZipFile
-
-    # Extract Zip File
-    Expand-Archive -Path $ZipFile -DestinationPath "$Location\advancedrun" -Force
-    Get-ChildItem -Path $Location -Recurse | Unblock-File
-     
-    # remove the zip file
-    Remove-Item -Path $ZipFile -Force
-}
-
-
 
 <# MAIN #>
 
@@ -693,20 +681,52 @@ $Script:stream = [System.IO.MemoryStream]::new($IconBase64, 0, $IconBase64.Lengt
 #Check if WiGui is uptodate
 Get-WiGuiLatestVersion
 
-#Check if Winget is installed, and install if not (download NirSoft AdvancedRun if in WSB)
+#Check if Winget is installed, and install if not (and download favourite apps/set ACL if in WSB)
 $WhoAmI = & whoami
 if ($WhoAmI -like '*wdagutilityaccount') {
+    $Script:AdvancedRunPath = "$env:ProgramData\NirSoft\advancedrun"
     #Check if AdvancedRun already downloaded
-    if (!(Test-Path "$Location\advancedrun")){
-        #If not, download
-        Get-AdvancedRun "https://www.nirsoft.net/utils/advancedrun-x64.zip"
+    if (!(Test-Path $AdvancedRunPath)){
+        #If not, download and create shortcut on desktop
+        Get-Tools "https://www.nirsoft.net/utils/advancedrun-x64.zip" $AdvancedRunPath
+        $SourceFilePath = "$AdvancedRunPath\AdvancedRun.exe"
+        $ShortcutPath = "C:\Users\Public\Desktop\AdvancedRun.lnk"
+        $WScriptObj = New-Object -ComObject ("WScript.Shell")
+        $shortcut = $WscriptObj.CreateShortcut($ShortcutPath)
+        $shortcut.TargetPath = $SourceFilePath
+        $shortcut.Save()
+        #& "$AdvancedRunPath\AdvancedRun.exe"
+    }
+    $Script:UninstallViewPath = "$env:ProgramData\NirSoft\uninstallview"
+    #Check if UninstallView already downloaded
+    if (!(Test-Path $UninstallViewPath)){
+        #If not, download and create shortcut on desktop
+        Get-Tools "https://www.nirsoft.net/utils/uninstallview-x64.zip" $UninstallViewPath
+        $SourceFilePath = "$UninstallViewPath\UninstallView.exe"
+        $ShortcutPath = "C:\Users\Public\Desktop\UninstallView.lnk"
+        $WScriptObj = New-Object -ComObject ("WScript.Shell")
+        $shortcut = $WscriptObj.CreateShortcut($ShortcutPath)
+        $shortcut.TargetPath = $SourceFilePath
+        $shortcut.Save()
+        #& "$UninstallViewPath\UninstallView.exe"
     }
     #WindowsApps folder
     $Script:AppsLocation = "$env:ProgramFiles\WindowsApps"
     if (!(Test-Path "$AppsLocation\WSB.fix")) {
-        & C:\Windows\System32\takeown.exe /F $AppsLocation /R /A /D Y
-        & C:\Windows\System32\icacls.exe $AppsLocation --% /inheritance:r /grant:r Administrators:(OI)(CI)F /T /C
-        New-Item -ItemType File -Force -Path $AppsLocation"\WSB.fix" | Out-Null
+        # Take ownership
+        & C:\Windows\System32\takeown.exe /F $AppsLocation /R /A /D Y | Out-Null
+
+        # Set PS variables for each of the icacls options
+        $icaclsPath = $AppsLocation   #The path must be the first thing passed to icacls
+        $replaceInherit = "/inheritance:r"
+        $Grant = "/grant:r"
+        $userAccount = "Administrators"
+        $Permissions = ":(OI)(CI)F"
+        $traverseContinue = "/T /C"
+        # Run icacls using invoke Expression
+        Invoke-Expression -Command ('icacls $icaclsPath $replaceInherit $Grant $userAccount$Permissions "${$traverseContinue}"') | Out-Null
+
+        New-Item -ItemType File -Force -Path "$AppsLocation\WSB.fix" | Out-Null
     }
     Get-WingetStatus
 }
