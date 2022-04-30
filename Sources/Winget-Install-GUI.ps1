@@ -11,7 +11,7 @@ https://github.com/Romanitho/Winget-AllinOne
 #>
 
 <# APP INFO #>
-$WiGuiVersion = "1.4.0"
+$WiGuiVersion = "1.4.1"
 
 <# FUNCTIONS #>
 
@@ -498,6 +498,8 @@ function Get-InstallGUI {
             $Script:WAUDoNotUpdate = $WAUDoNotUpdateCheckBox.Checked
             $Script:WAUDisableAU = $WAUDisableAUCheckBox.Checked
             Start-Installations
+            $WAUCheckBox.Checked = $false
+            $WAUgroupBox.Enabled = $false
         }
     })
 
