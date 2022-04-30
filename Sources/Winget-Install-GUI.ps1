@@ -74,6 +74,8 @@ function Get-WingetAppInfo ($SearchApp){
         [string]$Id
     }
 
+    [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+
     #Get WinGet Path (if admin context)
     $ResolveWingetPath = Resolve-Path "C:\Program Files\WindowsApps\Microsoft.DesktopAppInstaller_*_x64__8wekyb3d8bbwe"
     if ($ResolveWingetPath){
@@ -99,7 +101,7 @@ function Get-WingetAppInfo ($SearchApp){
     }
 
     #Get list of available upgrades on winget format
-    $AppResult = & $Winget search $SearchApp --accept-source-agreements --source winget | Out-String
+    $AppResult = & $Winget search $SearchApp --accept-source-agreements --source winget
 
     #Start Convertion of winget format to an array. Check if "-----" exists
     if (!($AppResult -match "-----")){
@@ -108,7 +110,7 @@ function Get-WingetAppInfo ($SearchApp){
     }
 
     #Split winget output to lines
-    $lines = $AppResult.replace("¦ ","").Split([Environment]::NewLine) | Where-Object {$_}
+    $lines = $AppResult.Split([Environment]::NewLine) | Where-Object {$_}
 
     # Find the line that starts with "------"
     $fl = 0
