@@ -79,6 +79,8 @@ function Get-WingetStatus{
     
     if (!($AppInstallerVers -gt "1.18.0.0")){
 
+        if ($WhoAmI -like '*wdagutilityaccount') {
+
         #Show Wait form
         Add-Type -AssemblyName System.Windows.Forms 
         $Form = New-Object system.Windows.Forms.Form
@@ -97,6 +99,7 @@ function Get-WingetStatus{
         $Form.Visible = $True
         $Form.Update()
         #Start-Sleep -Seconds 5
+        }
 
         #installing dependencies
         $ProgressPreference = 'SilentlyContinue'
@@ -114,32 +117,34 @@ function Get-WingetStatus{
             Add-AppxPackage -Path https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx
         }
 
-        #Check Prereqs
-        Install-Prerequisites
+        if ($WhoAmI -like '*wdagutilityaccount') {
 
-        #Download WinGet MSIXBundle
-        Write-Host "Not installed. Downloading WinGet..."
-        $WinGetURL = "https://github.com/microsoft/winget-cli/releases/download/v1.3.431/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
-        $WebClient=New-Object System.Net.WebClient
-        $WebClient.DownloadFile($WinGetURL, "$Location\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle")
+            #Check Prereqs
+            Install-Prerequisites
 
-        #Install WinGet MSIXBundle
-        try{
-            Write-Host "Installing MSIXBundle for App Installer..."
-            Add-AppxProvisionedPackage -Online -PackagePath "$Location\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -SkipLicense
-            Write-Host "Installed MSIXBundle for App Installer" -ForegroundColor Green
+            #Download WinGet MSIXBundle
+            Write-Host "Not installed. Downloading WinGet..."
+            $WinGetURL = "https://github.com/microsoft/winget-cli/releases/download/v1.3.431/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
+            $WebClient=New-Object System.Net.WebClient
+            $WebClient.DownloadFile($WinGetURL, "$Location\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle")
+
+            #Install WinGet MSIXBundle
+            try{
+                Write-Host "Installing MSIXBundle for App Installer..."
+                Add-AppxProvisionedPackage -Online -PackagePath "$Location\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -SkipLicense
+                Write-Host "Installed MSIXBundle for App Installer" -ForegroundColor Green
+            }
+            catch{
+                Write-Host "Failed to intall MSIXBundle for App Installer..." -ForegroundColor Red
+            }
+        
+            #Remove WinGet MSIXBundle
+            Remove-Item -Path "$Location\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -Force -ErrorAction Continue
+        
+            #Hide popup
+            $Form.Close()
         }
-        catch{
-            Write-Host "Failed to intall MSIXBundle for App Installer..." -ForegroundColor Red
-        }
-    
-        #Remove WinGet MSIXBundle
-        Remove-Item -Path "$Location\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -Force -ErrorAction Continue
-    
-        #Hide popup
-        $Form.Close()
     }
-
 }
 
 function Get-WingetAppInfo ($SearchApp){
@@ -769,7 +774,7 @@ $Script:stream = [System.IO.MemoryStream]::new($IconBase64, 0, $IconBase64.Lengt
 Get-WiGuiLatestVersion
 
 #Check if Winget is installed, and install if not (and download favourite apps/set ACL if in WSB)
-$WhoAmI = & whoami
+$Script:WhoAmI = & whoami
 if ($WhoAmI -like '*wdagutilityaccount') {
     $Script:AdvancedRunPath = "$env:ProgramData\NirSoft\advancedrun"
     #Check if AdvancedRun already downloaded
