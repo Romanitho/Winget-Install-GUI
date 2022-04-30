@@ -604,7 +604,7 @@ function Get-WiGuiLatestVersion {
         # WiGuiSaveFile
         #
         $WiGuiSaveFile.Filter = "Exe file (*.exe)|*.exe"
-        $WiGuiSaveFile.FileName = "WiGui_$WiGuiVersion.exe"
+        $WiGuiSaveFile.FileName = "WiGui_$WiGuiLatestVersion.exe"
         #
         # WiGuiUpdate
         #
