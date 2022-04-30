@@ -15,6 +15,40 @@ $WiGuiVersion = "1.4.1"
 
 <# FUNCTIONS #>
 
+function Install-Prerequisites{
+    #Check if Visual C++ 2019 or 2022 installed
+    $Visual2019 = "Microsoft Visual C++ 2015-2019 Redistributable*"
+    $Visual2022 = "Microsoft Visual C++ 2015-2022 Redistributable*"
+    $path = Get-Item HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*, HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.GetValue("DisplayName") -like $Visual2019 -or $_.GetValue("DisplayName") -like $Visual2022}
+    
+    #If not installed, install
+    if (!($path)){
+        try{
+            if((Get-CimInStance Win32_OperatingSystem).OSArchitecture -like "*64*"){
+                $OSArch = "x64"
+            }
+            else{
+                $OSArch = "x86"
+            }
+            Write-host "Downloading VC_redist.$OSArch.exe..."
+            $SourceURL = "https://aka.ms/vs/17/release/VC_redist.$OSArch.exe"
+            $Installer = $Location + "\VC_redist.$OSArch.exe"
+            $ProgressPreference = 'SilentlyContinue'
+            Invoke-WebRequest $SourceURL -OutFile (New-Item -Path $Installer -Force)
+            Write-host "Installing VC_redist.$OSArch.exe..."
+            Start-Process -FilePath $Installer -Args "/quiet /norestart" -Wait
+            Remove-Item $Installer -ErrorAction Ignore
+            Write-host "MS Visual C++ 2015-2022 installed successfully" -ForegroundColor Green
+        }
+        catch{
+            Write-host "MS Visual C++ 2015-2022 installation failed." -ForegroundColor Red
+            Start-Sleep 3
+        }
+    }
+    else{
+        Write-Host "Prerequisites checked. OK" -ForegroundColor Green
+    }
+}
 function Get-Tools ($Url, $Path) {
      
     # Force to create a zip file 
@@ -45,6 +79,25 @@ function Get-WingetStatus{
     
     if (!($AppInstallerVers -gt "1.18.0.0")){
 
+        #Show Wait form
+        Add-Type -AssemblyName System.Windows.Forms 
+        $Form = New-Object system.Windows.Forms.Form
+        $Label = New-Object System.Windows.Forms.Label
+        $Form.Controls.Add($Label)
+        $Label.Multiline = $True
+        $Label.Text = "`r`n Installing some prerequisites, please wait for a while..."
+        $Label.AutoSize = $True
+        $Form.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedSingle
+        $Form.MaximizeBox = $false
+        $Form.MinimizeBox = $false
+        $Form.Size = New-Object System.Drawing.Size(300,85)
+        $Form.StartPosition = [System.Windows.Forms.FormStartPosition]::CenterScreen
+        $Form.Text = "WiGui $WiGuiVersion"
+        $Form.Icon = [System.Drawing.Icon]::FromHandle(([System.Drawing.Bitmap]::new($stream).GetHIcon()))
+        $Form.Visible = $True
+        $Form.Update()
+        #Start-Sleep -Seconds 5
+
         #installing dependencies
         $ProgressPreference = 'SilentlyContinue'
         
@@ -61,9 +114,30 @@ function Get-WingetStatus{
             Add-AppxPackage -Path https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx
         }
 
-        #installin Winget
-        Add-AppxPackage -Path https://github.com/microsoft/winget-cli/releases/download/v1.3.431/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle
+        #Check Prereqs
+        Install-Prerequisites
+
+        #Download WinGet MSIXBundle
+        Write-Host "Not installed. Downloading WinGet..."
+        $WinGetURL = "https://github.com/microsoft/winget-cli/releases/download/v1.3.431/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
+        $WebClient=New-Object System.Net.WebClient
+        $WebClient.DownloadFile($WinGetURL, "$Location\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle")
+
+        #Install WinGet MSIXBundle
+        try{
+            Write-Host "Installing MSIXBundle for App Installer..."
+            Add-AppxProvisionedPackage -Online -PackagePath "$Location\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -SkipLicense
+            Write-Host "Installed MSIXBundle for App Installer" -ForegroundColor Green
+        }
+        catch{
+            Write-Host "Failed to intall MSIXBundle for App Installer..." -ForegroundColor Red
+        }
     
+        #Remove WinGet MSIXBundle
+        Remove-Item -Path "$Location\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -Force -ErrorAction Continue
+    
+        #Hide popup
+        $Form.Close()
     }
 
 }
