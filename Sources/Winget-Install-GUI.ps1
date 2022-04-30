@@ -81,43 +81,24 @@ function Get-WingetStatus{
 
         if ($WhoAmI -like '*wdagutilityaccount') {
 
-        #Show Wait form
-        Add-Type -AssemblyName System.Windows.Forms 
-        $Form = New-Object system.Windows.Forms.Form
-        $Label = New-Object System.Windows.Forms.Label
-        $Form.Controls.Add($Label)
-        $Label.Multiline = $True
-        $Label.Text = "`r`n Installing some prerequisites, please wait for a while..."
-        $Label.AutoSize = $True
-        $Form.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedSingle
-        $Form.MaximizeBox = $false
-        $Form.MinimizeBox = $false
-        $Form.Size = New-Object System.Drawing.Size(300,85)
-        $Form.StartPosition = [System.Windows.Forms.FormStartPosition]::CenterScreen
-        $Form.Text = "WiGui $WiGuiVersion"
-        $Form.Icon = [System.Drawing.Icon]::FromHandle(([System.Drawing.Bitmap]::new($stream).GetHIcon()))
-        $Form.Visible = $True
-        $Form.Update()
-        #Start-Sleep -Seconds 5
-        }
-
-        #installing dependencies
-        $ProgressPreference = 'SilentlyContinue'
-        
-        if (!(Get-AppxPackage -Name 'Microsoft.UI.Xaml.2.7')){
-            $UiXamlUrl = "https://www.nuget.org/api/v2/package/Microsoft.UI.Xaml/2.7.0"
-            Invoke-RestMethod -Uri $UiXamlUrl -OutFile "$Location\Microsoft.UI.XAML.2.7.zip"
-            Expand-Archive -Path "$Location\Microsoft.UI.XAML.2.7.zip" -DestinationPath "$Location\extracted" -Force
-            Add-AppxPackage -Path "$Location\extracted\tools\AppX\x64\Release\Microsoft.UI.Xaml.2.7.appx"
-            Remove-Item -Path "$Location\Microsoft.UI.XAML.2.7.zip" -Force
-            Remove-Item -Path "$Location\extracted" -Force -Recurse
-        }
-
-        if (!(Get-AppxPackage -Name 'Microsoft.VCLibs.140.00')){
-            Add-AppxPackage -Path https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx
-        }
-
-        if ($WhoAmI -like '*wdagutilityaccount') {
+            #Show Wait form
+            Add-Type -AssemblyName System.Windows.Forms 
+            $Form = New-Object system.Windows.Forms.Form
+            $Label = New-Object System.Windows.Forms.Label
+            $Form.Controls.Add($Label)
+            $Label.Multiline = $True
+            $Label.Text = "`r`n Installing some prerequisites, please wait for a while..."
+            $Label.AutoSize = $True
+            $Form.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedSingle
+            $Form.MaximizeBox = $false
+            $Form.MinimizeBox = $false
+            $Form.Size = New-Object System.Drawing.Size(300,85)
+            $Form.StartPosition = [System.Windows.Forms.FormStartPosition]::CenterScreen
+            $Form.Text = "WiGui $WiGuiVersion"
+            $Form.Icon = [System.Drawing.Icon]::FromHandle(([System.Drawing.Bitmap]::new($stream).GetHIcon()))
+            $Form.Visible = $True
+            $Form.Update()
+            #Start-Sleep -Seconds 5
 
             #Check Prereqs
             Install-Prerequisites
@@ -141,8 +122,45 @@ function Get-WingetStatus{
             #Remove WinGet MSIXBundle
             Remove-Item -Path "$Location\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -Force -ErrorAction Continue
         
+            #installing dependencies
+            $ProgressPreference = 'SilentlyContinue'
+            
+            if (!(Get-AppxPackage -Name 'Microsoft.UI.Xaml.2.7')){
+                $UiXamlUrl = "https://www.nuget.org/api/v2/package/Microsoft.UI.Xaml/2.7.0"
+                Invoke-RestMethod -Uri $UiXamlUrl -OutFile "$Location\Microsoft.UI.XAML.2.7.zip"
+                Expand-Archive -Path "$Location\Microsoft.UI.XAML.2.7.zip" -DestinationPath "$Location\extracted" -Force
+                Add-AppxPackage -Path "$Location\extracted\tools\AppX\x64\Release\Microsoft.UI.Xaml.2.7.appx"
+                Remove-Item -Path "$Location\Microsoft.UI.XAML.2.7.zip" -Force
+                Remove-Item -Path "$Location\extracted" -Force -Recurse
+            }
+
+            if (!(Get-AppxPackage -Name 'Microsoft.VCLibs.140.00')){
+                Add-AppxPackage -Path https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx
+            }
+
             #Hide popup
             $Form.Close()
+        }
+        else {
+
+            #installing dependencies
+            $ProgressPreference = 'SilentlyContinue'
+            
+            if (!(Get-AppxPackage -Name 'Microsoft.UI.Xaml.2.7')){
+                $UiXamlUrl = "https://www.nuget.org/api/v2/package/Microsoft.UI.Xaml/2.7.0"
+                Invoke-RestMethod -Uri $UiXamlUrl -OutFile "$Location\Microsoft.UI.XAML.2.7.zip"
+                Expand-Archive -Path "$Location\Microsoft.UI.XAML.2.7.zip" -DestinationPath "$Location\extracted" -Force
+                Add-AppxPackage -Path "$Location\extracted\tools\AppX\x64\Release\Microsoft.UI.Xaml.2.7.appx"
+                Remove-Item -Path "$Location\Microsoft.UI.XAML.2.7.zip" -Force
+                Remove-Item -Path "$Location\extracted" -Force -Recurse
+            }
+
+            if (!(Get-AppxPackage -Name 'Microsoft.VCLibs.140.00')){
+                Add-AppxPackage -Path https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx
+            }
+
+            #installin Winget
+            Add-AppxPackage -Path https://github.com/microsoft/winget-cli/releases/download/v1.3.431/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle
         }
     }
 }
