@@ -657,7 +657,16 @@ function Get-WiGuiLatestVersion {
 
 }
 
+function Add-Shortcut ($Source, $Target) {
 
+    #Creates shortcut
+    $SourceFilePath = "$Source"
+    $ShortcutPath = "$Target"
+    $WScriptObj = New-Object -ComObject ("WScript.Shell")
+    $shortcut = $WscriptObj.CreateShortcut($ShortcutPath)
+    $shortcut.TargetPath = $SourceFilePath
+    $shortcut.Save()
+}
 <# MAIN #>
 
 #Temp folder
@@ -689,26 +698,14 @@ if ($WhoAmI -like '*wdagutilityaccount') {
     if (!(Test-Path $AdvancedRunPath)){
         #If not, download and create shortcut on desktop
         Get-Tools "https://www.nirsoft.net/utils/advancedrun-x64.zip" $AdvancedRunPath
-        $SourceFilePath = "$AdvancedRunPath\AdvancedRun.exe"
-        $ShortcutPath = "C:\Users\Public\Desktop\AdvancedRun.lnk"
-        $WScriptObj = New-Object -ComObject ("WScript.Shell")
-        $shortcut = $WscriptObj.CreateShortcut($ShortcutPath)
-        $shortcut.TargetPath = $SourceFilePath
-        $shortcut.Save()
-        #& "$AdvancedRunPath\AdvancedRun.exe"
+        Add-Shortcut "$AdvancedRunPath\AdvancedRun.exe" "C:\Users\Public\Desktop\AdvancedRun.lnk"
     }
     $Script:UninstallViewPath = "$env:ProgramData\NirSoft\uninstallview"
     #Check if UninstallView already downloaded
     if (!(Test-Path $UninstallViewPath)){
         #If not, download and create shortcut on desktop
         Get-Tools "https://www.nirsoft.net/utils/uninstallview-x64.zip" $UninstallViewPath
-        $SourceFilePath = "$UninstallViewPath\UninstallView.exe"
-        $ShortcutPath = "C:\Users\Public\Desktop\UninstallView.lnk"
-        $WScriptObj = New-Object -ComObject ("WScript.Shell")
-        $shortcut = $WscriptObj.CreateShortcut($ShortcutPath)
-        $shortcut.TargetPath = $SourceFilePath
-        $shortcut.Save()
-        #& "$UninstallViewPath\UninstallView.exe"
+        Add-Shortcut "$UninstallViewPath\UninstallView.exe" "C:\Users\Public\Desktop\UninstallView.lnk"
     }
     #WindowsApps folder
     $Script:AppsLocation = "$env:ProgramFiles\WindowsApps"
