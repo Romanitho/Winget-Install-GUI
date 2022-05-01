@@ -84,12 +84,12 @@ function Get-WingetStatus{
             $Label = New-Object System.Windows.Forms.Label
             $Form.Controls.Add($Label)
             $Label.Multiline = $True
-            $Label.Text = "`r`n Windows Sandbox detected:`r`n`r`n Two of the best troubleshooting tools from NirSoft have`r`n already been installed...`r`n ...now installing some prerequisites, please wait!`r`n (1 of 4)"
+            $Label.Text = "`r`n Windows Sandbox detected:`r`n`r`n Two of the best troubleshooting tools from NirSoft have`r`n already been installed...`r`n`r`n Installing prerequisites:`r`n Visual C++ 2015-2022..."
             $Label.AutoSize = $True
             $Form.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedSingle
             $Form.MaximizeBox = $false
             $Form.MinimizeBox = $false
-            $Form.Size = New-Object System.Drawing.Size(305,140)
+            $Form.Size = New-Object System.Drawing.Size(305,155)
             $Form.StartPosition = [System.Windows.Forms.FormStartPosition]::CenterScreen
             $Form.Text = "WiGui $WiGuiVersion"
             $Form.Icon = [System.Drawing.Icon]::FromHandle(([System.Drawing.Bitmap]::new($stream).GetHIcon()))
@@ -103,9 +103,9 @@ function Get-WingetStatus{
             #installing dependencies
             $ProgressPreference = 'SilentlyContinue'
             
-            $Label.Text = "`r`n Windows Sandbox detected:`r`n`r`n Two of the best troubleshooting tools from NirSoft have`r`n already been installed...`r`n ...now installing some prerequisites, please wait!`r`n (2 of 4)"
-            $Form.Update()
             if (!(Get-AppxPackage -Name 'Microsoft.UI.Xaml.2.7')){
+                $Label.Text = "`r`n Windows Sandbox detected:`r`n`r`n Two of the best troubleshooting tools from NirSoft have`r`n already been installed...`r`n`r`n Installing prerequisites:`r`n Microsoft.UI.Xaml.2.7..."
+                $Form.Update()
                 $UiXamlUrl = "https://www.nuget.org/api/v2/package/Microsoft.UI.Xaml/2.7.0"
                 Invoke-RestMethod -Uri $UiXamlUrl -OutFile "$Location\Microsoft.UI.XAML.2.7.zip"
                 Expand-Archive -Path "$Location\Microsoft.UI.XAML.2.7.zip" -DestinationPath "$Location\extracted" -Force
@@ -114,13 +114,13 @@ function Get-WingetStatus{
                 Remove-Item -Path "$Location\extracted" -Force -Recurse
             }
 
-            $Label.Text = "`r`n Windows Sandbox detected:`r`n`r`n Two of the best troubleshooting tools from NirSoft have`r`n already been installed...`r`n ...now installing some prerequisites, please wait!`r`n (3 of 4)"
-            $Form.Update()
             if (!(Get-AppxPackage -Name 'Microsoft.VCLibs.140.00')){
+                $Label.Text = "`r`n Windows Sandbox detected:`r`n`r`n Two of the best troubleshooting tools from NirSoft have`r`n already been installed...`r`n`r`n Installing prerequisites:`r`n Microsoft.VCLibs.140.00..."
+                $Form.Update()
                 Add-AppxPackage -Path https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx
             }
 
-            $Label.Text = "`r`n Windows Sandbox detected:`r`n`r`n Two of the best troubleshooting tools from NirSoft have`r`n already been installed...`r`n ...now installing some prerequisites, please wait!`r`n (4 of 4)"
+            $Label.Text = "`r`n Windows Sandbox detected:`r`n`r`n Two of the best troubleshooting tools from NirSoft have`r`n already been installed...`r`n`r`n Installing prerequisites:`r`n MSIXBundle for App Installer..."
             $Form.Update()
             #Download WinGet MSIXBundle
             $WinGetURL = "https://github.com/microsoft/winget-cli/releases/download/v1.3.431/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
