@@ -129,7 +129,7 @@ function Get-WingetStatus{
 
             #Install WinGet MSIXBundle
             try{
-                Add-AppxProvisionedPackage -Online -PackagePath "$Location\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -SkipLicense
+                Add-AppxProvisionedPackage -Online -PackagePath "$Location\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -SkipLicense | Out-Null
             }
             catch{
                 Write-Host "Failed to intall MSIXBundle for App Installer..." -ForegroundColor Red
