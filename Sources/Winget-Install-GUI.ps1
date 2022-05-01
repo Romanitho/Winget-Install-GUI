@@ -30,15 +30,12 @@ function Install-Prerequisites{
             else{
                 $OSArch = "x86"
             }
-            Write-host "Downloading VC_redist.$OSArch.exe..."
             $SourceURL = "https://aka.ms/vs/17/release/VC_redist.$OSArch.exe"
             $Installer = $Location + "\VC_redist.$OSArch.exe"
             $ProgressPreference = 'SilentlyContinue'
             Invoke-WebRequest $SourceURL -OutFile (New-Item -Path $Installer -Force)
-            Write-host "Installing VC_redist.$OSArch.exe..."
             Start-Process -FilePath $Installer -Args "/quiet /norestart" -Wait
             Remove-Item $Installer -ErrorAction Ignore
-            Write-host "MS Visual C++ 2015-2022 installed successfully" -ForegroundColor Green
         }
         catch{
             Write-host "MS Visual C++ 2015-2022 installation failed." -ForegroundColor Red
@@ -126,23 +123,20 @@ function Get-WingetStatus{
             $Label.Text = "`r`n Windows Sandbox detected:`r`n`r`n Two of the best troubleshooting tools from NirSoft have`r`n already been installed...`r`n ...now installing some prerequisites, please wait!`r`n (4 of 4)"
             $Form.Update()
             #Download WinGet MSIXBundle
-            Write-Host "Not installed. Downloading WinGet..."
             $WinGetURL = "https://github.com/microsoft/winget-cli/releases/download/v1.3.431/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
             $WebClient=New-Object System.Net.WebClient
             $WebClient.DownloadFile($WinGetURL, "$Location\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle")
 
             #Install WinGet MSIXBundle
             try{
-                Write-Host "Installing MSIXBundle for App Installer..."
                 Add-AppxProvisionedPackage -Online -PackagePath "$Location\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -SkipLicense
-                Write-Host "Installed MSIXBundle for App Installer" -ForegroundColor Green
             }
             catch{
                 Write-Host "Failed to intall MSIXBundle for App Installer..." -ForegroundColor Red
             }
         
             #Remove WinGet MSIXBundle
-            Remove-Item -Path "$Location\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -Force -ErrorAction Continue
+            Remove-Item -Path "$Location\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -Force -ErrorAction Continue | Out-Null
         
             #Hide popup
             $Form.Close()
