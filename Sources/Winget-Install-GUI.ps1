@@ -805,16 +805,16 @@ if ($UserName -eq "WDAGUtilityAccount") {
         #If not, download and create shortcut in user start menu
         Get-Tools "https://www.nirsoft.net/utils/advancedrun-x64.zip" "$NirSoftInstallPathx64\AdvancedRun"
         New-Item -ItemType Directory -Force -Path "$UserStartMenu\NirSoft AdvancedRun" | Out-Null
-        Add-Shortcut "$NirSoftInstallPathx64\AdvancedRun\AdvancedRun.exe" $UserStartMenu"\NirSoft AdvancedRun\AdvancedRun.lnk"
-        Add-Shortcut "$NirSoftInstallPathx64\AdvancedRun\AdvancedRun.chm" $UserStartMenu"\NirSoft AdvancedRun\AdvancedRun Help.lnk"
+        Add-Shortcut "$NirSoftInstallPathx64\AdvancedRun\AdvancedRun.exe" "$UserStartMenu\NirSoft AdvancedRun\AdvancedRun.lnk"
+        Add-Shortcut "$NirSoftInstallPathx64\AdvancedRun\AdvancedRun.chm" "$UserStartMenu\NirSoft AdvancedRun\AdvancedRun Help.lnk"
     }
     #Check if UninstallView already installed
     if (!(Test-Path "$NirSoftInstallPathx64\UninstallView")){
         #If not, download and create shortcut in user start menu
         Get-Tools "https://www.nirsoft.net/utils/uninstallview-x64.zip" "$NirSoftInstallPathx64\UninstallView"
         New-Item -ItemType Directory -Force -Path "$UserStartMenu\NirSoft UninstallView" | Out-Null
-        Add-Shortcut "$NirSoftInstallPathx64\UninstallView\UninstallView.exe" $UserStartMenu"\NirSoft UninstallView\UninstallView.lnk"
-        Add-Shortcut $NirSoftInstallPathx64"\UninstallView\UninstallView.chm" $UserStartMenu"\NirSoft UninstallView\UninstallView Help.lnk"
+        Add-Shortcut "$NirSoftInstallPathx64\UninstallView\UninstallView.exe" "$UserStartMenu\NirSoft UninstallView\UninstallView.lnk"
+        Add-Shortcut "$NirSoftInstallPathx64\UninstallView\UninstallView.chm" "$UserStartMenu\NirSoft UninstallView\UninstallView Help.lnk"
     }
     #WindowsApps folder
     $Script:AppsLocation = "$env:ProgramFiles\WindowsApps"
