@@ -76,7 +76,7 @@ function Get-WingetStatus{
     
     if (!($AppInstallerVers -gt "1.18.0.0")){
 
-        if ($WhoAmI -like '*wdagutilityaccount') {
+        if ($UserName -eq "WDAGUtilityAccount") {
 
             #Show Wait form
             Add-Type -AssemblyName System.Windows.Forms 
@@ -792,21 +792,29 @@ $Script:stream = [System.IO.MemoryStream]::new($IconBase64, 0, $IconBase64.Lengt
 Get-WiGuiLatestVersion
 
 #Check if Winget is installed, and install if not (and download favourite apps/set ACL if in WSB)
-$Script:WhoAmI = & whoami
-if ($WhoAmI -like '*wdagutilityaccount') {
-    $Script:AdvancedRunPath = "$env:ProgramData\NirSoft\advancedrun"
-    #Check if AdvancedRun already downloaded
-    if (!(Test-Path $AdvancedRunPath)){
-        #If not, download and create shortcut on desktop
-        Get-Tools "https://www.nirsoft.net/utils/advancedrun-x64.zip" $AdvancedRunPath
-        Add-Shortcut "$AdvancedRunPath\AdvancedRun.exe" "C:\Users\Public\Desktop\AdvancedRun.lnk"
+$Script:UserName = "$env:UserName"
+if ($UserName -eq "WDAGUtilityAccount") {
+
+    #set user start menu
+    $Script:UserStartMenu = "$env:APPDATA\Microsoft\Windows\Start Menu\Programs"
+    #set NirSoft install path (x64)
+    $Script:NirSoftInstallPathx64 = "$env:ProgramFiles\NirSoft"
+
+    #Check if AdvancedRun already installed
+     if (!(Test-Path "$NirSoftInstallPathx64\AdvancedRun")){
+        #If not, download and create shortcut in user start menu
+        Get-Tools "https://www.nirsoft.net/utils/advancedrun-x64.zip" "$NirSoftInstallPathx64\AdvancedRun"
+        New-Item -ItemType Directory -Force -Path "$UserStartMenu\NirSoft AdvancedRun" | Out-Null
+        Add-Shortcut "$NirSoftInstallPathx64\AdvancedRun\AdvancedRun.exe" $UserStartMenu"\NirSoft AdvancedRun\AdvancedRun.lnk"
+        Add-Shortcut "$NirSoftInstallPathx64\AdvancedRun\AdvancedRun.chm" $UserStartMenu"\NirSoft AdvancedRun\AdvancedRun Help.lnk"
     }
-    $Script:UninstallViewPath = "$env:ProgramData\NirSoft\uninstallview"
-    #Check if UninstallView already downloaded
-    if (!(Test-Path $UninstallViewPath)){
-        #If not, download and create shortcut on desktop
-        Get-Tools "https://www.nirsoft.net/utils/uninstallview-x64.zip" $UninstallViewPath
-        Add-Shortcut "$UninstallViewPath\UninstallView.exe" "C:\Users\Public\Desktop\UninstallView.lnk"
+    #Check if UninstallView already installed
+    if (!(Test-Path "$NirSoftInstallPathx64\UninstallView")){
+        #If not, download and create shortcut in user start menu
+        Get-Tools "https://www.nirsoft.net/utils/uninstallview-x64.zip" "$NirSoftInstallPathx64\UninstallView"
+        New-Item -ItemType Directory -Force -Path "$UserStartMenu\NirSoft UninstallView" | Out-Null
+        Add-Shortcut "$NirSoftInstallPathx64\UninstallView\UninstallView.exe" $UserStartMenu"\NirSoft UninstallView\UninstallView.lnk"
+        Add-Shortcut $NirSoftInstallPathx64"\UninstallView\UninstallView.chm" $UserStartMenu"\NirSoft UninstallView\UninstallView Help.lnk"
     }
     #WindowsApps folder
     $Script:AppsLocation = "$env:ProgramFiles\WindowsApps"
