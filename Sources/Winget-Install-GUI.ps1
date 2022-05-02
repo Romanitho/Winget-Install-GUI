@@ -89,7 +89,7 @@ function Get-WingetStatus{
             $Form.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedSingle
             $Form.MaximizeBox = $false
             $Form.MinimizeBox = $false
-            $Form.Size = New-Object System.Drawing.Size(240,150)
+            $Form.Size = New-Object System.Drawing.Size(230,150)
             $Form.StartPosition = [System.Windows.Forms.FormStartPosition]::CenterScreen
             $Form.Text = "WiGui $WiGuiVersion"
             $Form.Icon = [System.Drawing.Icon]::FromHandle(([System.Drawing.Bitmap]::new($stream).GetHIcon()))
@@ -120,7 +120,7 @@ function Get-WingetStatus{
                 Add-AppxPackage -Path https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx
             }
 
-            $Label.Text = "`r`n Windows Sandbox detected:`r`n NirSoft AdvancedRun and UninstallView`r`n have been installed...`r`n`r`n Installing prerequisites:`r`n MSIXBundle for App Installer + prefetch..."
+            $Label.Text = "`r`n Windows Sandbox detected:`r`n NirSoft AdvancedRun and UninstallView`r`n have been installed...`r`n`r`n Installing prerequisites:`r`n MSIXBundle for App Installer..."
             $Form.Update()
             #Download WinGet MSIXBundle
             $WinGetURL = "https://github.com/microsoft/winget-cli/releases/download/v1.3.431/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
