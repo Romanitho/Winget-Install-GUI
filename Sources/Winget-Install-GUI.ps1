@@ -122,6 +122,9 @@ function Get-WingetStatus{
 
     }
 
+    #Close Form
+    $Form.Close()
+
 }
 
 function Get-WingetAppInfo ($SearchApp){
