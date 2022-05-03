@@ -34,30 +34,92 @@ function Get-GithubRepository ($Url) {
 
 function Get-WingetStatus{
     
+    #Show Wait form
+    Add-Type -AssemblyName System.Windows.Forms 
+    $Form = New-Object system.Windows.Forms.Form
+    $Label = New-Object System.Windows.Forms.Label
+    $Form.Controls.Add($Label)
+    $Label.Text = "`r`n Installing prerequisites:`r`n Visual C++ 2022"
+    $Label.AutoSize = $True
+    $Form.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedSingle
+    $Form.MaximizeBox = $false
+    $Form.MinimizeBox = $false
+    $Form.Size = New-Object System.Drawing.Size(230,150)
+    $Form.StartPosition = [System.Windows.Forms.FormStartPosition]::CenterScreen
+    $Form.Text = "WiGui $WiGuiVersion"
+    $Form.Icon = [System.Drawing.Icon]::FromHandle(([System.Drawing.Bitmap]::new($stream).GetHIcon()))
+    $Form.Visible = $True
+    $Form.Update()
+
+    #Check if Visual C++ 2019 or 2022 installed
+    $Visual2019 = "Microsoft Visual C++ 2015-2019 Redistributable*"
+    $Visual2022 = "Microsoft Visual C++ 2015-2022 Redistributable*"
+    $path = Get-Item HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*, HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.GetValue("DisplayName") -like $Visual2019 -or $_.GetValue("DisplayName") -like $Visual2022}
+
+    #If not installed, install
+    if (!($path)){
+        try{
+            if((Get-CimInStance Win32_OperatingSystem).OSArchitecture -like "*64*"){
+                $OSArch = "x64"
+            }
+            else{
+                $OSArch = "x86"
+            }
+            $SourceURL = "https://aka.ms/vs/17/release/VC_redist.$OSArch.exe"
+            $Installer = "$Location\VC_redist.$OSArch.exe"
+            Invoke-WebRequest $SourceURL -OutFile (New-Item -Path $Installer -Force)
+            Start-Process -FilePath $Installer -Args "/quiet /norestart" -Wait
+            Remove-Item $Installer -ErrorAction Ignore
+        }
+        catch{
+            Write-host "MS Visual C++ 2015-2022 installation failed." -ForegroundColor Red
+            Start-Sleep 3
+        }
+    }
+
     $hasAppInstaller = Get-AppXPackage -Name 'Microsoft.DesktopAppInstaller'
     [Version]$AppInstallerVers = $hasAppInstaller.version
     
     if (!($AppInstallerVers -gt "1.18.0.0")){
 
-        #installing dependencies
-        $ProgressPreference = 'SilentlyContinue'
-        
+        #installing dependencies     
         if (!(Get-AppxPackage -Name 'Microsoft.UI.Xaml.2.7')){
+            #Update Form
+            $Label.Text = "`r`n Installing prerequisites:`r`n Microsoft.UI.Xaml.2.7.0..."
+            $Form.Update()
+            #Install
             $UiXamlUrl = "https://www.nuget.org/api/v2/package/Microsoft.UI.Xaml/2.7.0"
-            Invoke-RestMethod -Uri $UiXamlUrl -OutFile "$Location\Microsoft.UI.XAML.2.7.zip"
-            Expand-Archive -Path "$Location\Microsoft.UI.XAML.2.7.zip" -DestinationPath "$Location\extracted" -Force
+            $UiXamlZip = "$Location\Microsoft.UI.XAML.2.7.zip"
+            Invoke-RestMethod -Uri $UiXamlUrl -OutFile $UiXamlZip
+            Expand-Archive -Path $UiXamlZip -DestinationPath "$Location\extracted" -Force
             Add-AppxPackage -Path "$Location\extracted\tools\AppX\x64\Release\Microsoft.UI.Xaml.2.7.appx"
-            Remove-Item -Path "$Location\Microsoft.UI.XAML.2.7.zip" -Force
+            Remove-Item -Path $UiXamlZip -Force
             Remove-Item -Path "$Location\extracted" -Force -Recurse
         }
 
         if (!(Get-AppxPackage -Name 'Microsoft.VCLibs.140.00')){
-            Add-AppxPackage -Path https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx
+            #Update Form
+            $Label.Text = "`r`n Installing prerequisites:`r`n Microsoft.VCLibs.x64.14.00..."
+            $Form.Update()
+            #Install
+            $VCLibsUrl = "https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx"
+            $VCLibsFile = "$Location\Microsoft.VCLibs.x64.14.00.Desktop.appx"
+            Invoke-RestMethod -Uri $UiXamlUrl -OutFile $VCLibsFile
+            Add-AppxPackage -Path $VCLibsFile
+            Remove-Item -Path $VCLibsFile -Force
         }
 
-        #installin Winget
-        Add-AppxPackage -Path https://github.com/microsoft/winget-cli/releases/download/v1.3.431/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle
-    
+        #installing Winget
+        #Update Form
+        $Label.Text = "`r`n Installing prerequisites:`r`n Winget..."
+        $Form.Update()
+        #Install
+        $WingetUrl = "https://github.com/microsoft/winget-cli/releases/download/v1.3.431/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
+        $WingetFile = "$Location\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
+        Invoke-RestMethod -Uri $WingetUrl -OutFile $WingetFile
+        Add-AppxPackage -Path $WingetFile
+        Remove-Item -Path $WingetFile
+
     }
 
 }
