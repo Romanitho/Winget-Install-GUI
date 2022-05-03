@@ -38,13 +38,15 @@ function Get-WingetStatus{
     Add-Type -AssemblyName System.Windows.Forms 
     $Form = New-Object system.Windows.Forms.Form
     $Label = New-Object System.Windows.Forms.Label
+    $Label.Text = "Installing prerequisites:`nVisual C++ 2022"
+    $Label.AutoSize = $False
+    $Label.Dock = [System.Windows.Forms.DockStyle]::Fill
+    $Label.TextAlign = [System.Drawing.ContentAlignment]::MiddleCenter
     $Form.Controls.Add($Label)
-    $Label.Text = "`r`n Installing prerequisites:`r`n Visual C++ 2022"
-    $Label.AutoSize = $True
     $Form.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedSingle
     $Form.MaximizeBox = $false
     $Form.MinimizeBox = $false
-    $Form.Size = New-Object System.Drawing.Size(230,150)
+    $Form.Size = New-Object System.Drawing.Size(300,200)
     $Form.StartPosition = [System.Windows.Forms.FormStartPosition]::CenterScreen
     $Form.Text = "WiGui $WiGuiVersion"
     $Form.Icon = [System.Drawing.Icon]::FromHandle(([System.Drawing.Bitmap]::new($stream).GetHIcon()))
@@ -85,7 +87,7 @@ function Get-WingetStatus{
         #installing dependencies     
         if (!(Get-AppxPackage -Name 'Microsoft.UI.Xaml.2.7')){
             #Update Form
-            $Label.Text = "`r`n Installing prerequisites:`r`n Microsoft.UI.Xaml.2.7.0..."
+            $Label.Text = "Installing prerequisites:`nMicrosoft UI Xaml 2.7.0"
             $Form.Update()
             #Install
             $UiXamlUrl = "https://www.nuget.org/api/v2/package/Microsoft.UI.Xaml/2.7.0"
@@ -99,7 +101,7 @@ function Get-WingetStatus{
 
         if (!(Get-AppxPackage -Name 'Microsoft.VCLibs.140.00')){
             #Update Form
-            $Label.Text = "`r`n Installing prerequisites:`r`n Microsoft.VCLibs.x64.14.00..."
+            $Label.Text = "Installing prerequisites:`nMicrosoft VCLibs x64 14.00"
             $Form.Update()
             #Install
             $VCLibsUrl = "https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx"
@@ -111,7 +113,7 @@ function Get-WingetStatus{
 
         #installing Winget
         #Update Form
-        $Label.Text = "`r`n Installing prerequisites:`r`n Winget..."
+        $Label.Text = "Installing prerequisites:`nWinget"
         $Form.Update()
         #Install
         $WingetUrl = "https://github.com/microsoft/winget-cli/releases/download/v1.3.431/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
@@ -660,7 +662,6 @@ function Get-WiGuiLatestVersion {
         #
         $TextLabel.Location = New-Object System.Drawing.Point(12, 9)
         $TextLabel.Name = "TextLabel"
-        $TextLabel.RightToLeft = [System.Windows.Forms.RightToLeft]::No
         $TextLabel.Size = New-Object System.Drawing.Size(312, 52)
         $TextLabel.TabIndex = 3
         $TextLabel.Text = "A New WiGui version is available. Version $WiGuiLatestVersion"
