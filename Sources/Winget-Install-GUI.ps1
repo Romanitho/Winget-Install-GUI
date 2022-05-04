@@ -98,22 +98,17 @@ function Get-WingetStatus{
                 Remove-Item -Path "$Location\extracted" -Force -Recurse
             }
 
-            if (!(Get-AppxPackage -Name 'Microsoft.VCLibs.140.00')){
-                #Show Wait form
-                $InfoLabel.Text = "`r`n Windows Sandbox detected:`r`n Tools and Prerequisites needed...`r`n`r`n Installing Prerequisite:`r`n Microsoft.VCLibs.140.00..."
-                $InfoForm.Visible = $True
-                $InfoForm.Update()
-                Add-AppxPackage -Path https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx
-            }
-
-            if (!(Get-AppxPackage -Name 'Microsoft.VCLibs.140.00.UWPDesktop')){
-                #Show Wait form
-                $InfoLabel.Text = "`r`n Windows Sandbox detected:`r`n Tools and Prerequisites needed...`r`n`r`n Installing Prerequisite:`r`n Microsoft.VCLibs.140.00.UWPDesktop..."
-                $InfoForm.Visible = $True
-                $InfoForm.Update()
-                #Hard to find, downloaded...
-                Add-AppxPackage "$PSScriptRoot\Microsoft.VCLibs.140.00.UWPDesktop_14.0.30704.0_x64__8wekyb3d8bbwe.Appx"
-            }
+            #Show Wait form
+            $InfoLabel.Text = "`r`n Windows Sandbox detected:`r`n Tools and Prerequisites needed...`r`n`r`n Installing Prerequisite:`r`n Microsoft.VCLibs.140.00..."
+            $InfoForm.Visible = $True
+            $InfoForm.Update()
+            #Download Microsoft.VCLibs.140.00
+            $VCLibsURL = 'https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx'
+            $WebClient=New-Object System.Net.WebClient
+            $WebClient.DownloadFile($VCLibsURL, "$Location\Microsoft.VCLibs.x64.14.00.Desktop.appx")
+            Add-AppxPackage "$Location\Microsoft.VCLibs.x64.14.00.Desktop.appx"
+            #Remove Microsoft.VCLibs.140.00
+            Remove-Item -Path "$Location\Microsoft.VCLibs.x64.14.00.Desktop.appx" -Force -ErrorAction Continue | Out-Null
 
             #Show Wait form
             $InfoLabel.Text = "`r`n Windows Sandbox detected:`r`n Tools and Prerequisites needed...`r`n`r`n Installing Prerequisite:`r`n MSIXBundle for App Installer..."
