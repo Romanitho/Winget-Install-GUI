@@ -98,8 +98,10 @@ function Get-WingetStatus{
                 Remove-Item -Path "$Location\extracted" -Force -Recurse
             }
 
+            if (!(Get-AppxPackage -Name 'Microsoft.VCLibs.140.00.UWPDesktop')){
+
             #Show Wait form
-            $InfoLabel.Text = "`r`n Windows Sandbox detected:`r`n Tools and Prerequisites needed...`r`n`r`n Installing Prerequisite:`r`n Microsoft.VCLibs.140.00..."
+            $InfoLabel.Text = "`r`n Windows Sandbox detected:`r`n Tools and Prerequisites needed...`r`n`r`n Installing Prerequisite:`r`n Microsoft.VCLibs.140.00.UWPDesktop..."
             $InfoForm.Visible = $True
             $InfoForm.Update()
             #Download Microsoft.VCLibs.140.00
@@ -109,6 +111,7 @@ function Get-WingetStatus{
             Add-AppxPackage "$Location\Microsoft.VCLibs.x64.14.00.Desktop.appx"
             #Remove Microsoft.VCLibs.140.00
             Remove-Item -Path "$Location\Microsoft.VCLibs.x64.14.00.Desktop.appx" -Force -ErrorAction Continue | Out-Null
+            }
 
             #Show Wait form
             $InfoLabel.Text = "`r`n Windows Sandbox detected:`r`n Tools and Prerequisites needed...`r`n`r`n Installing Prerequisite:`r`n MSIXBundle for App Installer..."
