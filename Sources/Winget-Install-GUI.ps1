@@ -23,6 +23,10 @@ function Install-Prerequisites{
     
     #If not installed, install
     if (!($path)){
+        #Show Wait form
+        $InfoLabel.Text = "`r`n Windows Sandbox detected:`r`n Tools and Prerequisites needed...`r`n`r`n Installing Prerequisite:`r`n Visual C++ 2015-2022..."
+        $InfoForm.Visible = $True
+        $InfoForm.Update()
         try{
             if((Get-CimInStance Win32_OperatingSystem).OSArchitecture -like "*64*"){
                 $OSArch = "x64"
@@ -41,9 +45,6 @@ function Install-Prerequisites{
             Write-host "MS Visual C++ 2015-2022 installation failed." -ForegroundColor Red
             Start-Sleep 3
         }
-    }
-    else{
-        Write-Host "Prerequisites checked. OK" -ForegroundColor Green
     }
 }
 function Get-Tools ($Url, $Path) {
@@ -78,25 +79,6 @@ function Get-WingetStatus{
 
         if ($UserName -eq "WDAGUtilityAccount") {
 
-            #Show Wait form
-            Add-Type -AssemblyName System.Windows.Forms 
-            $Form = New-Object system.Windows.Forms.Form
-            $Label = New-Object System.Windows.Forms.Label
-            $Form.Controls.Add($Label)
-            $Label.Multiline = $True
-            $Label.Text = "`r`n Windows Sandbox detected:`r`n NirSoft AdvancedRun and UninstallView`r`n have been installed...`r`n`r`n Installing prerequisites:`r`n Visual C++ 2015-2022..."
-            $Label.AutoSize = $True
-            $Form.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedSingle
-            $Form.MaximizeBox = $false
-            $Form.MinimizeBox = $false
-            $Form.Size = New-Object System.Drawing.Size(230,150)
-            $Form.StartPosition = [System.Windows.Forms.FormStartPosition]::CenterScreen
-            $Form.Text = "WiGui $WiGuiVersion"
-            $Form.Icon = [System.Drawing.Icon]::FromHandle(([System.Drawing.Bitmap]::new($stream).GetHIcon()))
-            $Form.Visible = $True
-            $Form.Update()
-            #Start-Sleep -Seconds 10
-
             #Check Prereqs
             Install-Prerequisites
 
@@ -104,8 +86,10 @@ function Get-WingetStatus{
             $ProgressPreference = 'SilentlyContinue'
             
             if (!(Get-AppxPackage -Name 'Microsoft.UI.Xaml.2.7')){
-                $Label.Text = "`r`n Windows Sandbox detected:`r`n NirSoft AdvancedRun and UninstallView`r`n have been installed...`r`n`r`n Installing prerequisites:`r`n Microsoft.UI.Xaml.2.7..."
-                $Form.Update()
+                #Show Wait form
+                $InfoLabel.Text = "`r`n Windows Sandbox detected:`r`n Tools and Prerequisites needed...`r`n`r`n Installing Prerequisite:`r`n Microsoft.UI.Xaml.2.7..."
+                $InfoForm.Visible = $True
+                $InfoForm.Update()
                 $UiXamlUrl = "https://www.nuget.org/api/v2/package/Microsoft.UI.Xaml/2.7.0"
                 Invoke-RestMethod -Uri $UiXamlUrl -OutFile "$Location\Microsoft.UI.XAML.2.7.zip"
                 Expand-Archive -Path "$Location\Microsoft.UI.XAML.2.7.zip" -DestinationPath "$Location\extracted" -Force
@@ -115,13 +99,26 @@ function Get-WingetStatus{
             }
 
             if (!(Get-AppxPackage -Name 'Microsoft.VCLibs.140.00')){
-                $Label.Text = "`r`n Windows Sandbox detected:`r`n NirSoft AdvancedRun and UninstallView`r`n have been installed...`r`n`r`n Installing prerequisites:`r`n Microsoft.VCLibs.140.00..."
-                $Form.Update()
+                #Show Wait form
+                $InfoLabel.Text = "`r`n Windows Sandbox detected:`r`n Tools and Prerequisites needed...`r`n`r`n Installing Prerequisite:`r`n Microsoft.VCLibs.140.00..."
+                $InfoForm.Visible = $True
+                $InfoForm.Update()
                 Add-AppxPackage -Path https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx
             }
 
-            $Label.Text = "`r`n Windows Sandbox detected:`r`n NirSoft AdvancedRun and UninstallView`r`n have been installed...`r`n`r`n Installing prerequisites:`r`n MSIXBundle for App Installer..."
-            $Form.Update()
+            if (!(Get-AppxPackage -Name 'Microsoft.VCLibs.140.00.UWPDesktop')){
+                #Show Wait form
+                $InfoLabel.Text = "`r`n Windows Sandbox detected:`r`n Tools and Prerequisites needed...`r`n`r`n Installing Prerequisite:`r`n Microsoft.VCLibs.140.00.UWPDesktop..."
+                $InfoForm.Visible = $True
+                $InfoForm.Update()
+                #Hard to find, downloaded...
+                Add-AppxPackage "$PSScriptRoot\Microsoft.VCLibs.140.00.UWPDesktop_14.0.30704.0_x64__8wekyb3d8bbwe.Appx"
+            }
+
+            #Show Wait form
+            $InfoLabel.Text = "`r`n Windows Sandbox detected:`r`n Tools and Prerequisites needed...`r`n`r`n Installing Prerequisite:`r`n MSIXBundle for App Installer..."
+            $InfoForm.Visible = $True
+            $InfoForm.Update()
             #Download WinGet MSIXBundle
             $WinGetURL = "https://github.com/microsoft/winget-cli/releases/download/v1.3.431/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
             $WebClient=New-Object System.Net.WebClient
@@ -129,7 +126,8 @@ function Get-WingetStatus{
 
             #Install WinGet MSIXBundle
             try{
-                Add-AppxProvisionedPackage -Online -PackagePath "$Location\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -SkipLicense | Out-Null
+                #doesn't work on win10 wsb!: Add-AppxProvisionedPackage -Online -PackagePath "$Location\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -SkipLicense | Out-Null
+                Add-AppxPackage "$Location\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
                 #Get WinGet Path
                 $ResolveWingetPath = Resolve-Path "C:\Program Files\WindowsApps\Microsoft.DesktopAppInstaller_*_x64__8wekyb3d8bbwe"
                 if ($ResolveWingetPath){
@@ -150,8 +148,8 @@ function Get-WingetStatus{
             #Remove WinGet MSIXBundle
             Remove-Item -Path "$Location\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -Force -ErrorAction Continue | Out-Null
         
-            #Hide popup
-            $Form.Close()
+            #Close Wait Form
+            $InfoForm.Close()
         }
         else {
 
@@ -780,7 +778,26 @@ function Add-Shortcut ($Source, $Target) {
     $shortcut.TargetPath = $SourceFilePath
     $shortcut.Save()
 }
+
+function Test-Network {
+    $Global:ProgressPreference = "SilentlyContinue"
+    $TestNetwork = Test-NetConnection 8.8.8.8 -Port 443 -InformationLevel Quiet
+    if ($TestNetwork){
+        
+        return $true
+    }
+    else{
+
+        return $false
+    }
+}
+
 <# MAIN #>
+
+if (!(Test-Network)){
+    Write-Host "Network is a Prerequisite!" -ForegroundColor Red
+    Break
+}
 
 #Temp folder
 $Script:Location = "$env:ProgramData\WiGui_Temp"
@@ -807,6 +824,23 @@ Get-WiGuiLatestVersion
 $Script:UserName = "$env:UserName"
 if ($UserName -eq "WDAGUtilityAccount") {
 
+    #Prepare Wait form
+    $Script:InfoForm = New-Object system.Windows.Forms.Form
+    $Script:InfoLabel = New-Object System.Windows.Forms.Label
+    $InfoForm.Controls.Add($InfoLabel)
+    $InfoLabel.Text = "`r`n Windows Sandbox detected:`r`n Tools and Prerequisites needed...`r`n`r`n Installing Tool:`r`n ..."
+    $InfoLabel.AutoSize = $True
+    $InfoForm.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedSingle
+    $InfoForm.MaximizeBox = $false
+    $InfoForm.MinimizeBox = $false
+    $InfoForm.Size = New-Object System.Drawing.Size(230,150)
+    $InfoForm.StartPosition = [System.Windows.Forms.FormStartPosition]::CenterScreen
+    $InfoForm.Text = "WiGui $WiGuiVersion"
+    $InfoForm.Icon = [System.Drawing.Icon]::FromHandle(([System.Drawing.Bitmap]::new($stream).GetHIcon()))
+    $InfoForm.Visible = $False
+    $InfoForm.Update()
+    #Start-Sleep -Seconds 10
+
     #set user start menu
     $Script:UserStartMenu = "$env:APPDATA\Microsoft\Windows\Start Menu\Programs"
     #set NirSoft install path (x64)
@@ -814,6 +848,10 @@ if ($UserName -eq "WDAGUtilityAccount") {
 
     #Check if AdvancedRun already installed
      if (!(Test-Path "$NirSoftInstallPathx64\AdvancedRun")){
+        #Show Wait form
+        $InfoLabel.Text = "`r`n Windows Sandbox detected:`r`n Tools and Prerequisites needed...`r`n`r`n Installing Tool:`r`n NirSoft AdvancedRun..."
+        $InfoForm.Visible = $True
+        $InfoForm.Update()
         #If not, download and create shortcut in user start menu
         Get-Tools "https://www.nirsoft.net/utils/advancedrun-x64.zip" "$NirSoftInstallPathx64\AdvancedRun"
         New-Item -ItemType Directory -Force -Path "$UserStartMenu\NirSoft AdvancedRun" | Out-Null
@@ -822,6 +860,10 @@ if ($UserName -eq "WDAGUtilityAccount") {
     }
     #Check if UninstallView already installed
     if (!(Test-Path "$NirSoftInstallPathx64\UninstallView")){
+        #Show Wait form
+        $InfoLabel.Text = "`r`n Windows Sandbox detected:`r`n Tools and Prerequisites needed...`r`n`r`n Installing Tool:`r`n NirSoft UninstallView..."
+        $InfoForm.Visible = $True
+        $InfoForm.Update()
         #If not, download and create shortcut in user start menu
         Get-Tools "https://www.nirsoft.net/utils/uninstallview-x64.zip" "$NirSoftInstallPathx64\UninstallView"
         New-Item -ItemType Directory -Force -Path "$UserStartMenu\NirSoft UninstallView" | Out-Null
@@ -831,9 +873,13 @@ if ($UserName -eq "WDAGUtilityAccount") {
     #WindowsApps folder
     $Script:AppsLocation = "$env:ProgramFiles\WindowsApps"
     if (!(Test-Path "$AppsLocation\WSB.fix")) {
+        #Show Wait form
+        $InfoLabel.Text = "`r`n Windows Sandbox detected:`r`n Tools and Prerequisites needed...`r`n`r`n Installing Correction:`r`n Correcting file system rights..."
+        $InfoForm.Visible = $True
+        $InfoForm.Update()
         # Take ownership
         & C:\Windows\System32\takeown.exe /F $AppsLocation /R /A /D Y | Out-Null
-
+        # Fix ACL:s
         # Set PS variables for each of the icacls options
         $icaclsPath = $AppsLocation   #The path must be the first thing passed to icacls
         $replaceInherit = "/inheritance:r"
