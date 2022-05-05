@@ -660,7 +660,7 @@ function Get-WiGuiLatestVersion {
 <# MAIN #>
 
 #Temp folder
-$Script:Location = "C:\WiGui_Temp"
+$Script:Location = "$env:ProgramData\WiGui_Temp"
 #Create Temp folder
 if (!(Test-Path $Location)){
     New-Item -ItemType Directory -Force -Path $Location | Out-Null
