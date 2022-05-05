@@ -104,7 +104,7 @@ function Get-WingetStatus{
             $Label.Text = "Installing prerequisites:`nMicrosoft VCLibs x64 14.00"
             $Form.Update()
             #Install
-            $VCLibsUrl = "https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx"
+            $VCLibsUrl = "https://download.microsoft.com/download/4/7/c/47c6134b-d61f-4024-83bd-b9c9ea951c25/14.0.30035.0-Desktop/Microsoft.VCLibs.x64.14.00.Desktop.appx"
             $VCLibsFile = "$Location\Microsoft.VCLibs.x64.14.00.Desktop.appx"
             Invoke-RestMethod -Uri $UiXamlUrl -OutFile $VCLibsFile
             Add-AppxPackage -Path $VCLibsFile
