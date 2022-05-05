@@ -99,12 +99,12 @@ function Get-WingetStatus{
             Remove-Item -Path "$Location\extracted" -Force -Recurse
         }
 
-        if (!(Get-AppxPackage -Name 'Microsoft.VCLibs.140.00')){
+        if (!(Get-AppxPackage -Name 'Microsoft.VCLibs.140.00.UWPDesktop')){
             #Update Form
             $Label.Text = "Installing prerequisites:`nMicrosoft VCLibs x64 14.00"
             $Form.Update()
             #Install
-            $VCLibsUrl = "https://download.microsoft.com/download/4/7/c/47c6134b-d61f-4024-83bd-b9c9ea951c25/14.0.30035.0-Desktop/Microsoft.VCLibs.x64.14.00.Desktop.appx"
+            $VCLibsUrl = "https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx"
             $VCLibsFile = "$Location\Microsoft.VCLibs.x64.14.00.Desktop.appx"
             Invoke-RestMethod -Uri $VCLibsUrl -OutFile $VCLibsFile
             Add-AppxPackage -Path $VCLibsFile
