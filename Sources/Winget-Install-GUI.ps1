@@ -577,6 +577,21 @@ function Get-InstallGUI {
 
 function Start-Installations {
     
+    ## WINGET INSTALL PART ##
+
+    if ($AppToInstall){
+        #Check if Winget-Install already downloaded
+        $TestPath = "$Location\*Winget-Install*\winget-install.ps1"
+        if (!(Test-Path $TestPath)){
+            #If not, download
+            Get-GithubRepository "https://github.com/Romanitho/Winget-Install/archive/refs/tags/v1.5.0.zip"
+        }
+
+        #Run Winget-Install
+        $WIInstallFile = (Resolve-Path $TestPath)[0].Path
+        Start-Process "powershell.exe" -Argument "-NoProfile -ExecutionPolicy Bypass -WindowStyle Maximized -Command `"$WIInstallFile -AppIDs $AppToInstall`"" -Wait -Verb RunAs
+    }
+
     ## WAU PART ##
 
     #Download and install Winget-AutoUpdate if box is checked
@@ -597,21 +612,6 @@ function Start-Installations {
         #Install Winget-Autoupdate
         $WAUInstallFile = (Resolve-Path $TestPath)[0].Path
         Start-Process "powershell.exe" -Argument "-NoProfile -ExecutionPolicy Bypass -WindowStyle Maximized -Command `"$WAUInstallFile $WAUParameters`"" -Wait -Verb RunAs
-    }
-
-    ## WINGET INSTALL PART ##
-
-    if ($AppToInstall){
-        #Check if Winget-Install already downloaded
-        $TestPath = "$Location\*Winget-Install*\winget-install.ps1"
-        if (!(Test-Path $TestPath)){
-            #If not, download
-            Get-GithubRepository "https://github.com/Romanitho/Winget-Install/archive/refs/tags/v1.5.0.zip"
-        }
-
-        #Run Winget-Install
-        $WIInstallFile = (Resolve-Path $TestPath)[0].Path
-        Start-Process "powershell.exe" -Argument "-NoProfile -ExecutionPolicy Bypass -WindowStyle Maximized -Command `"$WIInstallFile -AppIDs $AppToInstall`"" -Wait -Verb RunAs
     }
 
 }
