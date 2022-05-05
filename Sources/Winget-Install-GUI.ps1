@@ -34,11 +34,11 @@ function Get-GithubRepository ($Url) {
 
 function Get-WingetStatus{
     
-    #Show Wait form
+#Show Wait form
     Add-Type -AssemblyName System.Windows.Forms 
     $Form = New-Object system.Windows.Forms.Form
     $Label = New-Object System.Windows.Forms.Label
-    $Label.Text = "Installing prerequisites:`nVisual C++ 2022"
+    $Label.Text = "Starting..."
     $Label.AutoSize = $False
     $Label.Dock = [System.Windows.Forms.DockStyle]::Fill
     $Label.TextAlign = [System.Drawing.ContentAlignment]::MiddleCenter
@@ -46,7 +46,7 @@ function Get-WingetStatus{
     $Form.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedSingle
     $Form.MaximizeBox = $false
     $Form.MinimizeBox = $false
-    $Form.Size = New-Object System.Drawing.Size(300,200)
+    $Form.Size = New-Object System.Drawing.Size(210,120)
     $Form.StartPosition = [System.Windows.Forms.FormStartPosition]::CenterScreen
     $Form.Text = "WiGui $WiGuiVersion"
     $Form.Icon = [System.Drawing.Icon]::FromHandle(([System.Drawing.Bitmap]::new($stream).GetHIcon()))
@@ -60,6 +60,10 @@ function Get-WingetStatus{
 
     #If not installed, install
     if (!($path)){
+        #Update Form
+        $Label.Text = "Installing prerequisites:`nVisual C++ 2022"
+        $Form.Update()
+        #Install
         try{
             if((Get-CimInStance Win32_OperatingSystem).OSArchitecture -like "*64*"){
                 $OSArch = "x64"
