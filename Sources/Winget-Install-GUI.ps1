@@ -11,7 +11,7 @@ https://github.com/Romanitho/Winget-AllinOne
 #>
 
 <# APP INFO #>
-$WiGuiVersion = "1.4.1"
+$WiGuiVersion = "1.5.0"
 
 <# FUNCTIONS #>
 
@@ -216,12 +216,8 @@ function Get-InstallGUI {
     $WiGuiForm = New-Object System.Windows.Forms.Form
     $WiGuiTabControl = New-Object System.Windows.Forms.TabControl
     $AppsTabPage = New-Object System.Windows.Forms.TabPage
-    $WAUTabPage = New-Object System.Windows.Forms.TabPage
-    $SaveListButton = New-Object System.Windows.Forms.Button
-    $InstallButton = New-Object System.Windows.Forms.Button
-    $CloseButton = New-Object System.Windows.Forms.Button
-    $WiGuiLinkLabel = New-Object System.Windows.Forms.LinkLabel
     $OpenListButton = New-Object System.Windows.Forms.Button
+    $SaveListButton = New-Object System.Windows.Forms.Button
     $RemoveButton = New-Object System.Windows.Forms.Button
     $AppListBox = New-Object System.Windows.Forms.ListBox
     $AppListLabel = New-Object System.Windows.Forms.Label
@@ -231,13 +227,32 @@ function Get-InstallGUI {
     $SearchLabel = New-Object System.Windows.Forms.Label
     $SearchTextBox = New-Object System.Windows.Forms.TextBox
     $SearchButton = New-Object System.Windows.Forms.Button
+    $WAUTabPage = New-Object System.Windows.Forms.TabPage
+    $WAUConfGroupBox = New-Object System.Windows.Forms.GroupBox
+    $DailyRadioBut = New-Object System.Windows.Forms.RadioButton
+    $UpdAtLogonCheckBox = New-Object System.Windows.Forms.CheckBox
+    $WAUDisableAUCheckBox = New-Object System.Windows.Forms.CheckBox
+    $WAUDoNotUpdateCheckBox = New-Object System.Windows.Forms.CheckBox
     $WAUMoreInfoLabel = New-Object System.Windows.Forms.LinkLabel
     $WAUCheckBox = New-Object System.Windows.Forms.CheckBox
-    $WAUDoNotUpdateCheckBox = New-Object System.Windows.Forms.CheckBox
-    $WAUgroupBox = New-Object System.Windows.Forms.GroupBox
-    $WAUDisableAUCheckBox = New-Object System.Windows.Forms.CheckBox
+    $InstallButton = New-Object System.Windows.Forms.Button
+    $CloseButton = New-Object System.Windows.Forms.Button
+    $WiGuiLinkLabel = New-Object System.Windows.Forms.LinkLabel
     $SaveFileDialog = New-Object System.Windows.Forms.SaveFileDialog
     $OpenFileDialog = New-Object System.Windows.Forms.OpenFileDialog
+    $WAUFreqGroupBox = New-Object System.Windows.Forms.GroupBox
+    $WeeklyRadioBut = New-Object System.Windows.Forms.RadioButton
+    $BiweeklyRadioBut = New-Object System.Windows.Forms.RadioButton
+    $MonthlyRatioBut = New-Object System.Windows.Forms.RadioButton
+    $NotifLevelComboBox = New-Object System.Windows.Forms.ComboBox
+    $NotifLevelLabel = New-Object System.Windows.Forms.Label
+    $WAUWhiteBlackGroupBox = New-Object System.Windows.Forms.GroupBox
+    $DefaultRadioBut = New-Object System.Windows.Forms.RadioButton
+    $BlackRadioBut = New-Object System.Windows.Forms.RadioButton
+    $WhiteRadioBut = New-Object System.Windows.Forms.RadioButton
+    $WAUListFileTextBox = New-Object System.Windows.Forms.TextBox
+    $WAULoadListButton = New-Object System.Windows.Forms.Button
+    $WAUListOpenFile = New-Object System.Windows.Forms.OpenFileDialog
     #
     # WiGuiTabControl
     #
@@ -270,18 +285,14 @@ function Get-InstallGUI {
     $AppsTabPage.TabIndex = 0
     $AppsTabPage.Text = "Select Apps"
     #
-    # WAUTabPage
+    # OpenListButton
     #
-    $WAUTabPage.BackColor = [System.Drawing.Color]::Transparent
-    $WAUTabPage.Controls.Add($WAUgroupBox)
-    $WAUTabPage.Controls.Add($WAUMoreInfoLabel)
-    $WAUTabPage.Controls.Add($WAUCheckBox)
-    $WAUTabPage.Location = New-Object System.Drawing.Point(4, 22)
-    $WAUTabPage.Name = "WAUTabPage"
-    $WAUTabPage.Padding = New-Object System.Windows.Forms.Padding(3)
-    $WAUTabPage.Size = New-Object System.Drawing.Size(504, 474)
-    $WAUTabPage.TabIndex = 1
-    $WAUTabPage.Text = "Configure WAU"
+    $OpenListButton.Location = New-Object System.Drawing.Point(394, 149)
+    $OpenListButton.Name = "OpenListButton"
+    $OpenListButton.Size = New-Object System.Drawing.Size(100, 23)
+    $OpenListButton.TabIndex = 27
+    $OpenListButton.Text = "Import from File"
+    $OpenListButton.UseVisualStyleBackColor = $true
     #
     # SaveListButton
     #
@@ -291,43 +302,6 @@ function Get-InstallGUI {
     $SaveListButton.TabIndex = 16
     $SaveListButton.Text = "Save list to File"
     $SaveListButton.UseVisualStyleBackColor = $true
-    #
-    # InstallButton
-    #
-    $InstallButton.Location = New-Object System.Drawing.Point(368, 525)
-    $InstallButton.Name = "InstallButton"
-    $InstallButton.Size = New-Object System.Drawing.Size(75, 24)
-    $InstallButton.TabIndex = 15
-    $InstallButton.Text = "Install"
-    $InstallButton.UseVisualStyleBackColor = $true
-    #
-    # CloseButton
-    #
-    $CloseButton.Location = New-Object System.Drawing.Point(449, 525)
-    $CloseButton.Name = "CloseButton"
-    $CloseButton.Size = New-Object System.Drawing.Size(75, 24)
-    $CloseButton.TabIndex = 14
-    $CloseButton.Text = "Close"
-    $CloseButton.UseVisualStyleBackColor = $true
-    #
-    # WiGuiLinkLabel
-    #
-    $WiGuiLinkLabel.AutoSize = $true
-    $WiGuiLinkLabel.Location = New-Object System.Drawing.Point(13, 531)
-    $WiGuiLinkLabel.Name = "WiGuiLinkLabel"
-    $WiGuiLinkLabel.Size = New-Object System.Drawing.Size(97, 13)
-    $WiGuiLinkLabel.TabIndex = 17
-    $WiGuiLinkLabel.TabStop = $true
-    $WiGuiLinkLabel.Text = "WiGui is on GitHub"
-    #
-    # OpenListButton
-    #
-    $OpenListButton.Location = New-Object System.Drawing.Point(394, 149)
-    $OpenListButton.Name = "OpenListButton"
-    $OpenListButton.Size = New-Object System.Drawing.Size(100, 23)
-    $OpenListButton.TabIndex = 27
-    $OpenListButton.Text = "Import from File"
-    $OpenListButton.UseVisualStyleBackColor = $true
     #
     # RemoveButton
     #
@@ -343,9 +317,9 @@ function Get-InstallGUI {
     $AppListBox.FormattingEnabled = $true
     $AppListBox.Location = New-Object System.Drawing.Point(9, 120)
     $AppListBox.Name = "AppListBox"
+    $AppListBox.SelectionMode = [System.Windows.Forms.SelectionMode]::MultiExtended
     $AppListBox.Size = New-Object System.Drawing.Size(379, 342)
     $AppListBox.TabIndex = 25
-    $AppListBox.SelectionMode = "MultiExtended"
     #
     # AppListLabel
     #
@@ -407,6 +381,80 @@ function Get-InstallGUI {
     $SearchButton.Text = "Search"
     $SearchButton.UseVisualStyleBackColor = $true
     #
+    # WAUTabPage
+    #
+    $WAUTabPage.BackColor = [System.Drawing.Color]::Transparent
+    $WAUTabPage.Controls.Add($WAUWhiteBlackGroupBox)
+    $WAUTabPage.Controls.Add($WAUFreqGroupBox)
+    $WAUTabPage.Controls.Add($WAUConfGroupBox)
+    $WAUTabPage.Controls.Add($WAUMoreInfoLabel)
+    $WAUTabPage.Controls.Add($WAUCheckBox)
+    $WAUTabPage.Location = New-Object System.Drawing.Point(4, 22)
+    $WAUTabPage.Name = "WAUTabPage"
+    $WAUTabPage.Padding = New-Object System.Windows.Forms.Padding(3)
+    $WAUTabPage.Size = New-Object System.Drawing.Size(504, 474)
+    $WAUTabPage.TabIndex = 1
+    $WAUTabPage.Text = "Configure WAU"
+    #
+    # WAUConfGroupBox
+    #
+    $WAUConfGroupBox.Controls.Add($NotifLevelLabel)
+    $WAUConfGroupBox.Controls.Add($NotifLevelComboBox)
+    $WAUConfGroupBox.Controls.Add($WAUDisableAUCheckBox)
+    $WAUConfGroupBox.Controls.Add($WAUDoNotUpdateCheckBox)
+    $WAUConfGroupBox.Enabled = $false
+    $WAUConfGroupBox.Location = New-Object System.Drawing.Point(31, 46)
+    $WAUConfGroupBox.Name = "WAUConfGroupBox"
+    $WAUConfGroupBox.Size = New-Object System.Drawing.Size(214, 94)
+    $WAUConfGroupBox.TabIndex = 20
+    $WAUConfGroupBox.TabStop = $false
+    $WAUConfGroupBox.Text = "WAU Configurations"
+    #
+    # DailyRadioBut
+    #
+    $DailyRadioBut.AutoSize = $true
+    $DailyRadioBut.Checked = $true
+    $DailyRadioBut.Location = New-Object System.Drawing.Point(6, 19)
+    $DailyRadioBut.Name = "DailyRadioBut"
+    $DailyRadioBut.Size = New-Object System.Drawing.Size(48, 17)
+    $DailyRadioBut.TabIndex = 22
+    $DailyRadioBut.TabStop = $true
+    $DailyRadioBut.Text = "Daily"
+    $DailyRadioBut.TextAlign = [System.Drawing.ContentAlignment]::MiddleCenter
+    $DailyRadioBut.UseVisualStyleBackColor = $true
+    #
+    # UpdAtLogonCheckBox
+    #
+    $UpdAtLogonCheckBox.AutoSize = $true
+    $UpdAtLogonCheckBox.Checked = $true
+    $UpdAtLogonCheckBox.CheckState = [System.Windows.Forms.CheckState]::Checked
+    $UpdAtLogonCheckBox.Location = New-Object System.Drawing.Point(6, 42)
+    $UpdAtLogonCheckBox.Name = "UpdAtLogonCheckBox"
+    $UpdAtLogonCheckBox.Size = New-Object System.Drawing.Size(139, 17)
+    $UpdAtLogonCheckBox.TabIndex = 21
+    $UpdAtLogonCheckBox.Text = "Run WAU at user logon"
+    $UpdAtLogonCheckBox.UseVisualStyleBackColor = $true
+    #
+    # WAUDisableAUCheckBox
+    #
+    $WAUDisableAUCheckBox.AutoSize = $true
+    $WAUDisableAUCheckBox.Location = New-Object System.Drawing.Point(6, 42)
+    $WAUDisableAUCheckBox.Name = "WAUDisableAUCheckBox"
+    $WAUDisableAUCheckBox.Size = New-Object System.Drawing.Size(151, 17)
+    $WAUDisableAUCheckBox.TabIndex = 20
+    $WAUDisableAUCheckBox.Text = "Disable WAU Auto-update"
+    $WAUDisableAUCheckBox.UseVisualStyleBackColor = $true
+    #
+    # WAUDoNotUpdateCheckBox
+    #
+    $WAUDoNotUpdateCheckBox.AutoSize = $true
+    $WAUDoNotUpdateCheckBox.Location = New-Object System.Drawing.Point(6, 19)
+    $WAUDoNotUpdateCheckBox.Name = "WAUDoNotUpdateCheckBox"
+    $WAUDoNotUpdateCheckBox.Size = New-Object System.Drawing.Size(177, 17)
+    $WAUDoNotUpdateCheckBox.TabIndex = 19
+    $WAUDoNotUpdateCheckBox.Text = "Do not run WAU just after install"
+    $WAUDoNotUpdateCheckBox.UseVisualStyleBackColor = $true
+    #
     # WAUMoreInfoLabel
     #
     $WAUMoreInfoLabel.AutoSize = $true
@@ -420,44 +468,40 @@ function Get-InstallGUI {
     # WAUCheckBox
     #
     $WAUCheckBox.AutoSize = $true
-    $WAUCheckBox.Location = New-Object System.Drawing.Point(12, 16)
+    $WAUCheckBox.Location = New-Object System.Drawing.Point(21, 18)
     $WAUCheckBox.Name = "WAUCheckBox"
-    $WAUCheckBox.Size = New-Object System.Drawing.Size(82, 17)
+    $WAUCheckBox.Size = New-Object System.Drawing.Size(185, 17)
     $WAUCheckBox.TabIndex = 18
     $WAUCheckBox.Text = "Install WAU (Winget-AutoUpdate)"
     $WAUCheckBox.UseVisualStyleBackColor = $true
     #
-    # WAUDoNotUpdateCheckBox
+    # InstallButton
     #
-    $WAUDoNotUpdateCheckBox.AutoSize = $true
-    $WAUDoNotUpdateCheckBox.Location = New-Object System.Drawing.Point(6, 19)
-    $WAUDoNotUpdateCheckBox.Name = "WAUDoNotUpdateCheckBox"
-    $WAUDoNotUpdateCheckBox.Size = New-Object System.Drawing.Size(177, 17)
-    $WAUDoNotUpdateCheckBox.TabIndex = 19
-    $WAUDoNotUpdateCheckBox.Text = "Do not run WAU just after install"
-    $WAUDoNotUpdateCheckBox.UseVisualStyleBackColor = $true
+    $InstallButton.Location = New-Object System.Drawing.Point(368, 525)
+    $InstallButton.Name = "InstallButton"
+    $InstallButton.Size = New-Object System.Drawing.Size(75, 24)
+    $InstallButton.TabIndex = 15
+    $InstallButton.Text = "Install"
+    $InstallButton.UseVisualStyleBackColor = $true
     #
-    # WAUgroupBox
+    # CloseButton
     #
-    $WAUgroupBox.Controls.Add($WAUDisableAUCheckBox)
-    $WAUgroupBox.Controls.Add($WAUDoNotUpdateCheckBox)
-    $WAUgroupBox.Location = New-Object System.Drawing.Point(12, 48)
-    $WAUgroupBox.Name = "WAUgroupBox"
-    $WAUgroupBox.Size = New-Object System.Drawing.Size(192, 68)
-    $WAUgroupBox.TabIndex = 20
-    $WAUgroupBox.TabStop = $false
-    $WAUgroupBox.Text = "WAU Configurations"
-    $WAUgroupBox.Enabled = $false
+    $CloseButton.Location = New-Object System.Drawing.Point(449, 525)
+    $CloseButton.Name = "CloseButton"
+    $CloseButton.Size = New-Object System.Drawing.Size(75, 24)
+    $CloseButton.TabIndex = 14
+    $CloseButton.Text = "Close"
+    $CloseButton.UseVisualStyleBackColor = $true
     #
-    # WAUDisableAUCheckBox
+    # WiGuiLinkLabel
     #
-    $WAUDisableAUCheckBox.AutoSize = $true
-    $WAUDisableAUCheckBox.Location = New-Object System.Drawing.Point(6, 42)
-    $WAUDisableAUCheckBox.Name = "WAUDisableAUCheckBox"
-    $WAUDisableAUCheckBox.Size = New-Object System.Drawing.Size(151, 17)
-    $WAUDisableAUCheckBox.TabIndex = 20
-    $WAUDisableAUCheckBox.Text = "Disable WAU Auto-update"
-    $WAUDisableAUCheckBox.UseVisualStyleBackColor = $true
+    $WiGuiLinkLabel.AutoSize = $true
+    $WiGuiLinkLabel.Location = New-Object System.Drawing.Point(13, 531)
+    $WiGuiLinkLabel.Name = "WiGuiLinkLabel"
+    $WiGuiLinkLabel.Size = New-Object System.Drawing.Size(97, 13)
+    $WiGuiLinkLabel.TabIndex = 17
+    $WiGuiLinkLabel.TabStop = $true
+    $WiGuiLinkLabel.Text = "WiGui is on GitHub"
     #
     # SaveFileDialog
     #
@@ -466,6 +510,141 @@ function Get-InstallGUI {
     # OpenFileDialog
     #
     $OpenFileDialog.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*"
+    #
+    # WAUFreqGroupBox
+    #
+    $WAUFreqGroupBox.Controls.Add($MonthlyRatioBut)
+    $WAUFreqGroupBox.Controls.Add($BiweeklyRadioBut)
+    $WAUFreqGroupBox.Controls.Add($WeeklyRadioBut)
+    $WAUFreqGroupBox.Controls.Add($UpdAtLogonCheckBox)
+    $WAUFreqGroupBox.Controls.Add($DailyRadioBut)
+    $WAUFreqGroupBox.Enabled = $false
+    $WAUFreqGroupBox.Location = New-Object System.Drawing.Point(31, 151)
+    $WAUFreqGroupBox.Name = "WAUFreqGroupBox"
+    $WAUFreqGroupBox.Size = New-Object System.Drawing.Size(294, 66)
+    $WAUFreqGroupBox.TabIndex = 23
+    $WAUFreqGroupBox.TabStop = $false
+    $WAUFreqGroupBox.Text = "WAU Update Frequency"
+    #
+    # WeeklyRadioBut
+    #
+    $WeeklyRadioBut.AutoSize = $true
+    $WeeklyRadioBut.Location = New-Object System.Drawing.Point(70, 19)
+    $WeeklyRadioBut.Name = "WeeklyRadioBut"
+    $WeeklyRadioBut.Size = New-Object System.Drawing.Size(61, 17)
+    $WeeklyRadioBut.TabIndex = 23
+    $WeeklyRadioBut.Text = "Weekly"
+    $WeeklyRadioBut.UseVisualStyleBackColor = $true
+    #
+    # BiweeklyRadioBut
+    #
+    $BiweeklyRadioBut.AutoSize = $true
+    $BiweeklyRadioBut.Location = New-Object System.Drawing.Point(147, 19)
+    $BiweeklyRadioBut.Name = "BiweeklyRadioBut"
+    $BiweeklyRadioBut.Size = New-Object System.Drawing.Size(67, 17)
+    $BiweeklyRadioBut.TabIndex = 24
+    $BiweeklyRadioBut.Text = "Biweekly"
+    $BiweeklyRadioBut.UseVisualStyleBackColor = $true
+    #
+    # MonthlyRatioBut
+    #
+    $MonthlyRatioBut.AutoSize = $true
+    $MonthlyRatioBut.Location = New-Object System.Drawing.Point(230, 19)
+    $MonthlyRatioBut.Name = "MonthlyRatioBut"
+    $MonthlyRatioBut.Size = New-Object System.Drawing.Size(62, 17)
+    $MonthlyRatioBut.TabIndex = 25
+    $MonthlyRatioBut.Text = "Monthly"
+    $MonthlyRatioBut.UseVisualStyleBackColor = $true
+    #
+    # NotifLevelComboBox
+    #
+    $NotifLevelComboBox.FormattingEnabled = $true
+    $NotifLevelComboBox.Items.AddRange(@("Full","SuccessOnly","None"))
+    $NotifLevelComboBox.Location = New-Object System.Drawing.Point(97, 65)
+    $NotifLevelComboBox.Name = "NotifLevelComboBox"
+    $NotifLevelComboBox.Size = New-Object System.Drawing.Size(100, 21)
+    $NotifLevelComboBox.TabIndex = 21
+    $NotifLevelComboBox.Text = "Full"
+    #
+    # NotifLevelLabel
+    #
+    $NotifLevelLabel.AutoSize = $true
+    $NotifLevelLabel.Location = New-Object System.Drawing.Point(6, 68)
+    $NotifLevelLabel.Name = "NotifLevelLabel"
+    $NotifLevelLabel.Size = New-Object System.Drawing.Size(85, 13)
+    $NotifLevelLabel.TabIndex = 22
+    $NotifLevelLabel.Text = "Notification level"
+    #
+    # WAUWhiteBlackGroupBox
+    #
+    $WAUWhiteBlackGroupBox.Controls.Add($WAULoadListButton)
+    $WAUWhiteBlackGroupBox.Controls.Add($WAUListFileTextBox)
+    $WAUWhiteBlackGroupBox.Controls.Add($WhiteRadioBut)
+    $WAUWhiteBlackGroupBox.Controls.Add($BlackRadioBut)
+    $WAUWhiteBlackGroupBox.Controls.Add($DefaultRadioBut)
+    $WAUWhiteBlackGroupBox.Enabled = $false
+    $WAUWhiteBlackGroupBox.Location = New-Object System.Drawing.Point(31, 228)
+    $WAUWhiteBlackGroupBox.Name = "WAUWhiteBlackGroupBox"
+    $WAUWhiteBlackGroupBox.Size = New-Object System.Drawing.Size(445, 72)
+    $WAUWhiteBlackGroupBox.TabIndex = 24
+    $WAUWhiteBlackGroupBox.TabStop = $false
+    $WAUWhiteBlackGroupBox.Text = "WAU White / Black List"
+    #
+    # DefaultRadioBut
+    #
+    $DefaultRadioBut.AutoSize = $true
+    $DefaultRadioBut.Checked = $true
+    $DefaultRadioBut.Location = New-Object System.Drawing.Point(6, 19)
+    $DefaultRadioBut.Name = "DefaultRadioBut"
+    $DefaultRadioBut.Size = New-Object System.Drawing.Size(59, 17)
+    $DefaultRadioBut.TabIndex = 23
+    $DefaultRadioBut.Text = "Default"
+    $DefaultRadioBut.TextAlign = [System.Drawing.ContentAlignment]::MiddleCenter
+    $DefaultRadioBut.UseVisualStyleBackColor = $true
+    #
+    # BlackRadioBut
+    #
+    $BlackRadioBut.AutoSize = $true
+    $BlackRadioBut.Location = New-Object System.Drawing.Point(76, 19)
+    $BlackRadioBut.Name = "BlackRadioBut"
+    $BlackRadioBut.Size = New-Object System.Drawing.Size(68, 17)
+    $BlackRadioBut.TabIndex = 24
+    $BlackRadioBut.Text = "BlackList"
+    $BlackRadioBut.TextAlign = [System.Drawing.ContentAlignment]::MiddleRight
+    $BlackRadioBut.UseVisualStyleBackColor = $true
+    #
+    # WhiteRadioBut
+    #
+    $WhiteRadioBut.AutoSize = $true
+    $WhiteRadioBut.Location = New-Object System.Drawing.Point(155, 19)
+    $WhiteRadioBut.Name = "WhiteRadioBut"
+    $WhiteRadioBut.Size = New-Object System.Drawing.Size(69, 17)
+    $WhiteRadioBut.TabIndex = 25
+    $WhiteRadioBut.Text = "WhiteList"
+    $WhiteRadioBut.TextAlign = [System.Drawing.ContentAlignment]::MiddleCenter
+    $WhiteRadioBut.UseVisualStyleBackColor = $true
+    #
+    # WAUListFileTextBox
+    #
+    $WAUListFileTextBox.Enabled = $false
+    $WAUListFileTextBox.Location = New-Object System.Drawing.Point(6, 42)
+    $WAUListFileTextBox.Name = "WAUListFileTextBox"
+    $WAUListFileTextBox.Size = New-Object System.Drawing.Size(349, 20)
+    $WAUListFileTextBox.TabIndex = 26
+    #
+    # WAULoadListButton
+    #
+    $WAULoadListButton.Enabled = $false
+    $WAULoadListButton.Location = New-Object System.Drawing.Point(361, 40)
+    $WAULoadListButton.Name = "WAULoadListButton"
+    $WAULoadListButton.Size = New-Object System.Drawing.Size(75, 23)
+    $WAULoadListButton.TabIndex = 27
+    $WAULoadListButton.Text = "Load list"
+    $WAULoadListButton.UseVisualStyleBackColor = $true
+    #
+    # WAUListOpenFile
+    #
+    $WAUListOpenFile.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*"
     #
     # WiGuiForm
     #
@@ -479,34 +658,21 @@ function Get-InstallGUI {
     $WiGuiForm.MaximizeBox = $false
     $WiGuiForm.Name = "WiGuiForm"
     $WiGuiForm.StartPosition = [System.Windows.Forms.FormStartPosition]::CenterScreen
+    $WiGuiForm.Text = "WiGui $WiGuiVersion"
     #
     # Custom
     #
-    $WiGuiForm.Text = "WiGui $WiGuiVersion"
     $WiGuiForm.Icon = [System.Drawing.Icon]::FromHandle(([System.Drawing.Bitmap]::new($stream).GetHIcon()))
 
 
     ## ACTIONS ##
-
-    $WAUCheckBox.add_click({
-        if ($WAUCheckBox.Checked -eq $true)
-        {
-            $WAUgroupBox.Enabled = $true  
-        }
-        elseif ($WAUCheckBox.Checked -eq $false)
-        {
-            $WAUgroupBox.Enabled = $false
-        } 
-    })
-
+    #
+    # Tab 1
+    #
     $WiGuiLinkLabel.add_click({
         [System.Diagnostics.Process]::Start("https://github.com/Romanitho/Winget-Install-GUI")
     })
-
-    $WAUMoreInfoLabel.add_click({
-        [System.Diagnostics.Process]::Start("https://github.com/Romanitho/Winget-AutoUpdate")
-    })
-
+    #
     $SearchButton.add_click({
         $SubmitComboBox.Items.Clear()
         if ($SearchTextBox.Text){
@@ -517,20 +683,20 @@ function Get-InstallGUI {
             $SubmitComboBox.SelectedIndex = 0
         }
     })
-
+    #
     $SubmitButton.add_click({
         $AddAppToList = $SubmitComboBox.Text
         if ($AddAppToList -ne "" -and $AppListBox.Items -notcontains $AddAppToList){
             $AppListBox.Items.Add($AddAppToList)
         }  
     })
-
+    #
     $RemoveButton.add_click({
         while($AppListBox.SelectedItems) {
             $AppListBox.Items.Remove($AppListBox.SelectedItems[0])
         }
     })
-
+    #
     $SaveListButton.add_click({
         $response = $SaveFileDialog.ShowDialog() # $response can return OK or Cancel
         if ( $response -eq 'OK' ) {
@@ -538,7 +704,7 @@ function Get-InstallGUI {
             Write-Host "File saved to:`n$($SaveFileDialog.FileName)"
         }
     })
-
+    #
     $OpenListButton.add_click({
         $response = $OpenFileDialog.ShowDialog() # $response can return OK or Cancel
         if ( $response -eq 'OK' ) {
@@ -550,24 +716,72 @@ function Get-InstallGUI {
             }
         }
     })
-
+    #
+    # Tab 2
+    #
+    $WAUCheckBox.add_click({
+        if ($WAUCheckBox.Checked -eq $true)
+        {
+            $WAUConfGroupBox.Enabled = $true
+            $WAUFreqGroupBox.Enabled = $true
+            $WAUWhiteBlackGroupBox.Enabled =$true
+        }
+        elseif ($WAUCheckBox.Checked -eq $false)
+        {
+            $WAUConfGroupBox.Enabled = $false
+            $WAUFreqGroupBox.Enabled = $false
+            $WAUWhiteBlackGroupBox.Enabled =$false
+        } 
+    })
+    #
+    $WAUMoreInfoLabel.add_click({
+        [System.Diagnostics.Process]::Start("https://github.com/Romanitho/Winget-AutoUpdate")
+    })
+    #
+    $BlackRadioBut.add_click({
+        $WAULoadListButton.Enabled = $true
+    })
+    #
+    $WhiteRadioBut.add_click({
+        $WAULoadListButton.Enabled = $true
+    })
+    #
+    $DefaultRadioBut.add_click({
+        $WAULoadListButton.Enabled = $false
+        $WAUListFileTextBox.Clear()
+    })
+    #
+    $WAULoadListButton.add_click({
+        $response = $WAUListOpenFile.ShowDialog() # $response can return OK or Cancel
+        if ( $response -eq 'OK' ) {
+            $WAUListFileTextBox.Text = $WAUListOpenFile.FileName
+        }
+    })
+    #
+    # Form Buttons
+    #
     $CloseButton.add_click({
         $WiguiForm.DialogResult = [System.Windows.Forms.DialogResult]::Cancel
         $WiguiForm.Close()
     })
-
+    #
     $InstallButton.add_click({
         if ($AppListBox.Items -or $WAUCheckBox.Checked){
             $Script:AppToInstall = $AppListBox.Items -join ","
             $Script:InstallWAU = $WAUCheckBox.Checked
             $Script:WAUDoNotUpdate = $WAUDoNotUpdateCheckBox.Checked
             $Script:WAUDisableAU = $WAUDisableAUCheckBox.Checked
+            $Script:WAUAtUserLogon = $UpdAtLogonCheckBox.Checked
+            $Script:WAUNotificationLevel = $NotifLevelComboBox.Text
+            $Script:WAUUseWhiteList = $WhiteRadioBut.Checked
+            $Script:WAUListPath = $WAUListOpenFile.FileName
             Start-Installations
             $WAUCheckBox.Checked = $false
-            $WAUgroupBox.Enabled = $false
+            $WAUConfGroupBox.Enabled = $false
+            $WAUFreqGroupBox.Enabled = $false
+            $WAUWhiteBlackGroupBox.Enabled = $false
         }
     })
-
 
     ## RETURNS ##
 
@@ -584,7 +798,7 @@ function Start-Installations {
         $TestPath = "$Location\*Winget-Install*\winget-install.ps1"
         if (!(Test-Path $TestPath)){
             #If not, download
-            Get-GithubRepository "https://github.com/Romanitho/Winget-Install/archive/refs/tags/v1.5.0.zip"
+            Get-GithubRepository "https://github.com/Romanitho/Winget-Install/archive/refs/tags/v1.5.1.zip"
         }
 
         #Run Winget-Install
@@ -601,16 +815,38 @@ function Start-Installations {
         $TestPath = "$Location\*Winget-AutoUpdate*\Winget-AutoUpdate-Install.ps1"
         if (!(Test-Path $TestPath)){
             #If not, download
-            Get-GithubRepository "https://github.com/Romanitho/Winget-AutoUpdate/archive/refs/tags/v1.8.0.zip"
+            Get-GithubRepository "https://github.com/Romanitho/Winget-AutoUpdate/archive/refs/tags/v1.9.1.zip"
         }
+
+        #Get install file
+        $WAUInstallFile = (Resolve-Path $TestPath)[0].Path
+
+        #Get parent folder
+        $WAUInstallFolder = Split-Path $WAUInstallFile
 
         #Configure parameters
         $WAUParameters = "-Silent "
-        if ($WAUDoNotUpdate) {$WAUParameters += "-DoNotUpdate "}
-        if ($WAUDisableAU) {$WAUParameters += "-DisableWAUAutoUpdate "}
+        if ($WAUDoNotUpdate) {
+            $WAUParameters += "-DoNotUpdate "
+        }
+        if ($WAUDisableAU) {
+            $WAUParameters += "-DisableWAUAutoUpdate "
+        }
+        if ($WAUAtUserLogon) {
+            $WAUParameters += "-UpdatesAtLogon "
+        }
+        if ($WAUNotificationLevel) {
+            $WAUParameters += "-NotificationLevel $WAUNotificationLevel "
+        }
+        if ($WAUUseWhiteList) {
+            $WAUParameters += "-UseWhiteList "
+            if ($WAUListPath) {Copy-Item $WAUListPath -Destination "$WAUInstallFolder\included_apps.txt" -Force -ErrorAction SilentlyContinue}
+        }
+        else{
+            if ($WAUListPath) {Copy-Item $WAUListPath -Destination "$WAUInstallFolder\excluded_apps.txt" -Force -ErrorAction SilentlyContinue}
+        }
 
         #Install Winget-Autoupdate
-        $WAUInstallFile = (Resolve-Path $TestPath)[0].Path
         Start-Process "powershell.exe" -Argument "-NoProfile -ExecutionPolicy Bypass -WindowStyle Maximized -Command `"$WAUInstallFile $WAUParameters`"" -Wait -Verb RunAs
     }
 
