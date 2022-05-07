@@ -590,10 +590,8 @@ function Get-InstallGUI {
     # NotifLevelComboBox
     #
     $NotifLevelComboBox.FormattingEnabled = $true
-    $NotifLevelComboBox.Items.AddRange(@(
-    "Full",
-    "SuccessOnly",
-    "None"))
+    $NotifLevelComboBox.Items.AddRange(@("Full","SuccessOnly","None"))
+    $NotifLevelComboBox.DropDownStyle = "DropDownList"
     $NotifLevelComboBox.Location = New-Object System.Drawing.Point(129, 80)
     $NotifLevelComboBox.Margin = New-Object System.Windows.Forms.Padding(4, 4, 4, 4)
     $NotifLevelComboBox.Name = "NotifLevelComboBox"
