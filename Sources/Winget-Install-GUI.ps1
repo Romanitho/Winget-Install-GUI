@@ -235,11 +235,12 @@ function Get-InstallGUI {
     $BlackRadioBut = New-Object System.Windows.Forms.RadioButton
     $DefaultRadioBut = New-Object System.Windows.Forms.RadioButton
     $WAUFreqGroupBox = New-Object System.Windows.Forms.GroupBox
-    $MonthlyRatioBut = New-Object System.Windows.Forms.RadioButton
-    $BiweeklyRadioBut = New-Object System.Windows.Forms.RadioButton
-    $WeeklyRadioBut = New-Object System.Windows.Forms.RadioButton
-    $UpdAtLogonCheckBox = New-Object System.Windows.Forms.CheckBox
+    $WAUFredLayoutPanel = New-Object System.Windows.Forms.FlowLayoutPanel
     $DailyRadioBut = New-Object System.Windows.Forms.RadioButton
+    $WeeklyRadioBut = New-Object System.Windows.Forms.RadioButton
+    $BiweeklyRadioBut = New-Object System.Windows.Forms.RadioButton
+    $MonthlyRatioBut = New-Object System.Windows.Forms.RadioButton
+    $UpdAtLogonCheckBox = New-Object System.Windows.Forms.CheckBox
     $WAUConfGroupBox = New-Object System.Windows.Forms.GroupBox
     $NotifLevelLabel = New-Object System.Windows.Forms.Label
     $NotifLevelComboBox = New-Object System.Windows.Forms.ComboBox
@@ -253,17 +254,15 @@ function Get-InstallGUI {
     $SaveFileDialog = New-Object System.Windows.Forms.SaveFileDialog
     $OpenFileDialog = New-Object System.Windows.Forms.OpenFileDialog
     $WAUListOpenFile = New-Object System.Windows.Forms.OpenFileDialog
-    $WAUFredLayoutPanel = New-Object System.Windows.Forms.FlowLayoutPanel
     #
     # WiGuiTabControl
     #
     $WiGuiTabControl.Controls.Add($AppsTabPage)
     $WiGuiTabControl.Controls.Add($WAUTabPage)
-    $WiGuiTabControl.Location = New-Object System.Drawing.Point(16, 15)
-    $WiGuiTabControl.Margin = New-Object System.Windows.Forms.Padding(4, 4, 4, 4)
+    $WiGuiTabControl.Location = New-Object System.Drawing.Point(12, 12)
     $WiGuiTabControl.Name = "WiGuiTabControl"
     $WiGuiTabControl.SelectedIndex = 0
-    $WiGuiTabControl.Size = New-Object System.Drawing.Size(683, 615)
+    $WiGuiTabControl.Size = New-Object System.Drawing.Size(512, 500)
     $WiGuiTabControl.TabIndex = 0
     #
     # AppsTabPage
@@ -280,40 +279,35 @@ function Get-InstallGUI {
     $AppsTabPage.Controls.Add($SearchLabel)
     $AppsTabPage.Controls.Add($SearchTextBox)
     $AppsTabPage.Controls.Add($SearchButton)
-    $AppsTabPage.Location = New-Object System.Drawing.Point(4, 25)
-    $AppsTabPage.Margin = New-Object System.Windows.Forms.Padding(4, 4, 4, 4)
+    $AppsTabPage.Location = New-Object System.Drawing.Point(4, 22)
     $AppsTabPage.Name = "AppsTabPage"
-    $AppsTabPage.Padding = New-Object System.Windows.Forms.Padding(4, 4, 4, 4)
-    $AppsTabPage.Size = New-Object System.Drawing.Size(675, 586)
+    $AppsTabPage.Size = New-Object System.Drawing.Size(504, 474)
     $AppsTabPage.TabIndex = 0
     $AppsTabPage.Text = "Select Apps"
     #
     # OpenListButton
     #
-    $OpenListButton.Location = New-Object System.Drawing.Point(525, 183)
-    $OpenListButton.Margin = New-Object System.Windows.Forms.Padding(4, 4, 4, 4)
+    $OpenListButton.Location = New-Object System.Drawing.Point(394, 149)
     $OpenListButton.Name = "OpenListButton"
-    $OpenListButton.Size = New-Object System.Drawing.Size(133, 28)
+    $OpenListButton.Size = New-Object System.Drawing.Size(100, 23)
     $OpenListButton.TabIndex = 27
     $OpenListButton.Text = "Import from File"
     $OpenListButton.UseVisualStyleBackColor = $true
     #
     # SaveListButton
     #
-    $SaveListButton.Location = New-Object System.Drawing.Point(525, 148)
-    $SaveListButton.Margin = New-Object System.Windows.Forms.Padding(4, 4, 4, 4)
+    $SaveListButton.Location = New-Object System.Drawing.Point(394, 120)
     $SaveListButton.Name = "SaveListButton"
-    $SaveListButton.Size = New-Object System.Drawing.Size(133, 28)
+    $SaveListButton.Size = New-Object System.Drawing.Size(100, 23)
     $SaveListButton.TabIndex = 16
     $SaveListButton.Text = "Save list to File"
     $SaveListButton.UseVisualStyleBackColor = $true
     #
     # RemoveButton
     #
-    $RemoveButton.Location = New-Object System.Drawing.Point(525, 219)
-    $RemoveButton.Margin = New-Object System.Windows.Forms.Padding(4, 4, 4, 4)
+    $RemoveButton.Location = New-Object System.Drawing.Point(394, 178)
     $RemoveButton.Name = "RemoveButton"
-    $RemoveButton.Size = New-Object System.Drawing.Size(133, 28)
+    $RemoveButton.Size = New-Object System.Drawing.Size(100, 23)
     $RemoveButton.TabIndex = 26
     $RemoveButton.Text = "Remove"
     $RemoveButton.UseVisualStyleBackColor = $true
@@ -321,40 +315,35 @@ function Get-InstallGUI {
     # AppListBox
     #
     $AppListBox.FormattingEnabled = $true
-    $AppListBox.ItemHeight = 16
-    $AppListBox.Location = New-Object System.Drawing.Point(12, 148)
-    $AppListBox.Margin = New-Object System.Windows.Forms.Padding(4, 4, 4, 4)
+    $AppListBox.Location = New-Object System.Drawing.Point(9, 120)
     $AppListBox.Name = "AppListBox"
     $AppListBox.SelectionMode = [System.Windows.Forms.SelectionMode]::MultiExtended
-    $AppListBox.Size = New-Object System.Drawing.Size(504, 420)
+    $AppListBox.Size = New-Object System.Drawing.Size(379, 342)
     $AppListBox.TabIndex = 25
     #
     # AppListLabel
     #
     $AppListLabel.AutoSize = $true
-    $AppListLabel.Location = New-Object System.Drawing.Point(13, 127)
-    $AppListLabel.Margin = New-Object System.Windows.Forms.Padding(4, 0, 4, 0)
+    $AppListLabel.Location = New-Object System.Drawing.Point(7, 100)
     $AppListLabel.Name = "AppListLabel"
-    $AppListLabel.Size = New-Object System.Drawing.Size(141, 16)
+    $AppListLabel.Size = New-Object System.Drawing.Size(114, 13)
     $AppListLabel.TabIndex = 24
     $AppListLabel.Text = "Current Application list:"
     #
     # SubmitLabel
     #
     $SubmitLabel.AutoSize = $true
-    $SubmitLabel.Location = New-Object System.Drawing.Point(13, 65)
-    $SubmitLabel.Margin = New-Object System.Windows.Forms.Padding(4, 0, 4, 0)
+    $SubmitLabel.Location = New-Object System.Drawing.Point(7, 50)
     $SubmitLabel.Name = "SubmitLabel"
-    $SubmitLabel.Size = New-Object System.Drawing.Size(212, 16)
+    $SubmitLabel.Size = New-Object System.Drawing.Size(174, 13)
     $SubmitLabel.TabIndex = 23
     $SubmitLabel.Text = "Select the matching Winget AppID:"
     #
     # SubmitButton
     #
-    $SubmitButton.Location = New-Object System.Drawing.Point(525, 85)
-    $SubmitButton.Margin = New-Object System.Windows.Forms.Padding(4, 4, 4, 4)
+    $SubmitButton.Location = New-Object System.Drawing.Point(394, 69)
     $SubmitButton.Name = "SubmitButton"
-    $SubmitButton.Size = New-Object System.Drawing.Size(133, 28)
+    $SubmitButton.Size = New-Object System.Drawing.Size(100, 23)
     $SubmitButton.TabIndex = 22
     $SubmitButton.Text = "Add to List"
     $SubmitButton.UseVisualStyleBackColor = $true
@@ -362,36 +351,32 @@ function Get-InstallGUI {
     # SubmitComboBox
     #
     $SubmitComboBox.FormattingEnabled = $true
-    $SubmitComboBox.Location = New-Object System.Drawing.Point(13, 86)
-    $SubmitComboBox.Margin = New-Object System.Windows.Forms.Padding(4, 4, 4, 4)
+    $SubmitComboBox.Location = New-Object System.Drawing.Point(10, 70)
     $SubmitComboBox.Name = "SubmitComboBox"
-    $SubmitComboBox.Size = New-Object System.Drawing.Size(503, 24)
+    $SubmitComboBox.Size = New-Object System.Drawing.Size(378, 21)
     $SubmitComboBox.TabIndex = 21
     #
     # SearchLabel
     #
     $SearchLabel.AutoSize = $true
-    $SearchLabel.Location = New-Object System.Drawing.Point(12, 11)
-    $SearchLabel.Margin = New-Object System.Windows.Forms.Padding(4, 0, 4, 0)
+    $SearchLabel.Location = New-Object System.Drawing.Point(6, 6)
     $SearchLabel.Name = "SearchLabel"
-    $SearchLabel.Size = New-Object System.Drawing.Size(98, 16)
+    $SearchLabel.Size = New-Object System.Drawing.Size(80, 13)
     $SearchLabel.TabIndex = 20
     $SearchLabel.Text = "Search an app:"
     #
     # SearchTextBox
     #
-    $SearchTextBox.Location = New-Object System.Drawing.Point(12, 32)
-    $SearchTextBox.Margin = New-Object System.Windows.Forms.Padding(4, 4, 4, 4)
+    $SearchTextBox.Location = New-Object System.Drawing.Point(9, 26)
     $SearchTextBox.Name = "SearchTextBox"
-    $SearchTextBox.Size = New-Object System.Drawing.Size(504, 22)
+    $SearchTextBox.Size = New-Object System.Drawing.Size(379, 20)
     $SearchTextBox.TabIndex = 19
     #
     # SearchButton
     #
-    $SearchButton.Location = New-Object System.Drawing.Point(525, 30)
-    $SearchButton.Margin = New-Object System.Windows.Forms.Padding(4, 4, 4, 4)
+    $SearchButton.Location = New-Object System.Drawing.Point(394, 24)
     $SearchButton.Name = "SearchButton"
-    $SearchButton.Size = New-Object System.Drawing.Size(133, 28)
+    $SearchButton.Size = New-Object System.Drawing.Size(100, 23)
     $SearchButton.TabIndex = 18
     $SearchButton.Text = "Search"
     $SearchButton.UseVisualStyleBackColor = $true
@@ -404,11 +389,9 @@ function Get-InstallGUI {
     $WAUTabPage.Controls.Add($WAUConfGroupBox)
     $WAUTabPage.Controls.Add($WAUMoreInfoLabel)
     $WAUTabPage.Controls.Add($WAUCheckBox)
-    $WAUTabPage.Location = New-Object System.Drawing.Point(4, 25)
-    $WAUTabPage.Margin = New-Object System.Windows.Forms.Padding(4, 4, 4, 4)
+    $WAUTabPage.Location = New-Object System.Drawing.Point(4, 22)
     $WAUTabPage.Name = "WAUTabPage"
-    $WAUTabPage.Padding = New-Object System.Windows.Forms.Padding(4, 4, 4, 4)
-    $WAUTabPage.Size = New-Object System.Drawing.Size(675, 586)
+    $WAUTabPage.Size = New-Object System.Drawing.Size(504, 474)
     $WAUTabPage.TabIndex = 1
     $WAUTabPage.Text = "Configure WAU"
     #
@@ -420,11 +403,9 @@ function Get-InstallGUI {
     $WAUWhiteBlackGroupBox.Controls.Add($BlackRadioBut)
     $WAUWhiteBlackGroupBox.Controls.Add($DefaultRadioBut)
     $WAUWhiteBlackGroupBox.Enabled = $false
-    $WAUWhiteBlackGroupBox.Location = New-Object System.Drawing.Point(41, 286)
-    $WAUWhiteBlackGroupBox.Margin = New-Object System.Windows.Forms.Padding(4, 4, 4, 4)
+    $WAUWhiteBlackGroupBox.Location = New-Object System.Drawing.Point(31, 232)
     $WAUWhiteBlackGroupBox.Name = "WAUWhiteBlackGroupBox"
-    $WAUWhiteBlackGroupBox.Padding = New-Object System.Windows.Forms.Padding(4, 4, 4, 4)
-    $WAUWhiteBlackGroupBox.Size = New-Object System.Drawing.Size(593, 89)
+    $WAUWhiteBlackGroupBox.Size = New-Object System.Drawing.Size(445, 72)
     $WAUWhiteBlackGroupBox.TabIndex = 24
     $WAUWhiteBlackGroupBox.TabStop = $false
     $WAUWhiteBlackGroupBox.Text = "WAU White / Black List"
@@ -432,10 +413,9 @@ function Get-InstallGUI {
     # WAULoadListButton
     #
     $WAULoadListButton.Enabled = $false
-    $WAULoadListButton.Location = New-Object System.Drawing.Point(481, 49)
-    $WAULoadListButton.Margin = New-Object System.Windows.Forms.Padding(4, 4, 4, 4)
+    $WAULoadListButton.Location = New-Object System.Drawing.Point(361, 40)
     $WAULoadListButton.Name = "WAULoadListButton"
-    $WAULoadListButton.Size = New-Object System.Drawing.Size(100, 28)
+    $WAULoadListButton.Size = New-Object System.Drawing.Size(75, 23)
     $WAULoadListButton.TabIndex = 27
     $WAULoadListButton.Text = "Load list"
     $WAULoadListButton.UseVisualStyleBackColor = $true
@@ -443,19 +423,17 @@ function Get-InstallGUI {
     # WAUListFileTextBox
     #
     $WAUListFileTextBox.Enabled = $false
-    $WAUListFileTextBox.Location = New-Object System.Drawing.Point(8, 52)
-    $WAUListFileTextBox.Margin = New-Object System.Windows.Forms.Padding(4, 4, 4, 4)
+    $WAUListFileTextBox.Location = New-Object System.Drawing.Point(6, 42)
     $WAUListFileTextBox.Name = "WAUListFileTextBox"
-    $WAUListFileTextBox.Size = New-Object System.Drawing.Size(464, 22)
+    $WAUListFileTextBox.Size = New-Object System.Drawing.Size(349, 20)
     $WAUListFileTextBox.TabIndex = 26
     #
     # WhiteRadioBut
     #
     $WhiteRadioBut.AutoSize = $true
-    $WhiteRadioBut.Location = New-Object System.Drawing.Point(207, 23)
-    $WhiteRadioBut.Margin = New-Object System.Windows.Forms.Padding(4, 4, 4, 4)
+    $WhiteRadioBut.Location = New-Object System.Drawing.Point(155, 19)
     $WhiteRadioBut.Name = "WhiteRadioBut"
-    $WhiteRadioBut.Size = New-Object System.Drawing.Size(82, 20)
+    $WhiteRadioBut.Size = New-Object System.Drawing.Size(69, 17)
     $WhiteRadioBut.TabIndex = 25
     $WhiteRadioBut.Text = "WhiteList"
     $WhiteRadioBut.TextAlign = [System.Drawing.ContentAlignment]::MiddleCenter
@@ -464,10 +442,9 @@ function Get-InstallGUI {
     # BlackRadioBut
     #
     $BlackRadioBut.AutoSize = $true
-    $BlackRadioBut.Location = New-Object System.Drawing.Point(101, 23)
-    $BlackRadioBut.Margin = New-Object System.Windows.Forms.Padding(4, 4, 4, 4)
+    $BlackRadioBut.Location = New-Object System.Drawing.Point(76, 19)
     $BlackRadioBut.Name = "BlackRadioBut"
-    $BlackRadioBut.Size = New-Object System.Drawing.Size(82, 20)
+    $BlackRadioBut.Size = New-Object System.Drawing.Size(68, 17)
     $BlackRadioBut.TabIndex = 24
     $BlackRadioBut.Text = "BlackList"
     $BlackRadioBut.TextAlign = [System.Drawing.ContentAlignment]::MiddleRight
@@ -477,10 +454,9 @@ function Get-InstallGUI {
     #
     $DefaultRadioBut.AutoSize = $true
     $DefaultRadioBut.Checked = $true
-    $DefaultRadioBut.Location = New-Object System.Drawing.Point(8, 23)
-    $DefaultRadioBut.Margin = New-Object System.Windows.Forms.Padding(4, 4, 4, 4)
+    $DefaultRadioBut.Location = New-Object System.Drawing.Point(6, 19)
     $DefaultRadioBut.Name = "DefaultRadioBut"
-    $DefaultRadioBut.Size = New-Object System.Drawing.Size(70, 20)
+    $DefaultRadioBut.Size = New-Object System.Drawing.Size(59, 17)
     $DefaultRadioBut.TabIndex = 23
     $DefaultRadioBut.TabStop = $true
     $DefaultRadioBut.Text = "Default"
@@ -492,74 +468,78 @@ function Get-InstallGUI {
     $WAUFreqGroupBox.Controls.Add($WAUFredLayoutPanel)
     $WAUFreqGroupBox.Controls.Add($UpdAtLogonCheckBox)
     $WAUFreqGroupBox.Enabled = $false
-    $WAUFreqGroupBox.Location = New-Object System.Drawing.Point(41, 187)
-    $WAUFreqGroupBox.Margin = New-Object System.Windows.Forms.Padding(4, 4, 4, 4)
+    $WAUFreqGroupBox.Location = New-Object System.Drawing.Point(31, 152)
     $WAUFreqGroupBox.Name = "WAUFreqGroupBox"
-    $WAUFreqGroupBox.Padding = New-Object System.Windows.Forms.Padding(4, 4, 4, 4)
-    $WAUFreqGroupBox.Size = New-Object System.Drawing.Size(352, 85)
+    $WAUFreqGroupBox.Size = New-Object System.Drawing.Size(284, 69)
     $WAUFreqGroupBox.TabIndex = 23
     $WAUFreqGroupBox.TabStop = $false
     $WAUFreqGroupBox.Text = "WAU Update Frequency"
     #
-    # MonthlyRatioBut
+    # WAUFredLayoutPanel
     #
-    $MonthlyRatioBut.AutoSize = $true
-    $MonthlyRatioBut.Location = New-Object System.Drawing.Point(243, 4)
-    $MonthlyRatioBut.Margin = New-Object System.Windows.Forms.Padding(4, 4, 4, 4)
-    $MonthlyRatioBut.Name = "MonthlyRatioBut"
-    $MonthlyRatioBut.Size = New-Object System.Drawing.Size(74, 20)
-    $MonthlyRatioBut.TabIndex = 25
-    $MonthlyRatioBut.Text = "Monthly"
-    $MonthlyRatioBut.UseVisualStyleBackColor = $true
+    $WAUFredLayoutPanel.Controls.Add($DailyRadioBut)
+    $WAUFredLayoutPanel.Controls.Add($WeeklyRadioBut)
+    $WAUFredLayoutPanel.Controls.Add($BiweeklyRadioBut)
+    $WAUFredLayoutPanel.Controls.Add($MonthlyRatioBut)
+    $WAUFredLayoutPanel.Location = New-Object System.Drawing.Point(4, 18)
+    $WAUFredLayoutPanel.Name = "WAUFredLayoutPanel"
+    $WAUFredLayoutPanel.Size = New-Object System.Drawing.Size(275, 24)
+    $WAUFredLayoutPanel.TabIndex = 26
     #
-    # BiweeklyRadioBut
+    # DailyRadioBut
     #
-    $BiweeklyRadioBut.AutoSize = $true
-    $BiweeklyRadioBut.Location = New-Object System.Drawing.Point(153, 4)
-    $BiweeklyRadioBut.Margin = New-Object System.Windows.Forms.Padding(4, 4, 4, 4)
-    $BiweeklyRadioBut.Name = "BiweeklyRadioBut"
-    $BiweeklyRadioBut.Size = New-Object System.Drawing.Size(82, 20)
-    $BiweeklyRadioBut.TabIndex = 24
-    $BiweeklyRadioBut.Text = "Biweekly"
-    $BiweeklyRadioBut.UseVisualStyleBackColor = $true
+    $DailyRadioBut.AutoSize = $true
+    $DailyRadioBut.Checked = $true
+    $DailyRadioBut.Location = New-Object System.Drawing.Point(3, 3)
+    $DailyRadioBut.Name = "DailyRadioBut"
+    $DailyRadioBut.Size = New-Object System.Drawing.Size(48, 17)
+    $DailyRadioBut.TabIndex = 22
+    $DailyRadioBut.TabStop = $true
+    $DailyRadioBut.Text = "Daily"
+    $DailyRadioBut.TextAlign = [System.Drawing.ContentAlignment]::MiddleCenter
+    $DailyRadioBut.UseVisualStyleBackColor = $true
     #
     # WeeklyRadioBut
     #
     $WeeklyRadioBut.AutoSize = $true
-    $WeeklyRadioBut.Location = New-Object System.Drawing.Point(71, 4)
-    $WeeklyRadioBut.Margin = New-Object System.Windows.Forms.Padding(4, 4, 4, 4)
+    $WeeklyRadioBut.Location = New-Object System.Drawing.Point(57, 3)
     $WeeklyRadioBut.Name = "WeeklyRadioBut"
-    $WeeklyRadioBut.Size = New-Object System.Drawing.Size(74, 20)
+    $WeeklyRadioBut.Size = New-Object System.Drawing.Size(61, 17)
     $WeeklyRadioBut.TabIndex = 23
     $WeeklyRadioBut.Text = "Weekly"
     $WeeklyRadioBut.UseVisualStyleBackColor = $true
+    #
+    # BiweeklyRadioBut
+    #
+    $BiweeklyRadioBut.AutoSize = $true
+    $BiweeklyRadioBut.Location = New-Object System.Drawing.Point(124, 3)
+    $BiweeklyRadioBut.Name = "BiweeklyRadioBut"
+    $BiweeklyRadioBut.Size = New-Object System.Drawing.Size(67, 17)
+    $BiweeklyRadioBut.TabIndex = 24
+    $BiweeklyRadioBut.Text = "Biweekly"
+    $BiweeklyRadioBut.UseVisualStyleBackColor = $true
+    #
+    # MonthlyRatioBut
+    #
+    $MonthlyRatioBut.AutoSize = $true
+    $MonthlyRatioBut.Location = New-Object System.Drawing.Point(3, 26)
+    $MonthlyRatioBut.Name = "MonthlyRatioBut"
+    $MonthlyRatioBut.Size = New-Object System.Drawing.Size(62, 17)
+    $MonthlyRatioBut.TabIndex = 25
+    $MonthlyRatioBut.Text = "Monthly"
+    $MonthlyRatioBut.UseVisualStyleBackColor = $true
     #
     # UpdAtLogonCheckBox
     #
     $UpdAtLogonCheckBox.AutoSize = $true
     $UpdAtLogonCheckBox.Checked = $true
     $UpdAtLogonCheckBox.CheckState = [System.Windows.Forms.CheckState]::Checked
-    $UpdAtLogonCheckBox.Location = New-Object System.Drawing.Point(9, 58)
-    $UpdAtLogonCheckBox.Margin = New-Object System.Windows.Forms.Padding(4, 4, 4, 4)
+    $UpdAtLogonCheckBox.Location = New-Object System.Drawing.Point(7, 47)
     $UpdAtLogonCheckBox.Name = "UpdAtLogonCheckBox"
-    $UpdAtLogonCheckBox.Size = New-Object System.Drawing.Size(168, 20)
+    $UpdAtLogonCheckBox.Size = New-Object System.Drawing.Size(139, 17)
     $UpdAtLogonCheckBox.TabIndex = 21
     $UpdAtLogonCheckBox.Text = "Run WAU at user logon"
     $UpdAtLogonCheckBox.UseVisualStyleBackColor = $true
-    #
-    # DailyRadioBut
-    #
-    $DailyRadioBut.AutoSize = $true
-    $DailyRadioBut.Checked = $true
-    $DailyRadioBut.Location = New-Object System.Drawing.Point(4, 4)
-    $DailyRadioBut.Margin = New-Object System.Windows.Forms.Padding(4, 4, 4, 4)
-    $DailyRadioBut.Name = "DailyRadioBut"
-    $DailyRadioBut.Size = New-Object System.Drawing.Size(59, 20)
-    $DailyRadioBut.TabIndex = 22
-    $DailyRadioBut.TabStop = $true
-    $DailyRadioBut.Text = "Daily"
-    $DailyRadioBut.TextAlign = [System.Drawing.ContentAlignment]::MiddleCenter
-    $DailyRadioBut.UseVisualStyleBackColor = $true
     #
     # WAUConfGroupBox
     #
@@ -568,11 +548,9 @@ function Get-InstallGUI {
     $WAUConfGroupBox.Controls.Add($WAUDisableAUCheckBox)
     $WAUConfGroupBox.Controls.Add($WAUDoNotUpdateCheckBox)
     $WAUConfGroupBox.Enabled = $false
-    $WAUConfGroupBox.Location = New-Object System.Drawing.Point(41, 57)
-    $WAUConfGroupBox.Margin = New-Object System.Windows.Forms.Padding(4, 4, 4, 4)
+    $WAUConfGroupBox.Location = New-Object System.Drawing.Point(31, 46)
     $WAUConfGroupBox.Name = "WAUConfGroupBox"
-    $WAUConfGroupBox.Padding = New-Object System.Windows.Forms.Padding(4, 4, 4, 4)
-    $WAUConfGroupBox.Size = New-Object System.Drawing.Size(285, 116)
+    $WAUConfGroupBox.Size = New-Object System.Drawing.Size(214, 94)
     $WAUConfGroupBox.TabIndex = 20
     $WAUConfGroupBox.TabStop = $false
     $WAUConfGroupBox.Text = "WAU Configurations"
@@ -580,32 +558,27 @@ function Get-InstallGUI {
     # NotifLevelLabel
     #
     $NotifLevelLabel.AutoSize = $true
-    $NotifLevelLabel.Location = New-Object System.Drawing.Point(8, 84)
-    $NotifLevelLabel.Margin = New-Object System.Windows.Forms.Padding(4, 0, 4, 0)
+    $NotifLevelLabel.Location = New-Object System.Drawing.Point(6, 68)
     $NotifLevelLabel.Name = "NotifLevelLabel"
-    $NotifLevelLabel.Size = New-Object System.Drawing.Size(105, 16)
+    $NotifLevelLabel.Size = New-Object System.Drawing.Size(85, 13)
     $NotifLevelLabel.TabIndex = 22
     $NotifLevelLabel.Text = "Notification level"
     #
     # NotifLevelComboBox
     #
-    $NotifLevelComboBox.FormattingEnabled = $true
+    $NotifLevelComboBox.DropDownStyle = [System.Windows.Forms.ComboBoxStyle]::DropDownList
     $NotifLevelComboBox.Items.AddRange(@("Full","SuccessOnly","None"))
-    $NotifLevelComboBox.DropDownStyle = "DropDownList"
-    $NotifLevelComboBox.Location = New-Object System.Drawing.Point(129, 80)
-    $NotifLevelComboBox.Margin = New-Object System.Windows.Forms.Padding(4, 4, 4, 4)
+    $NotifLevelComboBox.Location = New-Object System.Drawing.Point(97, 65)
     $NotifLevelComboBox.Name = "NotifLevelComboBox"
-    $NotifLevelComboBox.Size = New-Object System.Drawing.Size(132, 24)
+    $NotifLevelComboBox.Size = New-Object System.Drawing.Size(100, 21)
     $NotifLevelComboBox.TabIndex = 21
-    $NotifLevelComboBox.Text = "Full"
     #
     # WAUDisableAUCheckBox
     #
     $WAUDisableAUCheckBox.AutoSize = $true
-    $WAUDisableAUCheckBox.Location = New-Object System.Drawing.Point(8, 52)
-    $WAUDisableAUCheckBox.Margin = New-Object System.Windows.Forms.Padding(4, 4, 4, 4)
+    $WAUDisableAUCheckBox.Location = New-Object System.Drawing.Point(6, 42)
     $WAUDisableAUCheckBox.Name = "WAUDisableAUCheckBox"
-    $WAUDisableAUCheckBox.Size = New-Object System.Drawing.Size(187, 20)
+    $WAUDisableAUCheckBox.Size = New-Object System.Drawing.Size(151, 17)
     $WAUDisableAUCheckBox.TabIndex = 20
     $WAUDisableAUCheckBox.Text = "Disable WAU Auto-update"
     $WAUDisableAUCheckBox.UseVisualStyleBackColor = $true
@@ -613,10 +586,9 @@ function Get-InstallGUI {
     # WAUDoNotUpdateCheckBox
     #
     $WAUDoNotUpdateCheckBox.AutoSize = $true
-    $WAUDoNotUpdateCheckBox.Location = New-Object System.Drawing.Point(8, 23)
-    $WAUDoNotUpdateCheckBox.Margin = New-Object System.Windows.Forms.Padding(4, 4, 4, 4)
+    $WAUDoNotUpdateCheckBox.Location = New-Object System.Drawing.Point(6, 19)
     $WAUDoNotUpdateCheckBox.Name = "WAUDoNotUpdateCheckBox"
-    $WAUDoNotUpdateCheckBox.Size = New-Object System.Drawing.Size(213, 20)
+    $WAUDoNotUpdateCheckBox.Size = New-Object System.Drawing.Size(177, 17)
     $WAUDoNotUpdateCheckBox.TabIndex = 19
     $WAUDoNotUpdateCheckBox.Text = "Do not run WAU just after install"
     $WAUDoNotUpdateCheckBox.UseVisualStyleBackColor = $true
@@ -624,10 +596,9 @@ function Get-InstallGUI {
     # WAUMoreInfoLabel
     #
     $WAUMoreInfoLabel.AutoSize = $true
-    $WAUMoreInfoLabel.Location = New-Object System.Drawing.Point(499, 549)
-    $WAUMoreInfoLabel.Margin = New-Object System.Windows.Forms.Padding(4, 0, 4, 0)
+    $WAUMoreInfoLabel.Location = New-Object System.Drawing.Point(371, 443)
     $WAUMoreInfoLabel.Name = "WAUMoreInfoLabel"
-    $WAUMoreInfoLabel.Size = New-Object System.Drawing.Size(134, 16)
+    $WAUMoreInfoLabel.Size = New-Object System.Drawing.Size(111, 13)
     $WAUMoreInfoLabel.TabIndex = 17
     $WAUMoreInfoLabel.TabStop = $true
     $WAUMoreInfoLabel.Text = "More Info about WAU"
@@ -635,30 +606,27 @@ function Get-InstallGUI {
     # WAUCheckBox
     #
     $WAUCheckBox.AutoSize = $true
-    $WAUCheckBox.Location = New-Object System.Drawing.Point(28, 22)
-    $WAUCheckBox.Margin = New-Object System.Windows.Forms.Padding(4, 4, 4, 4)
+    $WAUCheckBox.Location = New-Object System.Drawing.Point(18, 15)
     $WAUCheckBox.Name = "WAUCheckBox"
-    $WAUCheckBox.Size = New-Object System.Drawing.Size(227, 20)
+    $WAUCheckBox.Size = New-Object System.Drawing.Size(185, 17)
     $WAUCheckBox.TabIndex = 18
     $WAUCheckBox.Text = "Install WAU (Winget-AutoUpdate)"
     $WAUCheckBox.UseVisualStyleBackColor = $true
     #
     # InstallButton
     #
-    $InstallButton.Location = New-Object System.Drawing.Point(491, 646)
-    $InstallButton.Margin = New-Object System.Windows.Forms.Padding(4, 4, 4, 4)
+    $InstallButton.Location = New-Object System.Drawing.Point(368, 525)
     $InstallButton.Name = "InstallButton"
-    $InstallButton.Size = New-Object System.Drawing.Size(100, 30)
+    $InstallButton.Size = New-Object System.Drawing.Size(75, 24)
     $InstallButton.TabIndex = 15
     $InstallButton.Text = "Install"
     $InstallButton.UseVisualStyleBackColor = $true
     #
     # CloseButton
     #
-    $CloseButton.Location = New-Object System.Drawing.Point(599, 646)
-    $CloseButton.Margin = New-Object System.Windows.Forms.Padding(4, 4, 4, 4)
+    $CloseButton.Location = New-Object System.Drawing.Point(449, 525)
     $CloseButton.Name = "CloseButton"
-    $CloseButton.Size = New-Object System.Drawing.Size(100, 30)
+    $CloseButton.Size = New-Object System.Drawing.Size(75, 24)
     $CloseButton.TabIndex = 14
     $CloseButton.Text = "Close"
     $CloseButton.UseVisualStyleBackColor = $true
@@ -666,10 +634,9 @@ function Get-InstallGUI {
     # WiGuiLinkLabel
     #
     $WiGuiLinkLabel.AutoSize = $true
-    $WiGuiLinkLabel.Location = New-Object System.Drawing.Point(17, 654)
-    $WiGuiLinkLabel.Margin = New-Object System.Windows.Forms.Padding(4, 0, 4, 0)
+    $WiGuiLinkLabel.Location = New-Object System.Drawing.Point(13, 531)
     $WiGuiLinkLabel.Name = "WiGuiLinkLabel"
-    $WiGuiLinkLabel.Size = New-Object System.Drawing.Size(118, 16)
+    $WiGuiLinkLabel.Size = New-Object System.Drawing.Size(97, 13)
     $WiGuiLinkLabel.TabIndex = 17
     $WiGuiLinkLabel.TabStop = $true
     $WiGuiLinkLabel.Text = "WiGui is on GitHub"
@@ -686,27 +653,15 @@ function Get-InstallGUI {
     #
     $WAUListOpenFile.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*"
     #
-    # WAUFredLayoutPanel
-    #
-    $WAUFredLayoutPanel.Controls.Add($DailyRadioBut)
-    $WAUFredLayoutPanel.Controls.Add($WeeklyRadioBut)
-    $WAUFredLayoutPanel.Controls.Add($BiweeklyRadioBut)
-    $WAUFredLayoutPanel.Controls.Add($MonthlyRatioBut)
-    $WAUFredLayoutPanel.Location = New-Object System.Drawing.Point(5, 22)
-    $WAUFredLayoutPanel.Name = "WAUFredLayoutPanel"
-    $WAUFredLayoutPanel.Size = New-Object System.Drawing.Size(337, 29)
-    $WAUFredLayoutPanel.TabIndex = 26
-    #
     # WiGuiForm
     #
     $WiGuiForm.AcceptButton = $SearchButton
-    $WiGuiForm.ClientSize = New-Object System.Drawing.Size(715, 690)
+    $WiGuiForm.ClientSize = New-Object System.Drawing.Size(536, 561)
     $WiGuiForm.Controls.Add($WiGuiLinkLabel)
     $WiGuiForm.Controls.Add($InstallButton)
     $WiGuiForm.Controls.Add($CloseButton)
     $WiGuiForm.Controls.Add($WiGuiTabControl)
     $WiGuiForm.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedSingle
-    $WiGuiForm.Margin = New-Object System.Windows.Forms.Padding(4, 4, 4, 4)
     $WiGuiForm.MaximizeBox = $false
     $WiGuiForm.Name = "WiGuiForm"
     $WiGuiForm.StartPosition = [System.Windows.Forms.FormStartPosition]::CenterScreen
@@ -715,6 +670,7 @@ function Get-InstallGUI {
     # Custom
     #
     $WiGuiForm.Icon = [System.Drawing.Icon]::FromHandle(([System.Drawing.Bitmap]::new($stream).GetHIcon()))
+    $NotifLevelComboBox.Text = "Full"
 
 
     ## ACTIONS ##
