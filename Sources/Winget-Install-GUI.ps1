@@ -669,6 +669,7 @@ function Get-InstallGUI {
     #
     # Custom
     #
+    $WiGuiForm.Add_Shown({$SearchTextBox.Select()})
     $WiGuiForm.Icon = [System.Drawing.Icon]::FromHandle(([System.Drawing.Bitmap]::new($stream).GetHIcon()))
     $NotifLevelComboBox.Text = "Full"
 
