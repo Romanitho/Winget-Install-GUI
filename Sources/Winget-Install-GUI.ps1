@@ -853,7 +853,7 @@ function Start-Installations {
         $TestPath = "$Location\*Winget-Install*\winget-install.ps1"
         if (!(Test-Path $TestPath)){
             #If not, download
-            Get-GithubRepository "https://github.com/Romanitho/Winget-Install/archive/refs/tags/v1.5.1.zip"
+            Get-GithubRepository "https://github.com/Romanitho/Winget-Install/archive/refs/heads/scope-machine.zip"
         }
 
         #Run Winget-Install
@@ -870,7 +870,7 @@ function Start-Installations {
         $TestPath = "$Location\*Winget-AutoUpdate*\Winget-AutoUpdate-Install.ps1"
         if (!(Test-Path $TestPath)){
             #If not, download
-            Get-GithubRepository "https://github.com/Romanitho/Winget-AutoUpdate/archive/refs/tags/v1.9.1.zip"
+            Get-GithubRepository "https://github.com/Romanitho/Winget-AutoUpdate/archive/refs/heads/main.zip"
         }
 
         #Get install file
