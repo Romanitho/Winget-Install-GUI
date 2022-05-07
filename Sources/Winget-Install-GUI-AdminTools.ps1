@@ -918,7 +918,7 @@ function Start-Installations {
     ## ADMIN PART ##
 
     if ($CMTrace) {
-        $CMToolkitLink = "https://www.microsoft.com/en-us/download/confirmation.aspx?id=50012"
+        $CMToolkitLink = "https://download.microsoft.com/download/5/0/8/508918E1-3627-4383-B7D8-AA07B3490D21/ConfigMgrTools.msi"
         $CMToolkitPath = "C:\Tools\ConfigMgrTools.msi"
         Invoke-WebRequest $CMToolkitLink -OutFile (New-Item -Path $CMToolkitPath -Force)
         msiexec.exe /I $CMToolkitPath /passive
