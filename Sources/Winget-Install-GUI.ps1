@@ -267,7 +267,6 @@ function Get-InstallGUI {
     #
     # AppsTabPage
     #
-    $AppsTabPage.BackColor = [System.Drawing.Color]::Transparent
     $AppsTabPage.Controls.Add($OpenListButton)
     $AppsTabPage.Controls.Add($SaveListButton)
     $AppsTabPage.Controls.Add($RemoveButton)
@@ -383,7 +382,6 @@ function Get-InstallGUI {
     #
     # WAUTabPage
     #
-    $WAUTabPage.BackColor = [System.Drawing.Color]::Transparent
     $WAUTabPage.Controls.Add($WAUWhiteBlackGroupBox)
     $WAUTabPage.Controls.Add($WAUFreqGroupBox)
     $WAUTabPage.Controls.Add($WAUConfGroupBox)
