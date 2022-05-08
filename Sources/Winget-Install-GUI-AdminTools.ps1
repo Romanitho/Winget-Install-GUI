@@ -15,6 +15,38 @@ $WiGuiVersion = "1.5.0"
 
 <# FUNCTIONS #>
 
+#Function to start or update popup
+Function Start-PopUp ($Message) {
+    if (!$Script:PopUpForm){
+        Add-Type -AssemblyName System.Windows.Forms
+        $script:PopUpForm = New-Object system.Windows.Forms.Form
+        $script:PopUpLabel = New-Object System.Windows.Forms.Label
+        $PopUpLabel.AutoSize = $False
+        $PopUpLabel.Dock = [System.Windows.Forms.DockStyle]::Fill
+        $PopUpLabel.TextAlign = [System.Drawing.ContentAlignment]::MiddleCenter
+        $PopUpForm.Controls.Add($PopUpLabel)
+        $PopUpForm.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedSingle
+        $PopUpForm.MaximizeBox = $false
+        $PopUpForm.MinimizeBox = $false
+        $PopUpForm.Size = New-Object System.Drawing.Size(210,120)
+        $PopUpForm.StartPosition = [System.Windows.Forms.FormStartPosition]::CenterScreen
+        $PopUpForm.Text = "WiGui $WiGuiVersion"
+        $PopUpForm.Icon = [System.Drawing.Icon]::FromHandle(([System.Drawing.Bitmap]::new($stream).GetHIcon()))
+        $PopUpForm.Visible = $True
+    }
+    $Script:PopUpLabel.Text = $Message
+    $Script:PopUpForm.Update()
+}
+
+#Function to close popup
+Function Close-PopUp {
+    if($Script:PopUpForm){
+        $Script:PopUpForm.Close()
+        $Script:PopUpForm = $null
+        $Script:PopUpLabel = $null
+    }
+}
+
 function Get-GithubRepository ($Url) {
      
     # Force to create a zip file 
@@ -35,23 +67,7 @@ function Get-GithubRepository ($Url) {
 function Get-WingetStatus{
     
 #Show Wait form
-    Add-Type -AssemblyName System.Windows.Forms 
-    $Form = New-Object system.Windows.Forms.Form
-    $Label = New-Object System.Windows.Forms.Label
-    $Label.Text = "Starting..."
-    $Label.AutoSize = $False
-    $Label.Dock = [System.Windows.Forms.DockStyle]::Fill
-    $Label.TextAlign = [System.Drawing.ContentAlignment]::MiddleCenter
-    $Form.Controls.Add($Label)
-    $Form.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedSingle
-    $Form.MaximizeBox = $false
-    $Form.MinimizeBox = $false
-    $Form.Size = New-Object System.Drawing.Size(210,120)
-    $Form.StartPosition = [System.Windows.Forms.FormStartPosition]::CenterScreen
-    $Form.Text = "WiGui $WiGuiVersion"
-    $Form.Icon = [System.Drawing.Icon]::FromHandle(([System.Drawing.Bitmap]::new($stream).GetHIcon()))
-    $Form.Visible = $True
-    $Form.Update()
+    Start-PopUp "Starting..."
 
     #Check if Visual C++ 2019 or 2022 installed
     $Visual2019 = "Microsoft Visual C++ 2015-2019 Redistributable*"
@@ -61,8 +77,8 @@ function Get-WingetStatus{
     #If not installed, install
     if (!($path)){
         #Update Form
-        $Label.Text = "Installing prerequisites:`nVisual C++ 2022"
-        $Form.Update()
+        Start-PopUp "Installing prerequisites:`nVisual C++ 2022"
+
         #Install
         try{
             if((Get-CimInStance Win32_OperatingSystem).OSArchitecture -like "*64*"){
@@ -91,8 +107,8 @@ function Get-WingetStatus{
         #installing dependencies     
         if (!(Get-AppxPackage -Name 'Microsoft.UI.Xaml.2.7')){
             #Update Form
-            $Label.Text = "Installing prerequisites:`nMicrosoft UI Xaml 2.7.0"
-            $Form.Update()
+            Start-PopUp "Installing prerequisites:`nMicrosoft UI Xaml 2.7.0"
+
             #Install
             $UiXamlUrl = "https://www.nuget.org/api/v2/package/Microsoft.UI.Xaml/2.7.0"
             $UiXamlZip = "$Location\Microsoft.UI.XAML.2.7.zip"
@@ -105,8 +121,8 @@ function Get-WingetStatus{
 
         if (!(Get-AppxPackage -Name 'Microsoft.VCLibs.140.00.UWPDesktop')){
             #Update Form
-            $Label.Text = "Installing prerequisites:`nMicrosoft VCLibs x64 14.00"
-            $Form.Update()
+            Start-PopUp "Installing prerequisites:`nMicrosoft VCLibs x64 14.00"
+
             #Install
             $VCLibsUrl = "https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx"
             $VCLibsFile = "$Location\Microsoft.VCLibs.x64.14.00.Desktop.appx"
@@ -117,8 +133,8 @@ function Get-WingetStatus{
 
         #installing Winget
         #Update Form
-        $Label.Text = "Installing prerequisites:`nWinget"
-        $Form.Update()
+        Start-PopUp "Installing prerequisites:`nWinget"
+
         #Install
         $WingetUrl = "https://github.com/microsoft/winget-cli/releases/download/v1.3.431/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
         $WingetFile = "$Location\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
@@ -129,7 +145,7 @@ function Get-WingetStatus{
     }
 
     #Close Form
-    $Form.Close()
+    Close-PopUp
 
 }
 
@@ -296,7 +312,6 @@ function Get-InstallGUI {
     $OpenListButton.Size = New-Object System.Drawing.Size(100, 23)
     $OpenListButton.TabIndex = 27
     $OpenListButton.Text = "Import from File"
-    $OpenListButton.UseVisualStyleBackColor = $true
     #
     # SaveListButton
     #
@@ -305,7 +320,6 @@ function Get-InstallGUI {
     $SaveListButton.Size = New-Object System.Drawing.Size(100, 23)
     $SaveListButton.TabIndex = 16
     $SaveListButton.Text = "Save list to File"
-    $SaveListButton.UseVisualStyleBackColor = $true
     #
     # RemoveButton
     #
@@ -314,7 +328,6 @@ function Get-InstallGUI {
     $RemoveButton.Size = New-Object System.Drawing.Size(100, 23)
     $RemoveButton.TabIndex = 26
     $RemoveButton.Text = "Remove"
-    $RemoveButton.UseVisualStyleBackColor = $true
     #
     # AppListBox
     #
@@ -350,7 +363,6 @@ function Get-InstallGUI {
     $SubmitButton.Size = New-Object System.Drawing.Size(100, 23)
     $SubmitButton.TabIndex = 22
     $SubmitButton.Text = "Add to List"
-    $SubmitButton.UseVisualStyleBackColor = $true
     #
     # SubmitComboBox
     #
@@ -383,7 +395,6 @@ function Get-InstallGUI {
     $SearchButton.Size = New-Object System.Drawing.Size(100, 23)
     $SearchButton.TabIndex = 18
     $SearchButton.Text = "Search"
-    $SearchButton.UseVisualStyleBackColor = $true
     #
     # WAUTabPage
     #
@@ -421,7 +432,6 @@ function Get-InstallGUI {
     $WAULoadListButton.Size = New-Object System.Drawing.Size(75, 23)
     $WAULoadListButton.TabIndex = 27
     $WAULoadListButton.Text = "Load list"
-    $WAULoadListButton.UseVisualStyleBackColor = $true
     #
     # WAUListFileTextBox
     #
@@ -440,7 +450,6 @@ function Get-InstallGUI {
     $WhiteRadioBut.TabIndex = 25
     $WhiteRadioBut.Text = "WhiteList"
     $WhiteRadioBut.TextAlign = [System.Drawing.ContentAlignment]::MiddleCenter
-    $WhiteRadioBut.UseVisualStyleBackColor = $true
     #
     # BlackRadioBut
     #
@@ -451,7 +460,6 @@ function Get-InstallGUI {
     $BlackRadioBut.TabIndex = 24
     $BlackRadioBut.Text = "BlackList"
     $BlackRadioBut.TextAlign = [System.Drawing.ContentAlignment]::MiddleRight
-    $BlackRadioBut.UseVisualStyleBackColor = $true
     #
     # DefaultRadioBut
     #
@@ -464,7 +472,6 @@ function Get-InstallGUI {
     $DefaultRadioBut.TabStop = $true
     $DefaultRadioBut.Text = "Default"
     $DefaultRadioBut.TextAlign = [System.Drawing.ContentAlignment]::MiddleCenter
-    $DefaultRadioBut.UseVisualStyleBackColor = $true
     #
     # WAUFreqGroupBox
     #
@@ -500,7 +507,6 @@ function Get-InstallGUI {
     $DailyRadioBut.TabStop = $true
     $DailyRadioBut.Text = "Daily"
     $DailyRadioBut.TextAlign = [System.Drawing.ContentAlignment]::MiddleCenter
-    $DailyRadioBut.UseVisualStyleBackColor = $true
     #
     # WeeklyRadioBut
     #
@@ -510,7 +516,6 @@ function Get-InstallGUI {
     $WeeklyRadioBut.Size = New-Object System.Drawing.Size(61, 17)
     $WeeklyRadioBut.TabIndex = 23
     $WeeklyRadioBut.Text = "Weekly"
-    $WeeklyRadioBut.UseVisualStyleBackColor = $true
     #
     # BiweeklyRadioBut
     #
@@ -520,7 +525,6 @@ function Get-InstallGUI {
     $BiweeklyRadioBut.Size = New-Object System.Drawing.Size(67, 17)
     $BiweeklyRadioBut.TabIndex = 24
     $BiweeklyRadioBut.Text = "Biweekly"
-    $BiweeklyRadioBut.UseVisualStyleBackColor = $true
     #
     # MonthlyRatioBut
     #
@@ -530,7 +534,6 @@ function Get-InstallGUI {
     $MonthlyRatioBut.Size = New-Object System.Drawing.Size(62, 17)
     $MonthlyRatioBut.TabIndex = 25
     $MonthlyRatioBut.Text = "Monthly"
-    $MonthlyRatioBut.UseVisualStyleBackColor = $true
     #
     # UpdAtLogonCheckBox
     #
@@ -542,7 +545,6 @@ function Get-InstallGUI {
     $UpdAtLogonCheckBox.Size = New-Object System.Drawing.Size(139, 17)
     $UpdAtLogonCheckBox.TabIndex = 21
     $UpdAtLogonCheckBox.Text = "Run WAU at user logon"
-    $UpdAtLogonCheckBox.UseVisualStyleBackColor = $true
     #
     # WAUConfGroupBox
     #
@@ -570,10 +572,7 @@ function Get-InstallGUI {
     # NotifLevelComboBox
     #
     $NotifLevelComboBox.DropDownStyle = [System.Windows.Forms.ComboBoxStyle]::DropDownList
-    $NotifLevelComboBox.Items.AddRange(@(
-    "Full",
-    "SuccessOnly",
-    "None"))
+    $NotifLevelComboBox.Items.AddRange(@("Full","SuccessOnly","None"))
     $NotifLevelComboBox.Location = New-Object System.Drawing.Point(97, 65)
     $NotifLevelComboBox.Name = "NotifLevelComboBox"
     $NotifLevelComboBox.Size = New-Object System.Drawing.Size(100, 21)
@@ -587,7 +586,6 @@ function Get-InstallGUI {
     $WAUDisableAUCheckBox.Size = New-Object System.Drawing.Size(151, 17)
     $WAUDisableAUCheckBox.TabIndex = 20
     $WAUDisableAUCheckBox.Text = "Disable WAU Auto-update"
-    $WAUDisableAUCheckBox.UseVisualStyleBackColor = $true
     #
     # WAUDoNotUpdateCheckBox
     #
@@ -597,7 +595,6 @@ function Get-InstallGUI {
     $WAUDoNotUpdateCheckBox.Size = New-Object System.Drawing.Size(177, 17)
     $WAUDoNotUpdateCheckBox.TabIndex = 19
     $WAUDoNotUpdateCheckBox.Text = "Do not run WAU just after install"
-    $WAUDoNotUpdateCheckBox.UseVisualStyleBackColor = $true
     #
     # WAUMoreInfoLabel
     #
@@ -617,7 +614,6 @@ function Get-InstallGUI {
     $WAUCheckBox.Size = New-Object System.Drawing.Size(185, 17)
     $WAUCheckBox.TabIndex = 18
     $WAUCheckBox.Text = "Install WAU (Winget-AutoUpdate)"
-    $WAUCheckBox.UseVisualStyleBackColor = $true
     #
     # InstallButton
     #
@@ -626,7 +622,6 @@ function Get-InstallGUI {
     $InstallButton.Size = New-Object System.Drawing.Size(75, 24)
     $InstallButton.TabIndex = 15
     $InstallButton.Text = "Install"
-    $InstallButton.UseVisualStyleBackColor = $true
     #
     # CloseButton
     #
@@ -635,7 +630,6 @@ function Get-InstallGUI {
     $CloseButton.Size = New-Object System.Drawing.Size(75, 24)
     $CloseButton.TabIndex = 14
     $CloseButton.Text = "Close"
-    $CloseButton.UseVisualStyleBackColor = $true
     #
     # WiGuiLinkLabel
     #
@@ -666,7 +660,6 @@ function Get-InstallGUI {
     $AdminTabPage.Controls.Add($CMTraceCheckBox)
     $AdminTabPage.Location = New-Object System.Drawing.Point(4, 22)
     $AdminTabPage.Name = "AdminTabPage"
-    $AdminTabPage.Padding = New-Object System.Windows.Forms.Padding(3)
     $AdminTabPage.Size = New-Object System.Drawing.Size(504, 474)
     $AdminTabPage.TabIndex = 2
     $AdminTabPage.Text = "Admin Tools"
@@ -678,8 +671,7 @@ function Get-InstallGUI {
     $CMTraceCheckBox.Name = "CMTraceCheckBox"
     $CMTraceCheckBox.Size = New-Object System.Drawing.Size(100, 17)
     $CMTraceCheckBox.TabIndex = 19
-    $CMTraceCheckBox.Text = "Install CMTrace"
-    $CMTraceCheckBox.UseVisualStyleBackColor = $true
+    $CMTraceCheckBox.Text = "Install ConfigMgr Toolkit (With CMTrace log viewer tool)"
     #
     # UninstallViewCheckBox
     #
@@ -688,8 +680,7 @@ function Get-InstallGUI {
     $UninstallViewCheckBox.Name = "UninstallViewCheckBox"
     $UninstallViewCheckBox.Size = New-Object System.Drawing.Size(119, 17)
     $UninstallViewCheckBox.TabIndex = 20
-    $UninstallViewCheckBox.Text = "Install UninstallView"
-    $UninstallViewCheckBox.UseVisualStyleBackColor = $true
+    $UninstallViewCheckBox.Text = "Install NirSoft UninstallView"
     #
     # AdvancedRunCheckBox
     #
@@ -698,8 +689,7 @@ function Get-InstallGUI {
     $AdvancedRunCheckBox.Name = "AdvancedRunCheckBox"
     $AdvancedRunCheckBox.Size = New-Object System.Drawing.Size(125, 17)
     $AdvancedRunCheckBox.TabIndex = 21
-    $AdvancedRunCheckBox.Text = "Install AdvancedRun"
-    $AdvancedRunCheckBox.UseVisualStyleBackColor = $true
+    $AdvancedRunCheckBox.Text = "Install NirSoft AdvancedRun"
     #
     # WiGuiForm
     #
@@ -823,25 +813,26 @@ function Get-InstallGUI {
     })
     #
     $InstallButton.add_click({
-        if ($AppListBox.Items -or $WAUCheckBox.Checked -or $AdvancedRunCheckBox.Checked -or $UninstallViewCheckBox.Checked -or $CMTraceCheckBox.Checked){
-            $Script:AppToInstall = $AppListBox.Items -join ","
-            $Script:InstallWAU = $WAUCheckBox.Checked
-            $Script:WAUDoNotUpdate = $WAUDoNotUpdateCheckBox.Checked
-            $Script:WAUDisableAU = $WAUDisableAUCheckBox.Checked
-            $Script:WAUAtUserLogon = $UpdAtLogonCheckBox.Checked
-            $Script:WAUNotificationLevel = $NotifLevelComboBox.Text
-            $Script:WAUUseWhiteList = $WhiteRadioBut.Checked
-            $Script:WAUListPath = $WAUListFileTextBox.FileName
-            $Script:WAUFreqUpd = ($WAUFredLayoutPanel.Controls | Where-Object {$_.Checked} | Select-Object Text).Text
-            $Script:AdvancedRun = $AdvancedRunCheckBox.Checked
-            $Script:UninstallView = $UninstallViewCheckBox.Checked
-            $Script:CMTrace = $CMTraceCheckBox.Checked
-            Start-Installations
-            $WAUCheckBox.Checked = $false
-            $WAUConfGroupBox.Enabled = $false
-            $WAUFreqGroupBox.Enabled = $false
-            $WAUWhiteBlackGroupBox.Enabled = $false
-        }
+        $Script:AppToInstall = $AppListBox.Items -join ","
+        $Script:InstallWAU = $WAUCheckBox.Checked
+        $Script:WAUDoNotUpdate = $WAUDoNotUpdateCheckBox.Checked
+        $Script:WAUDisableAU = $WAUDisableAUCheckBox.Checked
+        $Script:WAUAtUserLogon = $UpdAtLogonCheckBox.Checked
+        $Script:WAUNotificationLevel = $NotifLevelComboBox.Text
+        $Script:WAUUseWhiteList = $WhiteRadioBut.Checked
+        $Script:WAUListPath = $WAUListFileTextBox.FileName
+        $Script:WAUFreqUpd = ($WAUFredLayoutPanel.Controls | Where-Object {$_.Checked} | Select-Object Text).Text
+        $Script:AdvancedRun = $AdvancedRunCheckBox.Checked
+        $Script:UninstallView = $UninstallViewCheckBox.Checked
+        $Script:CMTrace = $CMTraceCheckBox.Checked
+        Start-Installations
+        $WAUCheckBox.Checked = $false
+        $WAUConfGroupBox.Enabled = $false
+        $WAUFreqGroupBox.Enabled = $false
+        $WAUWhiteBlackGroupBox.Enabled = $false
+        $AdvancedRunCheckBox.Checked = $false
+        $UninstallViewCheckBox.Checked = $false
+        $CMTraceCheckBox.Checked = $false
     })
 
     ## RETURNS ##
@@ -856,6 +847,9 @@ function Start-Installations {
 
     #Download and run Winget-Install script if box is checked
     if ($AppToInstall){
+
+        Start-PopUp "Installing applications..."
+
         #Check if Winget-Install already downloaded
         $TestPath = "$Location\*Winget-Install*\winget-install.ps1"
         if (!(Test-Path $TestPath)){
@@ -865,13 +859,15 @@ function Start-Installations {
 
         #Run Winget-Install
         $WIInstallFile = (Resolve-Path $TestPath)[0].Path
-        Start-Process "powershell.exe" -Argument "-NoProfile -ExecutionPolicy Bypass -WindowStyle Maximized -Command `"$WIInstallFile -AppIDs $AppToInstall`"" -Wait -Verb RunAs
+        Start-Process "powershell.exe" -Argument "-NoProfile -ExecutionPolicy Bypass -WindowStyle Minimized -Command `"$WIInstallFile -AppIDs $AppToInstall`"" -Wait -Verb RunAs
     }
 
     ## WAU PART ##
 
     #Download and install Winget-AutoUpdate if box is checked
     if ($InstallWAU){
+
+        Start-PopUp "Installing WAU..."
         
         #Check if WAU already downloaded
         $TestPath = "$Location\*Winget-AutoUpdate*\Winget-AutoUpdate-Install.ps1"
@@ -912,17 +908,19 @@ function Start-Installations {
         }
 
         #Install Winget-Autoupdate
-        Start-Process "powershell.exe" -Argument "-NoProfile -ExecutionPolicy Bypass -WindowStyle Maximized -Command `"$WAUInstallFile $WAUParameters`"" -Wait -Verb RunAs
+        Start-Process "powershell.exe" -Argument "-NoProfile -ExecutionPolicy Bypass -WindowStyle Minimized -Command `"$WAUInstallFile $WAUParameters`"" -Wait -Verb RunAs
     }
 
     ## ADMIN PART ##
+
+    Start-PopUp "Installing Admin tools..."
 
     if ($CMTrace) {
         $CMToolkitLink = "https://www.microsoft.com/en-us/download/confirmation.aspx?id=50012"
         $CMToolkitPath = "C:\Tools\ConfigMgrTools.msi"
         Invoke-WebRequest $CMToolkitLink -OutFile (New-Item -Path $CMToolkitPath -Force)
         msiexec.exe /I $CMToolkitPath /passive
-        Copy-Item "C:\Program Files (x86)\ConfigMgr 2012 Toolkit R2\ClientTools\CMTrace.exe" "C:\Tools"
+        Copy-Item "C:\Program Files (x86)\ConfigMgr 2012 Toolkit R2\ClientTools\CMTrace.exe" "C:\Tools\CMTrace.exe"
         Remove-Item $CMToolkitPath
     }
 
@@ -942,6 +940,15 @@ function Start-Installations {
         Remove-Item $UninstallViewPath
     }
 
+    #Installs finished
+    Start-PopUp "Done!"
+    Start-Sleep 1
+    #Close Popup
+    Close-PopUp
+
+    if ($CMTrace -or $AdvancedRun -or $UninstallView){
+        Start-Process "C:\Tools"
+    }
 }
 
 function Get-WiGuiLatestVersion {
@@ -970,7 +977,6 @@ function Get-WiGuiLatestVersion {
         $SkipButton.Size = New-Object System.Drawing.Size(100, 23)
         $SkipButton.TabIndex = 0
         $SkipButton.Text = "Skip"
-        $SkipButton.UseVisualStyleBackColor = $true
         #
         # DownloadButton
         #
@@ -979,7 +985,6 @@ function Get-WiGuiLatestVersion {
         $DownloadButton.Size = New-Object System.Drawing.Size(100, 23)
         $DownloadButton.TabIndex = 1
         $DownloadButton.Text = "Download"
-        $DownloadButton.UseVisualStyleBackColor = $true
         #
         # GithubButton
         #
@@ -988,7 +993,6 @@ function Get-WiGuiLatestVersion {
         $GithubButton.Size = New-Object System.Drawing.Size(100, 23)
         $GithubButton.TabIndex = 2
         $GithubButton.Text = "See on GitHub"
-        $GithubButton.UseVisualStyleBackColor = $true
         #
         # TextLabel
         #
