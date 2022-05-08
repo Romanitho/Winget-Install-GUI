@@ -723,13 +723,15 @@ function Get-InstallGUI {
     })
     #
     $SearchButton.add_click({
-        $SubmitComboBox.Items.Clear()
         if ($SearchTextBox.Text){
+            Start-PopUp "Searching..."
+            $SubmitComboBox.Items.Clear()
             $List = Get-WingetAppInfo $SearchTextBox.Text
             foreach ($L in $List){
                 $SubmitComboBox.Items.Add($L.ID)
             }
             $SubmitComboBox.SelectedIndex = 0
+            Close-PopUp
         }
     })
     #
