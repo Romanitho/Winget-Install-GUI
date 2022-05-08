@@ -11,7 +11,9 @@ https://github.com/Romanitho/Winget-AllinOne
 #>
 
 <# APP INFO #>
-$WiGuiVersion = "1.5.0"
+$Script:WiGuiVersion = "1.5.0"
+$Script:WAUGithubLink = "https://github.com/Romanitho/Winget-AutoUpdate/archive/refs/heads/main.zip"
+$Script:WIGithubLink = "https://github.com/Romanitho/Winget-Install/archive/refs/heads/main.zip"
 
 <# FUNCTIONS #>
 
@@ -854,7 +856,7 @@ function Start-Installations {
         $TestPath = "$Location\*Winget-Install*\winget-install.ps1"
         if (!(Test-Path $TestPath)){
             #If not, download
-            Get-GithubRepository "https://github.com/Romanitho/Winget-Install/archive/refs/heads/main.zip"
+            Get-GithubRepository $WIGithubLink
         }
 
         #Run Winget-Install
@@ -873,7 +875,7 @@ function Start-Installations {
         $TestPath = "$Location\*Winget-AutoUpdate*\Winget-AutoUpdate-Install.ps1"
         if (!(Test-Path $TestPath)){
             #If not, download
-            Get-GithubRepository "https://github.com/Romanitho/Winget-AutoUpdate/archive/refs/heads/main.zip"
+            Get-GithubRepository $WAUGithubLink
         }
 
         #Get install file
