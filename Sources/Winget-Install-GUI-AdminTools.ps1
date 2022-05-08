@@ -10,6 +10,12 @@ This script will:
 https://github.com/Romanitho/Winget-AllinOne
 #>
 
+<# APP ARGUMENTS #>
+[CmdletBinding()]
+param(
+    [Parameter(Mandatory=$False)] [Switch] $Admin = $false
+)
+
 <# APP INFO #>
 $Script:WiGuiVersion = "1.5.0"
 $Script:WAUGithubLink = "https://github.com/Romanitho/Winget-AutoUpdate/archive/refs/heads/add-scope-machine.zip"
@@ -712,6 +718,9 @@ function Get-InstallGUI {
     $WiGuiForm.Add_Shown({$SearchTextBox.Select()})
     $WiGuiForm.Icon = [System.Drawing.Icon]::FromHandle(([System.Drawing.Bitmap]::new($stream).GetHIcon()))
     $NotifLevelComboBox.Text = "Full"
+    
+    # Hide Admin tool tab if not run with -admin argument
+    if (!$Admin){$WiGuiTabControl.Controls.Remove($AdminTabPage)}
 
 
     ## ACTIONS ##
