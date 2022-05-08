@@ -79,7 +79,7 @@ function Get-WingetStatus{
     #If not installed, install
     if (!($path)){
         #Update Form
-        Start-PopUp "Installing prerequisites:`nVisual C++ 2022"
+        Start-PopUp "Installing prerequisites:`nMicrosoft Visual C++ 2022"
 
         #Install
         try{
@@ -922,6 +922,7 @@ function Start-Installations {
         $CMToolkitPath = "C:\Tools\ConfigMgrTools.msi"
         Invoke-WebRequest $CMToolkitLink -OutFile (New-Item -Path $CMToolkitPath -Force)
         msiexec.exe /I $CMToolkitPath /passive
+        Start-Sleep 2
         #Create CMTrace Shortcut to C:\Tools
         $WScriptShell = New-Object -ComObject WScript.Shell
         $TargetFile = "${env:ProgramFiles(x86)}\ConfigMgr 2012 Toolkit R2\ClientTools\CMTrace.exe"
