@@ -12,7 +12,7 @@ https://github.com/Romanitho/Winget-AllinOne
 
 <# APP INFO #>
 $Script:WiGuiVersion = "1.5.0"
-$Script:WAUGithubLink = "https://github.com/Romanitho/Winget-AutoUpdate/archive/refs/heads/main.zip"
+$Script:WAUGithubLink = "https://github.com/Romanitho/Winget-AutoUpdate/archive/refs/heads/add-scope-machine.zip"
 $Script:WIGithubLink = "https://github.com/Romanitho/Winget-Install/archive/refs/heads/main.zip"
 
 <# FUNCTIONS #>
@@ -922,8 +922,13 @@ function Start-Installations {
         $CMToolkitPath = "C:\Tools\ConfigMgrTools.msi"
         Invoke-WebRequest $CMToolkitLink -OutFile (New-Item -Path $CMToolkitPath -Force)
         msiexec.exe /I $CMToolkitPath /passive
-        Start-Sleep 1
-        Copy-Item "C:\Program Files (x86)\ConfigMgr 2012 Toolkit R2\ClientTools\CMTrace.exe" "C:\Tools\CMTrace.exe"
+        #Create CMTrace Shortcut to C:\Tools
+        $WScriptShell = New-Object -ComObject WScript.Shell
+        $TargetFile = "${env:ProgramFiles(x86)}\ConfigMgr 2012 Toolkit R2\ClientTools\CMTrace.exe"
+        $ShortcutFile = "C:\Tools\CMTrace.lnk"
+        $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+        $Shortcut.TargetPath = $TargetFile
+        $Shortcut.Save()
         Remove-Item $CMToolkitPath
     }
 
