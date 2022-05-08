@@ -920,6 +920,7 @@ function Start-Installations {
         $CMToolkitPath = "C:\Tools\ConfigMgrTools.msi"
         Invoke-WebRequest $CMToolkitLink -OutFile (New-Item -Path $CMToolkitPath -Force)
         msiexec.exe /I $CMToolkitPath /passive
+        Start-Sleep 1
         Copy-Item "C:\Program Files (x86)\ConfigMgr 2012 Toolkit R2\ClientTools\CMTrace.exe" "C:\Tools\CMTrace.exe"
         Remove-Item $CMToolkitPath
     }
