@@ -18,7 +18,7 @@ param(
 
 <# APP INFO #>
 $Script:WiGuiVersion = "1.5.0"
-$Script:WAUGithubLink = "https://github.com/Romanitho/Winget-AutoUpdate/archive/refs/heads/add-scope-machine.zip"
+$Script:WAUGithubLink = "https://github.com/Romanitho/Winget-AutoUpdate/archive/refs/heads/main.zip"
 $Script:WIGithubLink = "https://github.com/Romanitho/Winget-Install/archive/refs/heads/main.zip"
 
 <# FUNCTIONS #>
