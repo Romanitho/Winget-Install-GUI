@@ -927,9 +927,8 @@ function Start-Installations {
 
     ## ADMIN PART ##
 
-    Start-PopUp "Installing Admin tools..."
-
     if ($CMTrace) {
+		Start-PopUp "Installing ConfigMgr 2012 Toolkit..."
         $CMToolkitLink = "https://download.microsoft.com/download/5/0/8/508918E1-3627-4383-B7D8-AA07B3490D21/ConfigMgrTools.msi"
         $CMToolkitPath = "C:\Tools\ConfigMgrTools.msi"
         Invoke-WebRequest $CMToolkitLink -OutFile (New-Item -Path $CMToolkitPath -Force)
@@ -946,26 +945,33 @@ function Start-Installations {
     }
 
     if ($AdvancedRun) {
+		Start-PopUp "Installing AdvancedRun..."
         $AdvancedRunLink = "https://www.nirsoft.net/utils/advancedrun-x64.zip"
         $AdvancedRunPath = "C:\Tools\advancedrun-x64.zip"
         Invoke-WebRequest $AdvancedRunLink -OutFile (New-Item -Path $AdvancedRunPath -Force)
         Expand-Archive -Path $AdvancedRunPath -DestinationPath "C:\Tools\AdvancedRun" -Force
+		Start-Sleep 1
         Remove-Item $AdvancedRunPath
     }
 
     if ($UninstallView) {
+		Start-PopUp "Installing UninstallView..."
         $UninstallViewLink = "https://www.nirsoft.net/utils/uninstallview-x64.zip"
         $UninstallViewPath = "C:\Tools\uninstallview-x64.zip"
         Invoke-WebRequest $UninstallViewLink -OutFile (New-Item -Path $UninstallViewPath -Force)
         Expand-Archive -Path $UninstallViewPath -DestinationPath "C:\Tools\UninstallView" -Force
+		Start-Sleep 1
         Remove-Item $UninstallViewPath
     }
 
-    #Installs finished
-    Start-PopUp "Done!"
-    Start-Sleep 1
-    #Close Popup
-    Close-PopUp
+    #If Popup Form is showing, close
+    if ($PopUpForm){
+        #Installs finished
+        Start-PopUp "Done!"
+        Start-Sleep 1
+        #Close Popup
+        Close-PopUp
+    }
 
     if ($CMTrace -or $AdvancedRun -or $UninstallView){
         Start-Process "C:\Tools"
