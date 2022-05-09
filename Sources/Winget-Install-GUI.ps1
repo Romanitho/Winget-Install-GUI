@@ -827,7 +827,7 @@ function Get-InstallGUI {
     })
     #
     $InstallButton.add_click({
-        $Script:AppToInstall = $AppListBox.Items -join ","
+        $Script:AppToInstall = "'$($AppListBox.Items -join "','")'"
         $Script:InstallWAU = $WAUCheckBox.Checked
         $Script:WAUDoNotUpdate = $WAUDoNotUpdateCheckBox.Checked
         $Script:WAUDisableAU = $WAUDisableAUCheckBox.Checked
