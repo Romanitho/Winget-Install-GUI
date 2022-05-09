@@ -833,7 +833,7 @@ function Get-InstallGUI {
         $Script:WAUAtUserLogon = $UpdAtLogonCheckBox.Checked
         $Script:WAUNotificationLevel = $NotifLevelComboBox.Text
         $Script:WAUUseWhiteList = $WhiteRadioBut.Checked
-        $Script:WAUListPath = $WAUListFileTextBox.FileName
+        $Script:WAUListPath = $WAUListFileTextBox.Text
         $Script:WAUFreqUpd = ($WAUFredLayoutPanel.Controls | Where-Object {$_.Checked} | Select-Object Text).Text
         $Script:AdvancedRun = $AdvancedRunCheckBox.Checked
         $Script:UninstallView = $UninstallViewCheckBox.Checked
