@@ -237,6 +237,7 @@ function Get-InstallGUI {
     #
     # Begin
     #
+    [System.Windows.Forms.Application]::EnableVisualStyles()
     $WiGuiForm = New-Object System.Windows.Forms.Form
     $WiGuiTabControl = New-Object System.Windows.Forms.TabControl
     $AppsTabPage = New-Object System.Windows.Forms.TabPage
