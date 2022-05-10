@@ -74,7 +74,7 @@ function Get-GithubRepository ($Url) {
 
 function Get-WingetStatus{
     
-#Show Wait form
+    #Show Wait form
     Start-PopUp "Starting..."
 
     #Check if Visual C++ 2019 or 2022 installed
@@ -979,7 +979,10 @@ function Start-Installations {
 }
 
 function Get-WiGuiLatestVersion {
-    
+
+    #Show Wait form
+    Start-PopUp "Starting..."
+
     #Get latest stable info
     $WiGuiURL = 'https://api.github.com/repos/Romanitho/Winget-Install-GUI/releases/latest'
     $WiGuiLatestVersion = ((Invoke-WebRequest $WiGuiURL -UseBasicParsing | ConvertFrom-Json)[0].tag_name).Replace("v","")
@@ -1081,6 +1084,9 @@ function Get-WiGuiLatestVersion {
         }
 
     }
+
+    #Show Wait form
+    Close-PopUp
 
 }
 
