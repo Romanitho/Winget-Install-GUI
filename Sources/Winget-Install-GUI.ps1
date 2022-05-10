@@ -73,9 +73,6 @@ function Get-GithubRepository ($Url) {
 }
 
 function Get-WingetStatus{
-    
-    #Show Wait form
-    Start-PopUp "Starting..."
 
     #Check if Visual C++ 2019 or 2022 installed
     $Visual2019 = "Microsoft Visual C++ 2015-2019 Redistributable*"
