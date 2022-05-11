@@ -20,6 +20,7 @@ param(
 $Script:WiGuiVersion = "1.5.0"
 $Script:WAUGithubLink = "https://github.com/Romanitho/Winget-AutoUpdate/archive/refs/heads/main.zip"
 $Script:WIGithubLink = "https://github.com/Romanitho/Winget-Install/archive/refs/heads/main.zip"
+$Script:WingetLink = "https://github.com/microsoft/winget-cli/releases/download/v1.3.1251-preview/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
 
 <# FUNCTIONS #>
 
@@ -141,9 +142,8 @@ function Get-WingetStatus{
         Start-PopUp "Installing prerequisites:`nWinget"
 
         #Install
-        $WingetUrl = "https://github.com/microsoft/winget-cli/releases/download/v1.3.431/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
         $WingetFile = "$Location\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
-        Invoke-RestMethod -Uri $WingetUrl -OutFile $WingetFile
+        Invoke-RestMethod -Uri $WingetLink -OutFile $WingetFile
         Add-AppxPackage -Path $WingetFile
         Remove-Item -Path $WingetFile
 
