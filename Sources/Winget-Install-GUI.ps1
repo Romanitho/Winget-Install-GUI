@@ -83,7 +83,7 @@ function Get-WingetStatus{
     #If not installed, install
     if (!($path)){
         #Update Form
-        Start-PopUp "Installing prerequisites:`nMicrosoft Visual C++ 2022"
+        Start-PopUp "Installing prerequisites:`nMicrosoft Visual C++ 2019"
 
         #Install
         try{
