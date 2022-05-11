@@ -100,7 +100,7 @@ function Get-WingetStatus{
             Remove-Item $Installer -ErrorAction Ignore
         }
         catch{
-            Write-host "MS Visual C++ 2015-2022 installation failed." -ForegroundColor Red
+            Write-host "MS Visual C++ 2015-2019 installation failed." -ForegroundColor Red
             Start-Sleep 3
         }
     }
