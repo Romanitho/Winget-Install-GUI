@@ -285,7 +285,7 @@ function Get-InstallGUI {
     #
     $WiGuiTabControl.Controls.Add($AppsTabPage)
     $WiGuiTabControl.Controls.Add($WAUTabPage)
-    $WiGuiTabControl.Controls.Add($AdminTabPage)
+    #$WiGuiTabControl.Controls.Add($AdminTabPage)
     $WiGuiTabControl.Location = New-Object System.Drawing.Point(12, 12)
     $WiGuiTabControl.Name = "WiGuiTabControl"
     $WiGuiTabControl.SelectedIndex = 0
@@ -704,7 +704,7 @@ function Get-InstallGUI {
     $WiGuiForm.Controls.Add($WiGuiLinkLabel)
     $WiGuiForm.Controls.Add($InstallButton)
     $WiGuiForm.Controls.Add($CloseButton)
-    #$WiGuiForm.Controls.Add($WiGuiTabControl)
+    $WiGuiForm.Controls.Add($WiGuiTabControl)
     $WiGuiForm.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedSingle
     $WiGuiForm.MaximizeBox = $false
     $WiGuiForm.Name = "WiGuiForm"
@@ -716,9 +716,6 @@ function Get-InstallGUI {
     $WiGuiForm.Add_Shown({$SearchTextBox.Select()})
     $WiGuiForm.Icon = [System.Drawing.Icon]::FromHandle(([System.Drawing.Bitmap]::new($stream).GetHIcon()))
     $NotifLevelComboBox.Text = "Full"
-    
-    # Hide Admin tool tab if not run with -admin argument
-    if (!$Admin){$WiGuiTabControl.Controls.Remove($AdminTabPage)}
 
 
     ## ACTIONS ##
