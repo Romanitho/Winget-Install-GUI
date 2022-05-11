@@ -21,3 +21,10 @@ GUI to search, select and install Apps at once with Winget package manager behin
   - Select Update frequency
 
 All In One GUI :)
+
+## Run without download
+
+Start CMD as admin and run this command:  
+```
+Powershell.exe Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/Romanitho/Winget-Install-GUI/main/Sources/Winget-Install-GUI.ps1'))
+```
