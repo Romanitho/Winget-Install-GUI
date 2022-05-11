@@ -83,7 +83,7 @@ function Get-WingetStatus{
     #If not installed, install
     if (!($path)){
         #Update Form
-        Start-PopUp "Installing prerequisites:`nMicrosoft Visual C++ 2019"
+        Start-PopUp "Installing prerequisites:`nMicrosoft Visual C++ 2022"
 
         #Install
         try{
@@ -93,14 +93,14 @@ function Get-WingetStatus{
             else{
                 $OSArch = "x86"
             }
-            $SourceURL = "https://aka.ms/vs/16/release/VC_redist.$OSArch.exe"
+            $SourceURL = "https://aka.ms/vs/17/release/VC_redist.$OSArch.exe"
             $Installer = "$Location\VC_redist.$OSArch.exe"
             Invoke-WebRequest $SourceURL -OutFile (New-Item -Path $Installer -Force)
             Start-Process -FilePath $Installer -Args "/passive /norestart" -Wait
             Remove-Item $Installer -ErrorAction Ignore
         }
         catch{
-            Write-host "MS Visual C++ 2015-2019 installation failed." -ForegroundColor Red
+            Write-host "MS Visual C++ 2015-2022 installation failed." -ForegroundColor Red
             Start-Sleep 3
         }
     }
