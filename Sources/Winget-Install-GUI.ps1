@@ -257,7 +257,7 @@ function Get-InstallGUI {
     $BlackRadioBut = New-Object System.Windows.Forms.RadioButton
     $DefaultRadioBut = New-Object System.Windows.Forms.RadioButton
     $WAUFreqGroupBox = New-Object System.Windows.Forms.GroupBox
-    $WAUFredLayoutPanel = New-Object System.Windows.Forms.FlowLayoutPanel
+    $WAUFreqLayoutPanel = New-Object System.Windows.Forms.FlowLayoutPanel
     $DailyRadioBut = New-Object System.Windows.Forms.RadioButton
     $WeeklyRadioBut = New-Object System.Windows.Forms.RadioButton
     $BiweeklyRadioBut = New-Object System.Windows.Forms.RadioButton
@@ -481,7 +481,7 @@ function Get-InstallGUI {
     #
     # WAUFreqGroupBox
     #
-    $WAUFreqGroupBox.Controls.Add($WAUFredLayoutPanel)
+    $WAUFreqGroupBox.Controls.Add($WAUFreqLayoutPanel)
     $WAUFreqGroupBox.Controls.Add($UpdAtLogonCheckBox)
     $WAUFreqGroupBox.Enabled = $false
     $WAUFreqGroupBox.Location = New-Object System.Drawing.Point(31, 152)
@@ -491,16 +491,16 @@ function Get-InstallGUI {
     $WAUFreqGroupBox.TabStop = $false
     $WAUFreqGroupBox.Text = "WAU Update Frequency"
     #
-    # WAUFredLayoutPanel
+    # WAUFreqLayoutPanel
     #
-    $WAUFredLayoutPanel.Controls.Add($DailyRadioBut)
-    $WAUFredLayoutPanel.Controls.Add($WeeklyRadioBut)
-    $WAUFredLayoutPanel.Controls.Add($BiweeklyRadioBut)
-    $WAUFredLayoutPanel.Controls.Add($MonthlyRatioBut)
-    $WAUFredLayoutPanel.Location = New-Object System.Drawing.Point(4, 18)
-    $WAUFredLayoutPanel.Name = "WAUFredLayoutPanel"
-    $WAUFredLayoutPanel.Size = New-Object System.Drawing.Size(275, 24)
-    $WAUFredLayoutPanel.TabIndex = 26
+    $WAUFreqLayoutPanel.Controls.Add($DailyRadioBut)
+    $WAUFreqLayoutPanel.Controls.Add($WeeklyRadioBut)
+    $WAUFreqLayoutPanel.Controls.Add($BiweeklyRadioBut)
+    $WAUFreqLayoutPanel.Controls.Add($MonthlyRatioBut)
+    $WAUFreqLayoutPanel.Location = New-Object System.Drawing.Point(4, 18)
+    $WAUFreqLayoutPanel.Name = "WAUFreqLayoutPanel"
+    $WAUFreqLayoutPanel.Size = New-Object System.Drawing.Size(275, 24)
+    $WAUFreqLayoutPanel.TabIndex = 26
     #
     # DailyRadioBut
     #
@@ -704,7 +704,7 @@ function Get-InstallGUI {
     $WiGuiForm.Controls.Add($WiGuiLinkLabel)
     $WiGuiForm.Controls.Add($InstallButton)
     $WiGuiForm.Controls.Add($CloseButton)
-    $WiGuiForm.Controls.Add($WiGuiTabControl)
+    #$WiGuiForm.Controls.Add($WiGuiTabControl)
     $WiGuiForm.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedSingle
     $WiGuiForm.MaximizeBox = $false
     $WiGuiForm.Name = "WiGuiForm"
@@ -722,6 +722,15 @@ function Get-InstallGUI {
 
 
     ## ACTIONS ##
+    #
+    #Adding Admin Tab by hitting F10 Key
+    #
+    $WiGuiForm.KeyPreview = $True
+    $WiGuiForm.Add_KeyDown({
+        if ($_.KeyCode -eq "F10" -and $WiGuiTabControl.Controls.Name -notcontains "AdminTabPage") {
+            $WiGuiTabControl.Controls.Add($AdminTabPage)
+        }
+    })
     #
     # Tab 1
     #
@@ -837,7 +846,7 @@ function Get-InstallGUI {
         $Script:WAUNotificationLevel = $NotifLevelComboBox.Text
         $Script:WAUUseWhiteList = $WhiteRadioBut.Checked
         $Script:WAUListPath = $WAUListFileTextBox.Text
-        $Script:WAUFreqUpd = ($WAUFredLayoutPanel.Controls | Where-Object {$_.Checked} | Select-Object Text).Text
+        $Script:WAUFreqUpd = ($WAUFreqLayoutPanel.Controls | Where-Object {$_.Checked} | Select-Object Text).Text
         $Script:AdvancedRun = $AdvancedRunCheckBox.Checked
         $Script:UninstallView = $UninstallViewCheckBox.Checked
         $Script:CMTrace = $CMTraceCheckBox.Checked
