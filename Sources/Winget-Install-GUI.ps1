@@ -317,7 +317,7 @@ function Get-InstallGUI {
     $OpenListButton.Name = "OpenListButton"
     $OpenListButton.Size = New-Object System.Drawing.Size(100, 23)
     $OpenListButton.TabIndex = 27
-    $OpenListButton.Text = "Import from File"
+    $OpenListButton.Text = "Import from &File"
     #
     # SaveListButton
     #
@@ -325,7 +325,7 @@ function Get-InstallGUI {
     $SaveListButton.Name = "SaveListButton"
     $SaveListButton.Size = New-Object System.Drawing.Size(100, 23)
     $SaveListButton.TabIndex = 16
-    $SaveListButton.Text = "Save list to File"
+    $SaveListButton.Text = "&Save list to File"
     #
     # RemoveButton
     #
@@ -333,7 +333,7 @@ function Get-InstallGUI {
     $RemoveButton.Name = "RemoveButton"
     $RemoveButton.Size = New-Object System.Drawing.Size(100, 23)
     $RemoveButton.TabIndex = 26
-    $RemoveButton.Text = "Remove"
+    $RemoveButton.Text = "&Remove"
     #
     # AppListBox
     #
@@ -368,7 +368,7 @@ function Get-InstallGUI {
     $SubmitButton.Name = "SubmitButton"
     $SubmitButton.Size = New-Object System.Drawing.Size(100, 23)
     $SubmitButton.TabIndex = 22
-    $SubmitButton.Text = "Add to List"
+    $SubmitButton.Text = "&Add to List"
     #
     # SubmitComboBox
     #
@@ -619,7 +619,7 @@ function Get-InstallGUI {
     $WAUCheckBox.Name = "WAUCheckBox"
     $WAUCheckBox.Size = New-Object System.Drawing.Size(185, 17)
     $WAUCheckBox.TabIndex = 18
-    $WAUCheckBox.Text = "Install WAU (Winget-AutoUpdate)"
+    $WAUCheckBox.Text = "Install &WAU (Winget-AutoUpdate)"
     #
     # InstallButton
     #
@@ -627,7 +627,7 @@ function Get-InstallGUI {
     $InstallButton.Name = "InstallButton"
     $InstallButton.Size = New-Object System.Drawing.Size(75, 24)
     $InstallButton.TabIndex = 15
-    $InstallButton.Text = "Install"
+    $InstallButton.Text = "&Install"
     #
     # CloseButton
     #
@@ -635,7 +635,7 @@ function Get-InstallGUI {
     $CloseButton.Name = "CloseButton"
     $CloseButton.Size = New-Object System.Drawing.Size(75, 24)
     $CloseButton.TabIndex = 14
-    $CloseButton.Text = "Close"
+    $CloseButton.Text = "&Close"
     #
     # WiGuiLinkLabel
     #
