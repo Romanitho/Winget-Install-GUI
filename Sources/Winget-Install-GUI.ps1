@@ -96,7 +96,7 @@ function Get-WingetStatus{
             $SourceURL = "https://aka.ms/vs/17/release/VC_redist.$OSArch.exe"
             $Installer = "$Location\VC_redist.$OSArch.exe"
             Invoke-WebRequest $SourceURL -OutFile (New-Item -Path $Installer -Force)
-            Start-Process -FilePath $Installer -Args "/quiet /norestart" -Wait
+            Start-Process -FilePath $Installer -Args "/passive /norestart" -Wait
             Remove-Item $Installer -ErrorAction Ignore
         }
         catch{
