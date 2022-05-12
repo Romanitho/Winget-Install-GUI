@@ -1087,14 +1087,15 @@ function Get-WiGuiLatestVersion {
         ## RETURNS ##
         $WiGuiUpdRespond = $WiGuiUpdate.ShowDialog()
 
-        if ($WiGuiUpdRespond -eq "OK"){
-            Break
-        }
-
     }
 
     #Show Wait form
     Close-PopUp
+
+    if ($WiGuiUpdRespond -eq "OK"){
+        Remove-Item -Path $Location -Force -Recurse -ErrorAction SilentlyContinue
+        Break
+    }
 
 }
 
