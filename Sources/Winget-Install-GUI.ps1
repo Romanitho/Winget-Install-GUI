@@ -228,7 +228,7 @@ function Get-WingetAppInfo ($SearchApp){
     return $upgradeList
 }
 
-function Get-InstallGUI {
+function Start-InstallGUI {
 
     ## FORM ##
     #
@@ -1128,7 +1128,7 @@ Get-WiGuiLatestVersion
 Get-WingetStatus
 
 #Run WiGui
-Get-InstallGUI
+Start-InstallGUI
 
 #Remove temp items
 Remove-Item -Path $Location -Force -Recurse -ErrorAction SilentlyContinue
