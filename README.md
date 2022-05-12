@@ -20,6 +20,9 @@ GUI to search, select and install Apps at once with Winget package manager behin
   - Install and configure WAU
   - Select Update frequency
 
+![animation](https://user-images.githubusercontent.com/96626929/168034491-4dfe7ccd-55d7-4082-8bd7-e8b3d56d34f8.gif)
+
+
 All In One GUI :)
 
 ## Run without download
