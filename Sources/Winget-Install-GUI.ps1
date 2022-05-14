@@ -685,7 +685,15 @@ function Get-InstallGUI {
     $WSCCPortableCheckBox.Size = New-Object System.Drawing.Size(119, 17)
     $WSCCPortableCheckBox.TabIndex = 20
     $WSCCPortableCheckBox.Text = "Install WSCC Portable (All the tools you ever wanted)"
-    #
+    if (!(Test-Path "C:\Tools\WSCC Portable")){
+		$WSCCPortableCheckBox.TabStop = $true
+        $WSCCPortableCheckBox.Enabled = $true
+    }
+    else {
+		$WSCCPortableCheckBox.TabStop = $false
+        $WSCCPortableCheckBox.Enabled = $false
+    }
+   #
     # WiGuiForm
     #
     $WiGuiForm.AcceptButton = $SearchButton
@@ -968,6 +976,8 @@ function Start-Installations {
             Invoke-WebRequest $WSCCSettingsURL/wscc.dat -OutFile (New-Item -Path $WSCCInstallPath\wscc.dat -Force)
             Invoke-WebRequest $WSCCSettingsURL/wscc.local.dat -OutFile (New-Item -Path $WSCCInstallPath\wscc.local.dat -Force)
         }
+        $WSCCPortableCheckBox.TabStop = $false
+        $WSCCPortableCheckBox.Enabled = $false
     }
 
     #If Popup Form is showing, close
