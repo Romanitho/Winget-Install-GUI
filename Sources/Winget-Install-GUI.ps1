@@ -943,12 +943,13 @@ function Start-Installations {
 		Start-PopUp "Installing WSCC Portable..."
         $WSCCPortableLink = "https://www.kls-soft.com/downloads/wscc_x64.zip"
         $WSCCPortablePath = "C:\Tools\wscc_x64.zip"
+        $WSCCInstallPath = "C:\Tools\WSCC Portable"
         Invoke-WebRequest $WSCCPortableLink -OutFile (New-Item -Path $WSCCPortablePath -Force)
-        Expand-Archive -Path $WSCCPortablePath -DestinationPath "C:\Tools\WSCC Portable" -Force
+        Expand-Archive -Path $WSCCPortablePath -DestinationPath $WSCCInstallPath -Force
 		Start-Sleep 1
         #Create WSCC Portable Shortcut to C:\Tools
         $WScriptShell = New-Object -ComObject WScript.Shell
-        $TargetFile = "C:\Tools\WSCC Portable\wscc.exe"
+        $TargetFile = "$WSCCInstallPath\wscc.exe"
         $ShortcutFile = "C:\Tools\WSCC Portable.lnk"
         $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
         $Shortcut.TargetPath = $TargetFile
@@ -956,7 +957,13 @@ function Start-Installations {
         Remove-Item $WSCCPortablePath
         #Add predefined settings/favourites to WSCC Portable
         if (Test-Path "$PSScriptRoot\wscc"){
-            Copy-Item "$PSScriptRoot\wscc\*.*" -Destination "C:\Tools\WSCC Portable" -Force
+            Copy-Item "$PSScriptRoot\wscc\*.*" -Destination "$WSCCInstallPath" -Force
+        }
+        else {
+            #Download the settings/favourites to WSCC Portable (KnifMelti for the moment...)
+            $WSCCSettingsURL = "https://raw.githubusercontent.com/KnifMelti/Winget-Install-GUI/main/Sources/wscc"
+            Invoke-WebRequest $WSCCSettingsURL/wscc.dat -OutFile (New-Item -Path $WSCCInstallPath\wscc.dat -Force)
+            Invoke-WebRequest $WSCCSettingsURL/wscc.local.dat -OutFile (New-Item -Path $WSCCInstallPath\wscc.local.dat -Force)
         }
     }
 
