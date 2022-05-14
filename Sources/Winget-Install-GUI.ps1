@@ -684,7 +684,7 @@ function Get-InstallGUI {
     $WSCCPortableCheckBox.Name = "WSCCPortableCheckBox"
     $WSCCPortableCheckBox.Size = New-Object System.Drawing.Size(119, 17)
     $WSCCPortableCheckBox.TabIndex = 20
-    $WSCCPortableCheckBox.Text = "Install WSCC Portable"
+    $WSCCPortableCheckBox.Text = "Install WSCC Portable (All the tools you ever wanted)"
     #
     # WiGuiForm
     #
