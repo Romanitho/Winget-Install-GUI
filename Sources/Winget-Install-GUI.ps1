@@ -278,8 +278,7 @@ function Get-InstallGUI {
     $WAUListOpenFile = New-Object System.Windows.Forms.OpenFileDialog
     $AdminTabPage = New-Object System.Windows.Forms.TabPage
     $CMTraceCheckBox = New-Object System.Windows.Forms.CheckBox
-    $UninstallViewCheckBox = New-Object System.Windows.Forms.CheckBox
-    $AdvancedRunCheckBox = New-Object System.Windows.Forms.CheckBox
+    $WSCCPortableCheckBox = New-Object System.Windows.Forms.CheckBox
     #
     # WiGuiTabControl
     #
@@ -661,8 +660,7 @@ function Get-InstallGUI {
     #
     # AdminTabPage
     #
-    $AdminTabPage.Controls.Add($AdvancedRunCheckBox)
-    $AdminTabPage.Controls.Add($UninstallViewCheckBox)
+    $AdminTabPage.Controls.Add($WSCCPortableCheckBox)
     $AdminTabPage.Controls.Add($CMTraceCheckBox)
     $AdminTabPage.Location = New-Object System.Drawing.Point(4, 22)
     $AdminTabPage.Name = "AdminTabPage"
@@ -673,29 +671,20 @@ function Get-InstallGUI {
     # CMTraceCheckBox
     #
     $CMTraceCheckBox.AutoSize = $true
-    $CMTraceCheckBox.Location = New-Object System.Drawing.Point(18, 61)
+    $CMTraceCheckBox.Location = New-Object System.Drawing.Point(18, 15)
     $CMTraceCheckBox.Name = "CMTraceCheckBox"
     $CMTraceCheckBox.Size = New-Object System.Drawing.Size(100, 17)
     $CMTraceCheckBox.TabIndex = 19
     $CMTraceCheckBox.Text = "Install ConfigMgr Toolkit (With CMTrace log viewer tool)"
     #
-    # UninstallViewCheckBox
+    # WSCCPortableCheckBox
     #
-    $UninstallViewCheckBox.AutoSize = $true
-    $UninstallViewCheckBox.Location = New-Object System.Drawing.Point(18, 38)
-    $UninstallViewCheckBox.Name = "UninstallViewCheckBox"
-    $UninstallViewCheckBox.Size = New-Object System.Drawing.Size(119, 17)
-    $UninstallViewCheckBox.TabIndex = 20
-    $UninstallViewCheckBox.Text = "Install NirSoft UninstallView"
-    #
-    # AdvancedRunCheckBox
-    #
-    $AdvancedRunCheckBox.AutoSize = $true
-    $AdvancedRunCheckBox.Location = New-Object System.Drawing.Point(18, 15)
-    $AdvancedRunCheckBox.Name = "AdvancedRunCheckBox"
-    $AdvancedRunCheckBox.Size = New-Object System.Drawing.Size(125, 17)
-    $AdvancedRunCheckBox.TabIndex = 21
-    $AdvancedRunCheckBox.Text = "Install NirSoft AdvancedRun"
+    $WSCCPortableCheckBox.AutoSize = $true
+    $WSCCPortableCheckBox.Location = New-Object System.Drawing.Point(18, 38)
+    $WSCCPortableCheckBox.Name = "WSCCPortableCheckBox"
+    $WSCCPortableCheckBox.Size = New-Object System.Drawing.Size(119, 17)
+    $WSCCPortableCheckBox.TabIndex = 20
+    $WSCCPortableCheckBox.Text = "Install WSCC Portable"
     #
     # WiGuiForm
     #
@@ -844,16 +833,14 @@ function Get-InstallGUI {
         $Script:WAUUseWhiteList = $WhiteRadioBut.Checked
         $Script:WAUListPath = $WAUListFileTextBox.Text
         $Script:WAUFreqUpd = ($WAUFreqLayoutPanel.Controls | Where-Object {$_.Checked} | Select-Object Text).Text
-        $Script:AdvancedRun = $AdvancedRunCheckBox.Checked
-        $Script:UninstallView = $UninstallViewCheckBox.Checked
+        $Script:WSCCPortable = $WSCCPortableCheckBox.Checked
         $Script:CMTrace = $CMTraceCheckBox.Checked
         Start-Installations
         $WAUCheckBox.Checked = $false
         $WAUConfGroupBox.Enabled = $false
         $WAUFreqGroupBox.Enabled = $false
         $WAUWhiteBlackGroupBox.Enabled = $false
-        $AdvancedRunCheckBox.Checked = $false
-        $UninstallViewCheckBox.Checked = $false
+        $WSCCPortableCheckBox.Checked = $false
         $CMTraceCheckBox.Checked = $false
     })
 
@@ -952,24 +939,25 @@ function Start-Installations {
         Remove-Item $CMToolkitPath
     }
 
-    if ($AdvancedRun) {
-		Start-PopUp "Installing AdvancedRun..."
-        $AdvancedRunLink = "https://www.nirsoft.net/utils/advancedrun-x64.zip"
-        $AdvancedRunPath = "C:\Tools\advancedrun-x64.zip"
-        Invoke-WebRequest $AdvancedRunLink -OutFile (New-Item -Path $AdvancedRunPath -Force)
-        Expand-Archive -Path $AdvancedRunPath -DestinationPath "C:\Tools\AdvancedRun" -Force
+    if ($WSCCPortable) {
+		Start-PopUp "Installing WSCC Portable..."
+        $WSCCPortableLink = "https://www.kls-soft.com/downloads/wscc_x64.zip"
+        $WSCCPortablePath = "C:\Tools\wscc_x64.zip"
+        Invoke-WebRequest $WSCCPortableLink -OutFile (New-Item -Path $WSCCPortablePath -Force)
+        Expand-Archive -Path $WSCCPortablePath -DestinationPath "C:\Tools\WSCC Portable" -Force
 		Start-Sleep 1
-        Remove-Item $AdvancedRunPath
-    }
-
-    if ($UninstallView) {
-		Start-PopUp "Installing UninstallView..."
-        $UninstallViewLink = "https://www.nirsoft.net/utils/uninstallview-x64.zip"
-        $UninstallViewPath = "C:\Tools\uninstallview-x64.zip"
-        Invoke-WebRequest $UninstallViewLink -OutFile (New-Item -Path $UninstallViewPath -Force)
-        Expand-Archive -Path $UninstallViewPath -DestinationPath "C:\Tools\UninstallView" -Force
-		Start-Sleep 1
-        Remove-Item $UninstallViewPath
+        #Create WSCC Portable Shortcut to C:\Tools
+        $WScriptShell = New-Object -ComObject WScript.Shell
+        $TargetFile = "C:\Tools\WSCC Portable\wscc.exe"
+        $ShortcutFile = "C:\Tools\WSCC Portable.lnk"
+        $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+        $Shortcut.TargetPath = $TargetFile
+        $Shortcut.Save()
+        Remove-Item $WSCCPortablePath
+        #Add predefined settings/favourites to WSCC Portable
+        if (Test-Path "$PSScriptRoot\wscc"){
+            Copy-Item "$PSScriptRoot\wscc\*.*" -Destination "C:\Tools\WSCC Portable" -Force
+        }
     }
 
     #If Popup Form is showing, close
@@ -981,7 +969,7 @@ function Start-Installations {
         Close-PopUp
     }
 
-    if ($CMTrace -or $AdvancedRun -or $UninstallView){
+    if ($CMTrace -or $WSCCPortable){
         Start-Process "C:\Tools"
     }
 }
