@@ -947,17 +947,20 @@ function Start-Installations {
         Invoke-WebRequest $WSCCPortableLink -OutFile (New-Item -Path $WSCCPortablePath -Force)
         Expand-Archive -Path $WSCCPortablePath -DestinationPath $WSCCInstallPath -Force
 		Start-Sleep 1
-        #Create WSCC Portable Shortcut to C:\Tools
+        #Create WSCC Portable Shortcut to to Start menu
         $WScriptShell = New-Object -ComObject WScript.Shell
         $TargetFile = "$WSCCInstallPath\wscc.exe"
-        $ShortcutFile = "C:\Tools\WSCC Portable.lnk"
+        $ShortcutFile = "${env:ProgramData}\Microsoft\Windows\Start Menu\Programs\WSCC Portable.lnk"
         $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
         $Shortcut.TargetPath = $TargetFile
+        $Shortcut.Description = "All the tools you ever wanted"
         $Shortcut.Save()
+        #Copy Shortcut to C:\Tools
+        Copy-Item "${env:ProgramData}\Microsoft\Windows\Start Menu\Programs\WSCC Portable.lnk" -Destination "C:\Tools\WSCC Portable.lnk" -Force -ErrorAction SilentlyContinue
         Remove-Item $WSCCPortablePath
         #Add predefined settings/favourites to WSCC Portable
         if (Test-Path "$PSScriptRoot\wscc"){
-            Copy-Item "$PSScriptRoot\wscc\*.*" -Destination "$WSCCInstallPath" -Force
+            Copy-Item "$PSScriptRoot\wscc\*.*" -Destination "$WSCCInstallPath" -Force -ErrorAction SilentlyContinue
         }
         else {
             #Download the settings/favourites to WSCC Portable (KnifMelti for the moment...)
