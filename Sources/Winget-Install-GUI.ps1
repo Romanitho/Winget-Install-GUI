@@ -17,10 +17,11 @@ param(
 )
 
 <# APP INFO #>
+
 $Script:WiGuiVersion  = "1.5.1"
 $Script:WAUGithubLink = "https://github.com/Romanitho/Winget-AutoUpdate/archive/refs/tags/v1.11.0.zip"
 $Script:WIGithubLink  = "https://github.com/Romanitho/Winget-Install/archive/refs/tags/v1.6.0.zip"
-$Script:WingetLink    = "https://github.com/microsoft/winget-cli/releases/download/v1.3.1251-preview/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
+$Script:WingetLink    = "https://github.com/microsoft/winget-cli/releases/download/v1.3.1391-preview/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
 
 <# FUNCTIONS #>
 
@@ -228,7 +229,7 @@ function Get-WingetAppInfo ($SearchApp){
     return $upgradeList
 }
 
-function Get-InstallGUI {
+function Start-InstallGUI {
 
     ## FORM ##
     #
@@ -1087,14 +1088,15 @@ function Get-WiGuiLatestVersion {
         ## RETURNS ##
         $WiGuiUpdRespond = $WiGuiUpdate.ShowDialog()
 
-        if ($WiGuiUpdRespond -eq "OK"){
-            Break
-        }
-
     }
 
     #Show Wait form
     Close-PopUp
+
+    if ($WiGuiUpdRespond -eq "OK"){
+        Remove-Item -Path $Location -Force -Recurse -ErrorAction SilentlyContinue
+        Break
+    }
 
 }
 
@@ -1127,7 +1129,7 @@ Get-WiGuiLatestVersion
 Get-WingetStatus
 
 #Run WiGui
-Get-InstallGUI
+Start-InstallGUI
 
 #Remove temp items
 Remove-Item -Path $Location -Force -Recurse -ErrorAction SilentlyContinue
