@@ -18,9 +18,9 @@ param(
 
 <# APP INFO #>
 
-$Script:WiGuiVersion  = "1.5.4"
+$Script:WiGuiVersion  = "1.5.5"
 $Script:WAUGithubLink = "https://github.com/Romanitho/Winget-AutoUpdate/archive/refs/tags/v1.11.2.zip"
-$Script:WIGithubLink  = "https://github.com/Romanitho/Winget-Install/archive/refs/tags/v1.6.0.zip"
+$Script:WIGithubLink  = "https://github.com/Romanitho/Winget-Install/archive/refs/tags/v1.7.0.zip"
 $Script:WingetLink    = "https://github.com/microsoft/winget-cli/releases/download/v1.3.1391-preview/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
 
 <# FUNCTIONS #>
@@ -905,7 +905,7 @@ function Start-Installations {
 
         #Run Winget-Install
         $WIInstallFile = (Resolve-Path $TestPath)[0].Path
-        Start-Process "powershell.exe" -Argument "-NoProfile -ExecutionPolicy Bypass -WindowStyle Minimized -Command `"$WIInstallFile -AppIDs $AppToInstall`"" -Wait -Verb RunAs
+        Start-Process "powershell.exe" -Argument "-NoProfile -ExecutionPolicy Bypass -Command `"$WIInstallFile -AppIDs $AppToInstall`"" -Wait -Verb RunAs
     }
 
     ## WAU PART ##
@@ -954,7 +954,7 @@ function Start-Installations {
         }
 
         #Install Winget-Autoupdate
-        Start-Process "powershell.exe" -Argument "-NoProfile -ExecutionPolicy Bypass -WindowStyle Minimized -Command `"$WAUInstallFile $WAUParameters`"" -Wait -Verb RunAs
+        Start-Process "powershell.exe" -Argument "-NoProfile -ExecutionPolicy Bypass -Command `"$WAUInstallFile $WAUParameters`"" -Wait -Verb RunAs
     }
 
     ## ADMIN PART ##
