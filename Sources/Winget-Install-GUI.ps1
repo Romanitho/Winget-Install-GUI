@@ -271,16 +271,17 @@ function Start-InstallGUI {
     $WAUDoNotUpdateCheckBox = New-Object System.Windows.Forms.CheckBox
     $WAUMoreInfoLabel = New-Object System.Windows.Forms.LinkLabel
     $WAUCheckBox = New-Object System.Windows.Forms.CheckBox
+    $AdminTabPage = New-Object System.Windows.Forms.TabPage
+    $AdvancedRunCheckBox = New-Object System.Windows.Forms.CheckBox
+    $UninstallViewCheckBox = New-Object System.Windows.Forms.CheckBox
+    $CMTraceCheckBox = New-Object System.Windows.Forms.CheckBox
     $InstallButton = New-Object System.Windows.Forms.Button
     $CloseButton = New-Object System.Windows.Forms.Button
     $WiGuiLinkLabel = New-Object System.Windows.Forms.LinkLabel
     $SaveFileDialog = New-Object System.Windows.Forms.SaveFileDialog
     $OpenFileDialog = New-Object System.Windows.Forms.OpenFileDialog
     $WAUListOpenFile = New-Object System.Windows.Forms.OpenFileDialog
-    $AdminTabPage = New-Object System.Windows.Forms.TabPage
-    $CMTraceCheckBox = New-Object System.Windows.Forms.CheckBox
-    $UninstallViewCheckBox = New-Object System.Windows.Forms.CheckBox
-    $AdvancedRunCheckBox = New-Object System.Windows.Forms.CheckBox
+    $LogButton = New-Object System.Windows.Forms.Button
     #
     # WiGuiTabControl
     #
@@ -622,6 +623,45 @@ function Start-InstallGUI {
     $WAUCheckBox.TabIndex = 18
     $WAUCheckBox.Text = "Install &WAU (Winget-AutoUpdate)"
     #
+    # AdminTabPage
+    #
+    $AdminTabPage.Controls.Add($LogButton)
+    $AdminTabPage.Controls.Add($AdvancedRunCheckBox)
+    $AdminTabPage.Controls.Add($UninstallViewCheckBox)
+    $AdminTabPage.Controls.Add($CMTraceCheckBox)
+    $AdminTabPage.Location = New-Object System.Drawing.Point(4, 22)
+    $AdminTabPage.Name = "AdminTabPage"
+    $AdminTabPage.Size = New-Object System.Drawing.Size(504, 474)
+    $AdminTabPage.TabIndex = 2
+    $AdminTabPage.Text = "Admin Tools"
+    #
+    # AdvancedRunCheckBox
+    #
+    $AdvancedRunCheckBox.AutoSize = $true
+    $AdvancedRunCheckBox.Location = New-Object System.Drawing.Point(15, 12)
+    $AdvancedRunCheckBox.Name = "AdvancedRunCheckBox"
+    $AdvancedRunCheckBox.Size = New-Object System.Drawing.Size(160, 17)
+    $AdvancedRunCheckBox.TabIndex = 21
+    $AdvancedRunCheckBox.Text = "Install NirSoft AdvancedRun"
+    #
+    # UninstallViewCheckBox
+    #
+    $UninstallViewCheckBox.AutoSize = $true
+    $UninstallViewCheckBox.Location = New-Object System.Drawing.Point(15, 35)
+    $UninstallViewCheckBox.Name = "UninstallViewCheckBox"
+    $UninstallViewCheckBox.Size = New-Object System.Drawing.Size(154, 17)
+    $UninstallViewCheckBox.TabIndex = 20
+    $UninstallViewCheckBox.Text = "Install NirSoft UninstallView"
+    #
+    # CMTraceCheckBox
+    #
+    $CMTraceCheckBox.AutoSize = $true
+    $CMTraceCheckBox.Location = New-Object System.Drawing.Point(15, 58)
+    $CMTraceCheckBox.Name = "CMTraceCheckBox"
+    $CMTraceCheckBox.Size = New-Object System.Drawing.Size(288, 17)
+    $CMTraceCheckBox.TabIndex = 19
+    $CMTraceCheckBox.Text = "Install ConfigMgr Toolkit (With CMTrace log viewer tool)"
+    #
     # InstallButton
     #
     $InstallButton.Location = New-Object System.Drawing.Point(368, 525)
@@ -660,43 +700,13 @@ function Start-InstallGUI {
     #
     $WAUListOpenFile.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*"
     #
-    # AdminTabPage
+    # LogButton
     #
-    $AdminTabPage.Controls.Add($AdvancedRunCheckBox)
-    $AdminTabPage.Controls.Add($UninstallViewCheckBox)
-    $AdminTabPage.Controls.Add($CMTraceCheckBox)
-    $AdminTabPage.Location = New-Object System.Drawing.Point(4, 22)
-    $AdminTabPage.Name = "AdminTabPage"
-    $AdminTabPage.Size = New-Object System.Drawing.Size(504, 474)
-    $AdminTabPage.TabIndex = 2
-    $AdminTabPage.Text = "Admin Tools"
-    #
-    # CMTraceCheckBox
-    #
-    $CMTraceCheckBox.AutoSize = $true
-    $CMTraceCheckBox.Location = New-Object System.Drawing.Point(18, 61)
-    $CMTraceCheckBox.Name = "CMTraceCheckBox"
-    $CMTraceCheckBox.Size = New-Object System.Drawing.Size(100, 17)
-    $CMTraceCheckBox.TabIndex = 19
-    $CMTraceCheckBox.Text = "Install ConfigMgr Toolkit (With CMTrace log viewer tool)"
-    #
-    # UninstallViewCheckBox
-    #
-    $UninstallViewCheckBox.AutoSize = $true
-    $UninstallViewCheckBox.Location = New-Object System.Drawing.Point(18, 38)
-    $UninstallViewCheckBox.Name = "UninstallViewCheckBox"
-    $UninstallViewCheckBox.Size = New-Object System.Drawing.Size(119, 17)
-    $UninstallViewCheckBox.TabIndex = 20
-    $UninstallViewCheckBox.Text = "Install NirSoft UninstallView"
-    #
-    # AdvancedRunCheckBox
-    #
-    $AdvancedRunCheckBox.AutoSize = $true
-    $AdvancedRunCheckBox.Location = New-Object System.Drawing.Point(18, 15)
-    $AdvancedRunCheckBox.Name = "AdvancedRunCheckBox"
-    $AdvancedRunCheckBox.Size = New-Object System.Drawing.Size(125, 17)
-    $AdvancedRunCheckBox.TabIndex = 21
-    $AdvancedRunCheckBox.Text = "Install NirSoft AdvancedRun"
+    $LogButton.Location = New-Object System.Drawing.Point(381, 437)
+    $LogButton.Name = "LogButton"
+    $LogButton.Size = New-Object System.Drawing.Size(108, 24)
+    $LogButton.TabIndex = 18
+    $LogButton.Text = "Open Log Folder"
     #
     # WiGuiForm
     #
@@ -721,20 +731,7 @@ function Start-InstallGUI {
 
     ## ACTIONS ##
     #
-    #Adding Admin Tab by hitting F10 Key
-    #
-    $WiGuiForm.KeyPreview = $True
-    $WiGuiForm.Add_KeyDown({
-        if ($_.KeyCode -eq "F10" -and $WiGuiTabControl.Controls.Name -notcontains "AdminTabPage") {
-            $WiGuiTabControl.Controls.Add($AdminTabPage)
-        }
-    })
-    #
-    # Tab 1
-    #
-    $WiGuiLinkLabel.add_click({
-        [System.Diagnostics.Process]::Start("https://github.com/Romanitho/Winget-Install-GUI")
-    })
+    # "Select Apps" Tab
     #
     $SearchButton.add_click({
         if ($SearchTextBox.Text){
@@ -782,7 +779,7 @@ function Start-InstallGUI {
         }
     })
     #
-    # Tab 2
+    # "Configure WAU" Tab
     #
     $WAUCheckBox.add_click({
         if ($WAUCheckBox.Checked -eq $true)
@@ -823,7 +820,33 @@ function Start-InstallGUI {
         }
     })
     #
-    # Form Buttons
+    # "Admin Tool" Tab (by hitting F10 Key)
+    #
+    $WiGuiForm.KeyPreview = $True
+    $WiGuiForm.Add_KeyDown({
+        if ($_.KeyCode -eq "F10" -and $WiGuiTabControl.Controls.Name -notcontains "AdminTabPage") {
+            $WiGuiTabControl.Controls.Add($AdminTabPage)
+        }
+    })
+    #
+    $LogButton.add_click({
+        if (Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Winget-AutoUpdate\"){
+            $LogPath = Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Winget-AutoUpdate\" -Name InstallLocation
+            Start-Process "$LogPath\Logs"
+        }
+        elseif (Test-Path "$env:programdata\Winget-AutoUpdate\Logs"){
+            Start-Process "$env:programdata\Winget-AutoUpdate\Logs"
+        }
+        else {
+            Write-Host "Log location not found."
+        }
+    })
+    #
+    # Global Form
+    #
+    $WiGuiLinkLabel.add_click({
+        [System.Diagnostics.Process]::Start("https://github.com/Romanitho/Winget-Install-GUI")
+    })
     #
     $CloseButton.add_click({
         $WiguiForm.DialogResult = [System.Windows.Forms.DialogResult]::Cancel
