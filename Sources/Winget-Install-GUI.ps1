@@ -18,8 +18,8 @@ param(
 
 <# APP INFO #>
 
-$Script:WiGuiVersion  = "1.5.4"
-$Script:WAUGithubLink = "https://github.com/Romanitho/Winget-AutoUpdate/archive/refs/tags/v1.11.2.zip"
+$Script:WiGuiVersion  = "1.5.5"
+$Script:WAUGithubLink = "https://github.com/Romanitho/Winget-AutoUpdate/archive/refs/tags/v1.11.3.zip"
 $Script:WIGithubLink  = "https://github.com/Romanitho/Winget-Install/archive/refs/tags/v1.7.0.zip"
 $Script:WingetLink    = "https://github.com/microsoft/winget-cli/releases/download/v1.3.1391-preview/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
 
@@ -155,40 +155,85 @@ function Get-WingetStatus{
 
 }
 
-function Get-WingetAppInfo ($SearchApp){
-    class Software {
-        [string]$Name
-        [string]$Id
+function Get-WingetCmd{
+
+    #WinGet Path (if User/Admin context)
+    $UserWingetPath = Get-Command winget.exe -ErrorAction SilentlyContinue
+    #WinGet Path (if system context)
+    $SystemWingetPath = Resolve-Path "C:\Program Files\WindowsApps\Microsoft.DesktopAppInstaller_*_x64__8wekyb3d8bbwe\winget.exe"
+
+    #Get Winget Location in User/Admin context
+    if ($UserWingetPath){
+        $Script:Winget = $UserWingetPath.Source
     }
-
-    [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-
-    #Get WinGet Path (if admin context)
-    $ResolveWingetPath = Resolve-Path "C:\Program Files\WindowsApps\Microsoft.DesktopAppInstaller_*_x64__8wekyb3d8bbwe"
-    if ($ResolveWingetPath){
+    #Get Winget Location in System context
+    elseif ($SystemWingetPath){
         #If multiple version, pick last one
-        $WingetPath = $ResolveWingetPath[-1].Path
-    }
-    #Get Winget Location in User context
-    $WingetCmd = Get-Command winget.exe -ErrorAction SilentlyContinue
-    if ($WingetCmd){
-        $Script:Winget = $WingetCmd.Source
-    }
-    #Get Winget Location in System context (WinGet < 1.17)
-    elseif (Test-Path "$WingetPath\AppInstallerCLI.exe"){
-        $Script:Winget = "$WingetPath\AppInstallerCLI.exe"
-    }
-    #Get Winget Location in System context (WinGet > 1.17)
-    elseif (Test-Path "$WingetPath\winget.exe"){
-        $Script:Winget = "$WingetPath\winget.exe"
+        $Script:Winget = $SystemWingetPath[-1].Path
     }
     else{
         Write-Host "WinGet is not installed. It is mandatory to run WiGui"
         break
     }
 
+}
+
+function Get-WingetAppInfo ($SearchApp){
+    class Software {
+        [string]$Name
+        [string]$Id
+    }
+
     #Get list of available upgrades on winget format
     $AppResult = & $Winget search $SearchApp --accept-source-agreements --source winget
+
+    #Start Convertion of winget format to an array. Check if "-----" exists
+    if (!($AppResult -match "-----")){
+        Write-Host "No application found."
+        return
+    }
+
+    #Split winget output to lines
+    $lines = $AppResult.Split([Environment]::NewLine) | Where-Object {$_}
+
+    # Find the line that starts with "------"
+    $fl = 0
+    while (-not $lines[$fl].StartsWith("-----")){
+        $fl++
+    }
+
+    $fl = $fl - 1
+
+    #Get header titles
+    $index = $lines[$fl] -split '\s+'
+
+    # Line $fl has the header, we can find char where we find ID and Version
+    $idStart = $lines[$fl].IndexOf($index[1])
+    $versionStart = $lines[$fl].IndexOf($index[2])
+
+    # Now cycle in real package and split accordingly
+    $upgradeList = @()
+    For ($i = $fl + 2; $i -le $lines.Length; $i++){
+        $line = $lines[$i]
+        if ($line.Length -gt ($sourceStart+5)){
+            $software = [Software]::new()
+            $software.Name = $line.Substring(0, $idStart).TrimEnd()
+            $software.Id = $line.Substring($idStart, $versionStart - $idStart).TrimEnd()
+            #add formated soft to list
+            $upgradeList += $software
+        }
+    }
+    return $upgradeList
+}
+
+function Get-WingetInstalledApps {
+    class Software {
+        [string]$Name
+        [string]$Id
+    }
+
+    #Get list of available upgrades on winget format
+    $AppResult = & $Winget list $SearchApp --accept-source-agreements --source winget
 
     #Start Convertion of winget format to an array. Check if "-----" exists
     if (!($AppResult -match "-----")){
@@ -272,6 +317,7 @@ function Start-InstallGUI {
     $WAUMoreInfoLabel = New-Object System.Windows.Forms.LinkLabel
     $WAUCheckBox = New-Object System.Windows.Forms.CheckBox
     $AdminTabPage = New-Object System.Windows.Forms.TabPage
+    $LogButton = New-Object System.Windows.Forms.Button
     $AdvancedRunCheckBox = New-Object System.Windows.Forms.CheckBox
     $UninstallViewCheckBox = New-Object System.Windows.Forms.CheckBox
     $CMTraceCheckBox = New-Object System.Windows.Forms.CheckBox
@@ -281,7 +327,9 @@ function Start-InstallGUI {
     $SaveFileDialog = New-Object System.Windows.Forms.SaveFileDialog
     $OpenFileDialog = New-Object System.Windows.Forms.OpenFileDialog
     $WAUListOpenFile = New-Object System.Windows.Forms.OpenFileDialog
-    $LogButton = New-Object System.Windows.Forms.Button
+    $WAUStatusLabel = New-Object System.Windows.Forms.Label
+    $UninstallButton = New-Object System.Windows.Forms.Button
+    $InstalledAppButton = New-Object System.Windows.Forms.Button
     #
     # WiGuiTabControl
     #
@@ -296,6 +344,8 @@ function Start-InstallGUI {
     #
     # AppsTabPage
     #
+    $AppsTabPage.Controls.Add($InstalledAppButton)
+    $AppsTabPage.Controls.Add($UninstallButton)
     $AppsTabPage.Controls.Add($OpenListButton)
     $AppsTabPage.Controls.Add($SaveListButton)
     $AppsTabPage.Controls.Add($RemoveButton)
@@ -387,7 +437,7 @@ function Start-InstallGUI {
     $SearchLabel.Name = "SearchLabel"
     $SearchLabel.Size = New-Object System.Drawing.Size(80, 13)
     $SearchLabel.TabIndex = 20
-    $SearchLabel.Text = "Search an app:"
+    $SearchLabel.Text = "Search for an app:"
     #
     # SearchTextBox
     #
@@ -406,6 +456,7 @@ function Start-InstallGUI {
     #
     # WAUTabPage
     #
+    $WAUTabPage.Controls.Add($WAUStatusLabel)
     $WAUTabPage.Controls.Add($WAUWhiteBlackGroupBox)
     $WAUTabPage.Controls.Add($WAUFreqGroupBox)
     $WAUTabPage.Controls.Add($WAUConfGroupBox)
@@ -635,6 +686,14 @@ function Start-InstallGUI {
     $AdminTabPage.TabIndex = 2
     $AdminTabPage.Text = "Admin Tools"
     #
+    # LogButton
+    #
+    $LogButton.Location = New-Object System.Drawing.Point(381, 437)
+    $LogButton.Name = "LogButton"
+    $LogButton.Size = New-Object System.Drawing.Size(108, 24)
+    $LogButton.TabIndex = 18
+    $LogButton.Text = "Open Log Folder"
+    #
     # AdvancedRunCheckBox
     #
     $AdvancedRunCheckBox.AutoSize = $true
@@ -700,13 +759,30 @@ function Start-InstallGUI {
     #
     $WAUListOpenFile.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*"
     #
-    # LogButton
+    # WAUStatusLabel
     #
-    $LogButton.Location = New-Object System.Drawing.Point(381, 437)
-    $LogButton.Name = "LogButton"
-    $LogButton.Size = New-Object System.Drawing.Size(108, 24)
-    $LogButton.TabIndex = 18
-    $LogButton.Text = "Open Log Folder"
+    $WAUStatusLabel.AutoSize = $true
+    $WAUStatusLabel.Location = New-Object System.Drawing.Point(15, 443)
+    $WAUStatusLabel.Name = "WAUStatusLabel"
+    $WAUStatusLabel.Size = New-Object System.Drawing.Size(217, 13)
+    $WAUStatusLabel.TabIndex = 25
+    $WAUStatusLabel.Text = "WAU installed status"
+    #
+    # UninstallButton
+    #
+    $UninstallButton.Location = New-Object System.Drawing.Point(394, 439)
+    $UninstallButton.Name = "UninstallButton"
+    $UninstallButton.Size = New-Object System.Drawing.Size(100, 23)
+    $UninstallButton.TabIndex = 28
+    $UninstallButton.Text = "Uninstall selection"
+    #
+    # InstalledAppButton
+    #
+    $InstalledAppButton.Location = New-Object System.Drawing.Point(394, 410)
+    $InstalledAppButton.Name = "InstalledAppButton"
+    $InstalledAppButton.Size = New-Object System.Drawing.Size(100, 23)
+    $InstalledAppButton.TabIndex = 29
+    $InstalledAppButton.Text = "Installed apps"
     #
     # WiGuiForm
     #
@@ -727,6 +803,9 @@ function Start-InstallGUI {
     $WiGuiForm.Add_Shown({$SearchTextBox.Select()})
     $WiGuiForm.Icon = [System.Drawing.Icon]::FromHandle(([System.Drawing.Bitmap]::new($stream).GetHIcon()))
     $NotifLevelComboBox.Text = "Full"
+    $WAUInstallStatus = Get-WAUInstallStatus
+    $WAUStatusLabel.Text = $WAUInstallStatus[0]
+    $WAUStatusLabel.ForeColor = $WAUInstallStatus[1]
 
 
     ## ACTIONS ##
@@ -776,6 +855,26 @@ function Start-InstallGUI {
                     $AppListBox.Items.Add($App)
                 } 
             }
+        }
+    })
+    #
+    $InstalledAppButton.add_click({
+        Start-PopUp "Loading..."
+        $AppListBox.Items.Clear()
+        $List = Get-WingetInstalledApps
+        foreach ($L in $List){
+            $AppListBox.Items.Add($L.ID)
+        }
+        Close-PopUp
+    })
+    #
+    $UninstallButton.add_click({
+        if ($AppListBox.SelectedItems){
+            Start-Uninstallations $AppListBox.SelectedItems
+            $WAUInstallStatus = Get-WAUInstallStatus
+            $WAUStatusLabel.Text = $WAUInstallStatus[0]
+            $WAUStatusLabel.ForeColor = $WAUInstallStatus[1]
+            $AppListBox.Items.Clear()
         }
     })
     #
@@ -879,6 +978,9 @@ function Start-InstallGUI {
         $AdvancedRunCheckBox.Checked = $false
         $UninstallViewCheckBox.Checked = $false
         $CMTraceCheckBox.Checked = $false
+        $WAUInstallStatus = Get-WAUInstallStatus
+        $WAUStatusLabel.Text = $WAUInstallStatus[0]
+        $WAUStatusLabel.ForeColor = $WAUInstallStatus[1]
     })
 
     ## RETURNS ##
@@ -1010,6 +1112,27 @@ function Start-Installations {
     }
 }
 
+function Start-Uninstallations ($AppToUninstall) {
+    #Download and run Winget-Install script if box is checked
+    if ($AppToUninstall){
+
+        Start-PopUp "Uninstalling applications..."
+
+        #Check if Winget-Install already downloaded
+        $TestPath = "$Location\*Winget-Install*\winget-install.ps1"
+        if (!(Test-Path $TestPath)){
+            #If not, download
+            Get-GithubRepository $WIGithubLink
+        }
+
+        #Run Winget-Install
+        $WIInstallFile = (Resolve-Path $TestPath)[0].Path
+        Start-Process "powershell.exe" -Argument "-NoProfile -ExecutionPolicy Bypass -Command `"$WIInstallFile -AppIDs $AppToUninstall -Uninstall`"" -Wait -Verb RunAs
+
+        Close-PopUp
+    }
+}
+
 function Get-WiGuiLatestVersion {
 
     #Show Wait form
@@ -1123,12 +1246,25 @@ function Get-WiGuiLatestVersion {
 
 }
 
+function Get-WAUInstallStatus {
+    $WAUVersion = Get-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Winget-AutoUpdate\ -ErrorAction SilentlyContinue | Select-Object -ExpandProperty DisplayVersion -ErrorAction SilentlyContinue
+    if ($WAUVersion){
+        $WAULabelText = "WAU is currently installed (v$WAUVersion)."
+        $WAUStatus = "Green"
+    }
+    else{
+        $WAULabelText = "WAU is not installed."
+        $WAUStatus = "Red"
+    }
+    return $WAULabelText,$WAUStatus
+}
+
 
 
 <# MAIN #>
 
 #Temp folder
-$Script:Location = "C:\WiGui_Temp"
+$Script:Location = "$Env:SystemDrive\WiGui_Temp"
 #Create Temp folder
 if (!(Test-Path $Location)){
     New-Item -ItemType Directory -Force -Path $Location | Out-Null
@@ -1139,6 +1275,7 @@ Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
 #Set some variables
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $ProgressPreference = "SilentlyContinue"
 $Script:AppToInstall = $null
 $Script:InstallWAU = $null
@@ -1147,6 +1284,9 @@ $Script:stream = [System.IO.MemoryStream]::new($IconBase64, 0, $IconBase64.Lengt
 
 #Check if WiGui is uptodate
 Get-WiGuiLatestVersion
+
+#Get WinGet cmd
+Get-WingetCmd
 
 #Check if Winget is installed, and install if not
 Get-WingetStatus

@@ -7,5 +7,5 @@ $InputFile = "$Path\Sources\Winget-Install-GUI.ps1"
 $OutputFile = "$Path\Compiler\WiGui.exe"
 $Icon = "$Path\Sources\WiGui.ico"
 $Title = "WiGui"
-$AppVersion = "1.5.4"
+$AppVersion = "1.5.5"
 Invoke-ps2exe -inputFile $InputFile -outputFile $OutputFile -noConsole -requireAdmin -title $Title -version $AppVersion -copyright "Romanitho" -product $Title -icon $Icon -noerror
