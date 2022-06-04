@@ -774,7 +774,7 @@ function Start-InstallGUI {
     $UninstallButton.Name = "UninstallButton"
     $UninstallButton.Size = New-Object System.Drawing.Size(100, 23)
     $UninstallButton.TabIndex = 28
-    $UninstallButton.Text = "Uninstall selection"
+    $UninstallButton.Text = "Uninstall"
     #
     # InstalledAppButton
     #
@@ -833,6 +833,11 @@ function Start-InstallGUI {
     })
     #
     $RemoveButton.add_click({
+        if (!$AppListBox.SelectedItems) {
+            Start-PopUp "Please select apps to remove..."
+            Start-Sleep 1
+            Close-PopUp
+        }
         while($AppListBox.SelectedItems) {
             $AppListBox.Items.Remove($AppListBox.SelectedItems[0])
         }
@@ -875,6 +880,11 @@ function Start-InstallGUI {
             $WAUStatusLabel.Text = $WAUInstallStatus[0]
             $WAUStatusLabel.ForeColor = $WAUInstallStatus[1]
             $AppListBox.Items.Clear()
+        }
+        else {
+            Start-PopUp "Please select apps to uninstall..."
+            Start-Sleep 1
+            Close-PopUp
         }
     })
     #
