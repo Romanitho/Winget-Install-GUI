@@ -1285,11 +1285,11 @@ $Script:stream = [System.IO.MemoryStream]::new($IconBase64, 0, $IconBase64.Lengt
 #Check if WiGui is uptodate
 Get-WiGuiLatestVersion
 
-#Get WinGet cmd
-Get-WingetCmd
-
 #Check if Winget is installed, and install if not
 Get-WingetStatus
+
+#Get WinGet cmd
+Get-WingetCmd
 
 #Run WiGui
 Start-InstallGUI
