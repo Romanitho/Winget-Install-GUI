@@ -782,7 +782,7 @@ function Start-InstallGUI {
     $InstalledAppButton.Name = "InstalledAppButton"
     $InstalledAppButton.Size = New-Object System.Drawing.Size(100, 23)
     $InstalledAppButton.TabIndex = 29
-    $InstalledAppButton.Text = "Installed apps"
+    $InstalledAppButton.Text = "List installed"
     #
     # WiGuiForm
     #
@@ -859,7 +859,7 @@ function Start-InstallGUI {
     })
     #
     $InstalledAppButton.add_click({
-        Start-PopUp "Loading..."
+        Start-PopUp "Getting installed apps..."
         $AppListBox.Items.Clear()
         $List = Get-WingetInstalledApps
         foreach ($L in $List){
