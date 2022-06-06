@@ -1,4 +1,4 @@
-﻿<### Install ps2exe ###>
+<### Install ps2exe ###>
 #Install-Module ps2exe
 
 <### Run ps2exe ###>
