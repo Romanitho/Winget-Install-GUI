@@ -19,8 +19,8 @@ param(
 <# APP INFO #>
 
 $Script:WiGuiVersion  = "1.6.1"
-$Script:WAUGithubLink = "https://github.com/Romanitho/Winget-AutoUpdate/archive/refs/tags/v1.11.4.zip"
-$Script:WIGithubLink  = "https://github.com/Romanitho/Winget-Install/archive/refs/tags/v1.7.4.zip"
+$Script:WAUGithubLink = "https://github.com/Romanitho/Winget-AutoUpdate/archive/refs/heads/main.zip"
+$Script:WIGithubLink  = "https://github.com/Romanitho/Winget-Install/archive/refs/heads/main.zip"
 $Script:WingetLink    = "https://github.com/microsoft/winget-cli/releases/download/v1.3.1391-preview/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
 
 <# FUNCTIONS #>
