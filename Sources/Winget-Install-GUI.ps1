@@ -18,7 +18,7 @@ param(
 
 <# APP INFO #>
 
-$Script:WiGuiVersion  = "1.6.1"
+$Script:WiGuiVersion  = "1.6.2"
 $Script:WAUGithubLink = "https://github.com/Romanitho/Winget-AutoUpdate/archive/refs/tags/v1.11.4.zip"
 $Script:WIGithubLink  = "https://github.com/Romanitho/Winget-Install/archive/refs/tags/v1.7.4.zip"
 $Script:WingetLink    = "https://github.com/microsoft/winget-cli/releases/download/v1.3.1391-preview/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
@@ -1135,9 +1135,10 @@ function Start-Uninstallations ($AppToUninstall) {
             Get-GithubRepository $WIGithubLink
         }
 
-        #Run Winget-Install
+        #Run Winget-Install -Uninstall
         $WIInstallFile = (Resolve-Path $TestPath)[0].Path
-        Start-Process "powershell.exe" -Argument "-NoProfile -ExecutionPolicy Bypass -Command `"$WIInstallFile -AppIDs $AppToUninstall -Uninstall`"" -Wait -Verb RunAs
+        $AppsToUninstall = "'$($AppToUninstall -join "','")'"
+        Start-Process "powershell.exe" -Argument "-NoProfile -ExecutionPolicy Bypass -Command `"$WIInstallFile -AppIDs $AppsToUninstall -Uninstall`"" -Wait -Verb RunAs
 
         Close-PopUp
     }
