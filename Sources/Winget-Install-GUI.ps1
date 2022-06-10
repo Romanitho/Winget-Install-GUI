@@ -13,21 +13,21 @@ https://github.com/Romanitho/Winget-AllinOne
 <# APP ARGUMENTS #>
 [CmdletBinding()]
 param(
-    [Parameter(Mandatory=$False)] [Switch] $Admin = $false
+    [Parameter(Mandatory = $False)] [Switch] $Admin = $false
 )
 
 <# APP INFO #>
 
-$Script:WiGuiVersion  = "1.6.2"
+$Script:WiGuiVersion = "1.6.2"
 $Script:WAUGithubLink = "https://github.com/Romanitho/Winget-AutoUpdate/archive/refs/tags/v1.11.4.zip"
-$Script:WIGithubLink  = "https://github.com/Romanitho/Winget-Install/archive/refs/tags/v1.7.4.zip"
-$Script:WingetLink    = "https://github.com/microsoft/winget-cli/releases/download/v1.3.1391-preview/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
+$Script:WIGithubLink = "https://github.com/Romanitho/Winget-Install/archive/refs/tags/v1.7.4.zip"
+$Script:WingetLink = "https://github.com/microsoft/winget-cli/releases/download/v1.3.1391-preview/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
 
 <# FUNCTIONS #>
 
 #Function to start or update popup
 Function Start-PopUp ($Message) {
-    if (!$Script:PopUpForm){
+    if (!$Script:PopUpForm) {
         Add-Type -AssemblyName System.Windows.Forms
         $script:PopUpForm = New-Object system.Windows.Forms.Form
         $script:PopUpLabel = New-Object System.Windows.Forms.Label
@@ -38,7 +38,7 @@ Function Start-PopUp ($Message) {
         $PopUpForm.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedSingle
         $PopUpForm.MaximizeBox = $false
         $PopUpForm.MinimizeBox = $false
-        $PopUpForm.Size = New-Object System.Drawing.Size(210,120)
+        $PopUpForm.Size = New-Object System.Drawing.Size(210, 120)
         $PopUpForm.StartPosition = [System.Windows.Forms.FormStartPosition]::CenterScreen
         $PopUpForm.Text = "WiGui $WiGuiVersion"
         $PopUpForm.Icon = [System.Drawing.Icon]::FromHandle(([System.Drawing.Bitmap]::new($stream).GetHIcon()))
@@ -50,7 +50,7 @@ Function Start-PopUp ($Message) {
 
 #Function to close popup
 Function Close-PopUp {
-    if($Script:PopUpForm){
+    if ($Script:PopUpForm) {
         $Script:PopUpForm.Close()
         $Script:PopUpForm = $null
         $Script:PopUpLabel = $null
@@ -74,24 +74,24 @@ function Get-GithubRepository ($Url) {
     Remove-Item -Path $ZipFile -Force
 }
 
-function Get-WingetStatus{
+function Get-WingetStatus {
 
     #Check if Visual C++ 2019 or 2022 installed
     $Visual2019 = "Microsoft Visual C++ 2015-2019 Redistributable*"
     $Visual2022 = "Microsoft Visual C++ 2015-2022 Redistributable*"
-    $path = Get-Item HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*, HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.GetValue("DisplayName") -like $Visual2019 -or $_.GetValue("DisplayName") -like $Visual2022}
+    $path = Get-Item HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*, HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object { $_.GetValue("DisplayName") -like $Visual2019 -or $_.GetValue("DisplayName") -like $Visual2022 }
 
     #If not installed, install
-    if (!($path)){
+    if (!($path)) {
         #Update Form
         Start-PopUp "Installing prerequisites:`nMicrosoft Visual C++ 2022"
 
         #Install
-        try{
-            if((Get-CimInStance Win32_OperatingSystem).OSArchitecture -like "*64*"){
+        try {
+            if ((Get-CimInStance Win32_OperatingSystem).OSArchitecture -like "*64*") {
                 $OSArch = "x64"
             }
-            else{
+            else {
                 $OSArch = "x86"
             }
             $SourceURL = "https://aka.ms/vs/17/release/VC_redist.$OSArch.exe"
@@ -100,7 +100,7 @@ function Get-WingetStatus{
             Start-Process -FilePath $Installer -Args "/passive /norestart" -Wait
             Remove-Item $Installer -ErrorAction Ignore
         }
-        catch{
+        catch {
             Write-host "MS Visual C++ 2015-2022 installation failed." -ForegroundColor Red
             Start-Sleep 3
         }
@@ -109,10 +109,10 @@ function Get-WingetStatus{
     $hasAppInstaller = Get-AppXPackage -Name 'Microsoft.DesktopAppInstaller'
     [Version]$AppInstallerVers = $hasAppInstaller.version
     
-    if (!($AppInstallerVers -gt "1.18.1391.0")){
+    if (!($AppInstallerVers -gt "1.18.1391.0")) {
 
         #installing dependencies     
-        if (!(Get-AppxPackage -Name 'Microsoft.UI.Xaml.2.7')){
+        if (!(Get-AppxPackage -Name 'Microsoft.UI.Xaml.2.7')) {
             #Update Form
             Start-PopUp "Installing prerequisites:`nMicrosoft UI Xaml 2.7.0"
 
@@ -126,7 +126,7 @@ function Get-WingetStatus{
             Remove-Item -Path "$Location\extracted" -Force -Recurse
         }
 
-        if (!(Get-AppxPackage -Name 'Microsoft.VCLibs.140.00.UWPDesktop')){
+        if (!(Get-AppxPackage -Name 'Microsoft.VCLibs.140.00.UWPDesktop')) {
             #Update Form
             Start-PopUp "Installing prerequisites:`nMicrosoft VCLibs x64 14.00"
 
@@ -155,7 +155,7 @@ function Get-WingetStatus{
 
 }
 
-function Get-WingetCmd{
+function Get-WingetCmd {
 
     #WinGet Path (if User/Admin context)
     $UserWingetPath = Get-Command winget.exe -ErrorAction SilentlyContinue
@@ -163,22 +163,22 @@ function Get-WingetCmd{
     $SystemWingetPath = Resolve-Path "C:\Program Files\WindowsApps\Microsoft.DesktopAppInstaller_*_x64__8wekyb3d8bbwe\winget.exe"
 
     #Get Winget Location in User/Admin context
-    if ($UserWingetPath){
+    if ($UserWingetPath) {
         $Script:Winget = $UserWingetPath.Source
     }
     #Get Winget Location in System context
-    elseif ($SystemWingetPath){
+    elseif ($SystemWingetPath) {
         #If multiple version, pick last one
         $Script:Winget = $SystemWingetPath[-1].Path
     }
-    else{
+    else {
         Write-Host "WinGet is not installed. It is mandatory to run WiGui"
         break
     }
 
 }
 
-function Get-WingetAppInfo ($SearchApp){
+function Get-WingetAppInfo ($SearchApp) {
     class Software {
         [string]$Name
         [string]$Id
@@ -188,17 +188,17 @@ function Get-WingetAppInfo ($SearchApp){
     $AppResult = & $Winget search $SearchApp --accept-source-agreements --source winget
 
     #Start Convertion of winget format to an array. Check if "-----" exists
-    if (!($AppResult -match "-----")){
+    if (!($AppResult -match "-----")) {
         Write-Host "No application found."
         return
     }
 
     #Split winget output to lines
-    $lines = $AppResult.Split([Environment]::NewLine) | Where-Object {$_}
+    $lines = $AppResult.Split([Environment]::NewLine) | Where-Object { $_ }
 
     # Find the line that starts with "------"
     $fl = 0
-    while (-not $lines[$fl].StartsWith("-----")){
+    while (-not $lines[$fl].StartsWith("-----")) {
         $fl++
     }
 
@@ -213,9 +213,9 @@ function Get-WingetAppInfo ($SearchApp){
 
     # Now cycle in real package and split accordingly
     $upgradeList = @()
-    For ($i = $fl + 2; $i -le $lines.Length; $i++){
+    For ($i = $fl + 2; $i -le $lines.Length; $i++) {
         $line = $lines[$i]
-        if ($line.Length -gt ($sourceStart+5)){
+        if ($line.Length -gt ($sourceStart + 5)) {
             $software = [Software]::new()
             $software.Name = $line.Substring(0, $idStart).TrimEnd()
             $software.Id = $line.Substring($idStart, $versionStart - $idStart).TrimEnd()
@@ -236,17 +236,17 @@ function Get-WingetInstalledApps {
     $AppResult = & $Winget list $SearchApp --accept-source-agreements --source winget
 
     #Start Convertion of winget format to an array. Check if "-----" exists
-    if (!($AppResult -match "-----")){
+    if (!($AppResult -match "-----")) {
         Write-Host "No application found."
         return
     }
 
     #Split winget output to lines
-    $lines = $AppResult.Split([Environment]::NewLine) | Where-Object {$_}
+    $lines = $AppResult.Split([Environment]::NewLine) | Where-Object { $_ }
 
     # Find the line that starts with "------"
     $fl = 0
-    while (-not $lines[$fl].StartsWith("-----")){
+    while (-not $lines[$fl].StartsWith("-----")) {
         $fl++
     }
 
@@ -261,9 +261,9 @@ function Get-WingetInstalledApps {
 
     # Now cycle in real package and split accordingly
     $upgradeList = @()
-    For ($i = $fl + 2; $i -le $lines.Length; $i++){
+    For ($i = $fl + 2; $i -le $lines.Length; $i++) {
         $line = $lines[$i]
-        if ($line.Length -gt ($sourceStart+5)){
+        if ($line.Length -gt ($sourceStart + 5)) {
             $software = [Software]::new()
             $software.Name = $line.Substring(0, $idStart).TrimEnd()
             $software.Id = $line.Substring($idStart, $versionStart - $idStart).TrimEnd()
@@ -631,7 +631,7 @@ function Start-InstallGUI {
     # NotifLevelComboBox
     #
     $NotifLevelComboBox.DropDownStyle = [System.Windows.Forms.ComboBoxStyle]::DropDownList
-    $NotifLevelComboBox.Items.AddRange(@("Full","SuccessOnly","None"))
+    $NotifLevelComboBox.Items.AddRange(@("Full", "SuccessOnly", "None"))
     $NotifLevelComboBox.Location = New-Object System.Drawing.Point(97, 65)
     $NotifLevelComboBox.Name = "NotifLevelComboBox"
     $NotifLevelComboBox.Size = New-Object System.Drawing.Size(100, 21)
@@ -800,7 +800,7 @@ function Start-InstallGUI {
     #
     # Custom
     #
-    $WiGuiForm.Add_Shown({$SearchTextBox.Select()})
+    $WiGuiForm.Add_Shown({ $SearchTextBox.Select() })
     $WiGuiForm.Icon = [System.Drawing.Icon]::FromHandle(([System.Drawing.Bitmap]::new($stream).GetHIcon()))
     $NotifLevelComboBox.Text = "Full"
     $WAUInstallStatus = Get-WAUInstallStatus
@@ -813,185 +813,183 @@ function Start-InstallGUI {
     # "Select Apps" Tab
     #
     $SearchButton.add_click({
-        if ($SearchTextBox.Text){
-            Start-PopUp "Searching..."
-            $SubmitComboBox.Items.Clear()
-            $List = Get-WingetAppInfo $SearchTextBox.Text
-            foreach ($L in $List){
-                $SubmitComboBox.Items.Add($L.ID)
+            if ($SearchTextBox.Text) {
+                Start-PopUp "Searching..."
+                $SubmitComboBox.Items.Clear()
+                $List = Get-WingetAppInfo $SearchTextBox.Text
+                foreach ($L in $List) {
+                    $SubmitComboBox.Items.Add($L.ID)
+                }
+                $SubmitComboBox.SelectedIndex = 0
+                Close-PopUp
             }
-            $SubmitComboBox.SelectedIndex = 0
-            Close-PopUp
-        }
-    })
+        })
     #
     $SubmitButton.add_click({
-        $AddAppToList = $SubmitComboBox.Text
-        if ($AddAppToList -ne "" -and $AppListBox.Items -notcontains $AddAppToList){
-            $AppListBox.Items.Add($AddAppToList)
-        }  
-    })
+            $AddAppToList = $SubmitComboBox.Text
+            if ($AddAppToList -ne "" -and $AppListBox.Items -notcontains $AddAppToList) {
+                $AppListBox.Items.Add($AddAppToList)
+            }  
+        })
     #
     $RemoveButton.add_click({
-        if (!$AppListBox.SelectedItems) {
-            Start-PopUp "Please select apps to remove..."
-            Start-Sleep 1
-            Close-PopUp
-        }
-        while($AppListBox.SelectedItems) {
-            $AppListBox.Items.Remove($AppListBox.SelectedItems[0])
-        }
-    })
+            if (!$AppListBox.SelectedItems) {
+                Start-PopUp "Please select apps to remove..."
+                Start-Sleep 1
+                Close-PopUp
+            }
+            while ($AppListBox.SelectedItems) {
+                $AppListBox.Items.Remove($AppListBox.SelectedItems[0])
+            }
+        })
     #
     $SaveListButton.add_click({
-        $response = $SaveFileDialog.ShowDialog() # $response can return OK or Cancel
-        if ( $response -eq 'OK' ) {
-            $AppListBox.Items | Out-File $SaveFileDialog.FileName -Append
-            Write-Host "File saved to:`n$($SaveFileDialog.FileName)"
-        }
-    })
+            $response = $SaveFileDialog.ShowDialog() # $response can return OK or Cancel
+            if ( $response -eq 'OK' ) {
+                $AppListBox.Items | Out-File $SaveFileDialog.FileName -Append
+                Write-Host "File saved to:`n$($SaveFileDialog.FileName)"
+            }
+        })
     #
     $OpenListButton.add_click({
-        $response = $OpenFileDialog.ShowDialog() # $response can return OK or Cancel
-        if ( $response -eq 'OK' ) {
-            $FileContent = Get-Content $OpenFileDialog.FileName
-            foreach($App in $FileContent){
-                if ($App -ne "" -and $AppListBox.Items -notcontains $App){
-                    $AppListBox.Items.Add($App)
-                } 
+            $response = $OpenFileDialog.ShowDialog() # $response can return OK or Cancel
+            if ( $response -eq 'OK' ) {
+                $FileContent = Get-Content $OpenFileDialog.FileName
+                foreach ($App in $FileContent) {
+                    if ($App -ne "" -and $AppListBox.Items -notcontains $App) {
+                        $AppListBox.Items.Add($App)
+                    } 
+                }
             }
-        }
-    })
+        })
     #
     $InstalledAppButton.add_click({
-        Start-PopUp "Getting installed apps..."
-        $AppListBox.Items.Clear()
-        $List = Get-WingetInstalledApps
-        foreach ($L in $List){
-            $AppListBox.Items.Add($L.ID)
-        }
-        Close-PopUp
-    })
+            Start-PopUp "Getting installed apps..."
+            $AppListBox.Items.Clear()
+            $List = Get-WingetInstalledApps
+            foreach ($L in $List) {
+                $AppListBox.Items.Add($L.ID)
+            }
+            Close-PopUp
+        })
     #
     $UninstallButton.add_click({
-        if ($AppListBox.SelectedItems){
-            Start-Uninstallations $AppListBox.SelectedItems
-            $WAUInstallStatus = Get-WAUInstallStatus
-            $WAUStatusLabel.Text = $WAUInstallStatus[0]
-            $WAUStatusLabel.ForeColor = $WAUInstallStatus[1]
-            $AppListBox.Items.Clear()
-        }
-        else {
-            Start-PopUp "Please select apps to uninstall..."
-            Start-Sleep 1
-            Close-PopUp
-        }
-    })
+            if ($AppListBox.SelectedItems) {
+                Start-Uninstallations $AppListBox.SelectedItems
+                $WAUInstallStatus = Get-WAUInstallStatus
+                $WAUStatusLabel.Text = $WAUInstallStatus[0]
+                $WAUStatusLabel.ForeColor = $WAUInstallStatus[1]
+                $AppListBox.Items.Clear()
+            }
+            else {
+                Start-PopUp "Please select apps to uninstall..."
+                Start-Sleep 1
+                Close-PopUp
+            }
+        })
     #
     # "Configure WAU" Tab
     #
     $WAUCheckBox.add_click({
-        if ($WAUCheckBox.Checked -eq $true)
-        {
-            $WAUConfGroupBox.Enabled = $true
-            $WAUFreqGroupBox.Enabled = $true
-            $WAUWhiteBlackGroupBox.Enabled =$true
-        }
-        elseif ($WAUCheckBox.Checked -eq $false)
-        {
-            $WAUConfGroupBox.Enabled = $false
-            $WAUFreqGroupBox.Enabled = $false
-            $WAUWhiteBlackGroupBox.Enabled =$false
-        } 
-    })
+            if ($WAUCheckBox.Checked -eq $true) {
+                $WAUConfGroupBox.Enabled = $true
+                $WAUFreqGroupBox.Enabled = $true
+                $WAUWhiteBlackGroupBox.Enabled = $true
+            }
+            elseif ($WAUCheckBox.Checked -eq $false) {
+                $WAUConfGroupBox.Enabled = $false
+                $WAUFreqGroupBox.Enabled = $false
+                $WAUWhiteBlackGroupBox.Enabled = $false
+            } 
+        })
     #
     $WAUMoreInfoLabel.add_click({
-        [System.Diagnostics.Process]::Start("https://github.com/Romanitho/Winget-AutoUpdate")
-    })
+            [System.Diagnostics.Process]::Start("https://github.com/Romanitho/Winget-AutoUpdate")
+        })
     #
     $BlackRadioBut.add_click({
-        $WAULoadListButton.Enabled = $true
-    })
+            $WAULoadListButton.Enabled = $true
+        })
     #
     $WhiteRadioBut.add_click({
-        $WAULoadListButton.Enabled = $true
-    })
+            $WAULoadListButton.Enabled = $true
+        })
     #
     $DefaultRadioBut.add_click({
-        $WAULoadListButton.Enabled = $false
-        $WAUListFileTextBox.Clear()
-    })
+            $WAULoadListButton.Enabled = $false
+            $WAUListFileTextBox.Clear()
+        })
     #
     $WAULoadListButton.add_click({
-        $response = $WAUListOpenFile.ShowDialog() # $response can return OK or Cancel
-        if ( $response -eq 'OK' ) {
-            $WAUListFileTextBox.Text = $WAUListOpenFile.FileName
-        }
-    })
+            $response = $WAUListOpenFile.ShowDialog() # $response can return OK or Cancel
+            if ( $response -eq 'OK' ) {
+                $WAUListFileTextBox.Text = $WAUListOpenFile.FileName
+            }
+        })
     #
     # "Admin Tool" Tab (by hitting F10 Key)
     #
     $WiGuiForm.KeyPreview = $True
     $WiGuiForm.Add_KeyDown({
-        if ($_.KeyCode -eq "F10" -and $WiGuiTabControl.Controls.Name -notcontains "AdminTabPage") {
-            $WiGuiTabControl.Controls.Add($AdminTabPage)
-        }
-    })
+            if ($_.KeyCode -eq "F10" -and $WiGuiTabControl.Controls.Name -notcontains "AdminTabPage") {
+                $WiGuiTabControl.Controls.Add($AdminTabPage)
+            }
+        })
     #
     $LogButton.add_click({
-        if (Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Winget-AutoUpdate\"){
-            $LogPath = Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Winget-AutoUpdate\" -Name InstallLocation
-            Start-Process "$LogPath\Logs"
-        }
-        elseif (Test-Path "$env:programdata\Winget-AutoUpdate\Logs"){
-            Start-Process "$env:programdata\Winget-AutoUpdate\Logs"
-        }
-        else {
-            Write-Host "Log location not found."
-        }
-    })
+            if (Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Winget-AutoUpdate\") {
+                $LogPath = Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Winget-AutoUpdate\" -Name InstallLocation
+                Start-Process "$LogPath\Logs"
+            }
+            elseif (Test-Path "$env:programdata\Winget-AutoUpdate\Logs") {
+                Start-Process "$env:programdata\Winget-AutoUpdate\Logs"
+            }
+            else {
+                Write-Host "Log location not found."
+            }
+        })
     #
     # Global Form
     #
     $WiGuiLinkLabel.add_click({
-        [System.Diagnostics.Process]::Start("https://github.com/Romanitho/Winget-Install-GUI")
-    })
+            [System.Diagnostics.Process]::Start("https://github.com/Romanitho/Winget-Install-GUI")
+        })
     #
     $CloseButton.add_click({
-        $WiguiForm.DialogResult = [System.Windows.Forms.DialogResult]::Cancel
-        $WiguiForm.Close()
-    })
+            $WiguiForm.DialogResult = [System.Windows.Forms.DialogResult]::Cancel
+            $WiguiForm.Close()
+        })
     #
     $InstallButton.add_click({
-        if ($AppListBox.Items) {
-            $Script:AppToInstall = "'$($AppListBox.Items -join "','")'"
-        }
-        else{
-            $Script:AppToInstall = $null
-        }
-        $Script:InstallWAU = $WAUCheckBox.Checked
-        $Script:WAUDoNotUpdate = $WAUDoNotUpdateCheckBox.Checked
-        $Script:WAUDisableAU = $WAUDisableAUCheckBox.Checked
-        $Script:WAUAtUserLogon = $UpdAtLogonCheckBox.Checked
-        $Script:WAUNotificationLevel = $NotifLevelComboBox.Text
-        $Script:WAUUseWhiteList = $WhiteRadioBut.Checked
-        $Script:WAUListPath = $WAUListFileTextBox.Text
-        $Script:WAUFreqUpd = ($WAUFreqLayoutPanel.Controls | Where-Object {$_.Checked} | Select-Object Text).Text
-        $Script:AdvancedRun = $AdvancedRunCheckBox.Checked
-        $Script:UninstallView = $UninstallViewCheckBox.Checked
-        $Script:CMTrace = $CMTraceCheckBox.Checked
-        Start-Installations
-        $WAUCheckBox.Checked = $false
-        $WAUConfGroupBox.Enabled = $false
-        $WAUFreqGroupBox.Enabled = $false
-        $WAUWhiteBlackGroupBox.Enabled = $false
-        $AdvancedRunCheckBox.Checked = $false
-        $UninstallViewCheckBox.Checked = $false
-        $CMTraceCheckBox.Checked = $false
-        $WAUInstallStatus = Get-WAUInstallStatus
-        $WAUStatusLabel.Text = $WAUInstallStatus[0]
-        $WAUStatusLabel.ForeColor = $WAUInstallStatus[1]
-    })
+            if ($AppListBox.Items) {
+                $Script:AppToInstall = "'$($AppListBox.Items -join "','")'"
+            }
+            else {
+                $Script:AppToInstall = $null
+            }
+            $Script:InstallWAU = $WAUCheckBox.Checked
+            $Script:WAUDoNotUpdate = $WAUDoNotUpdateCheckBox.Checked
+            $Script:WAUDisableAU = $WAUDisableAUCheckBox.Checked
+            $Script:WAUAtUserLogon = $UpdAtLogonCheckBox.Checked
+            $Script:WAUNotificationLevel = $NotifLevelComboBox.Text
+            $Script:WAUUseWhiteList = $WhiteRadioBut.Checked
+            $Script:WAUListPath = $WAUListFileTextBox.Text
+            $Script:WAUFreqUpd = ($WAUFreqLayoutPanel.Controls | Where-Object { $_.Checked } | Select-Object Text).Text
+            $Script:AdvancedRun = $AdvancedRunCheckBox.Checked
+            $Script:UninstallView = $UninstallViewCheckBox.Checked
+            $Script:CMTrace = $CMTraceCheckBox.Checked
+            Start-Installations
+            $WAUCheckBox.Checked = $false
+            $WAUConfGroupBox.Enabled = $false
+            $WAUFreqGroupBox.Enabled = $false
+            $WAUWhiteBlackGroupBox.Enabled = $false
+            $AdvancedRunCheckBox.Checked = $false
+            $UninstallViewCheckBox.Checked = $false
+            $CMTraceCheckBox.Checked = $false
+            $WAUInstallStatus = Get-WAUInstallStatus
+            $WAUStatusLabel.Text = $WAUInstallStatus[0]
+            $WAUStatusLabel.ForeColor = $WAUInstallStatus[1]
+        })
 
     ## RETURNS ##
 
@@ -1004,13 +1002,13 @@ function Start-Installations {
     ## WINGET-INSTALL PART ##
 
     #Download and run Winget-Install script if box is checked
-    if ($AppToInstall){
+    if ($AppToInstall) {
 
         Start-PopUp "Installing applications..."
 
         #Check if Winget-Install already downloaded
         $TestPath = "$Location\*Winget-Install*\winget-install.ps1"
-        if (!(Test-Path $TestPath)){
+        if (!(Test-Path $TestPath)) {
             #If not, download
             Get-GithubRepository $WIGithubLink
         }
@@ -1023,13 +1021,13 @@ function Start-Installations {
     ## WAU PART ##
 
     #Download and install Winget-AutoUpdate if box is checked
-    if ($InstallWAU){
+    if ($InstallWAU) {
 
         Start-PopUp "Installing WAU..."
         
         #Check if WAU already downloaded
         $TestPath = "$Location\*Winget-AutoUpdate*\Winget-AutoUpdate-Install.ps1"
-        if (!(Test-Path $TestPath)){
+        if (!(Test-Path $TestPath)) {
             #If not, download
             Get-GithubRepository $WAUGithubLink
         }
@@ -1051,7 +1049,7 @@ function Start-Installations {
         if ($WAUNotificationLevel) {
             $WAUParameters += "-NotificationLevel $WAUNotificationLevel "
         }
-        if ($WAUFreqUpd){
+        if ($WAUFreqUpd) {
             $WAUParameters += "-UpdatesInterval $WAUFreqUpd "
         }
         if ($WAUAtUserLogon) {
@@ -1059,10 +1057,10 @@ function Start-Installations {
         }
         if ($WAUUseWhiteList) {
             $WAUParameters += "-UseWhiteList "
-            if ($WAUListPath) {Copy-Item $WAUListPath -Destination "$WAUInstallFolder\included_apps.txt" -Force -ErrorAction SilentlyContinue}
+            if ($WAUListPath) { Copy-Item $WAUListPath -Destination "$WAUInstallFolder\included_apps.txt" -Force -ErrorAction SilentlyContinue }
         }
-        else{
-            if ($WAUListPath) {Copy-Item $WAUListPath -Destination "$WAUInstallFolder\excluded_apps.txt" -Force -ErrorAction SilentlyContinue}
+        else {
+            if ($WAUListPath) { Copy-Item $WAUListPath -Destination "$WAUInstallFolder\excluded_apps.txt" -Force -ErrorAction SilentlyContinue }
         }
 
         #Install Winget-Autoupdate
@@ -1072,7 +1070,7 @@ function Start-Installations {
     ## ADMIN PART ##
 
     if ($CMTrace) {
-		Start-PopUp "Installing ConfigMgr 2012 Toolkit..."
+        Start-PopUp "Installing ConfigMgr 2012 Toolkit..."
         $CMToolkitLink = "https://download.microsoft.com/download/5/0/8/508918E1-3627-4383-B7D8-AA07B3490D21/ConfigMgrTools.msi"
         $CMToolkitPath = "C:\Tools\ConfigMgrTools.msi"
         Invoke-WebRequest $CMToolkitLink -OutFile (New-Item -Path $CMToolkitPath -Force)
@@ -1089,27 +1087,27 @@ function Start-Installations {
     }
 
     if ($AdvancedRun) {
-		Start-PopUp "Installing AdvancedRun..."
+        Start-PopUp "Installing AdvancedRun..."
         $AdvancedRunLink = "https://www.nirsoft.net/utils/advancedrun-x64.zip"
         $AdvancedRunPath = "C:\Tools\advancedrun-x64.zip"
         Invoke-WebRequest $AdvancedRunLink -OutFile (New-Item -Path $AdvancedRunPath -Force)
         Expand-Archive -Path $AdvancedRunPath -DestinationPath "C:\Tools\AdvancedRun" -Force
-		Start-Sleep 1
+        Start-Sleep 1
         Remove-Item $AdvancedRunPath
     }
 
     if ($UninstallView) {
-		Start-PopUp "Installing UninstallView..."
+        Start-PopUp "Installing UninstallView..."
         $UninstallViewLink = "https://www.nirsoft.net/utils/uninstallview-x64.zip"
         $UninstallViewPath = "C:\Tools\uninstallview-x64.zip"
         Invoke-WebRequest $UninstallViewLink -OutFile (New-Item -Path $UninstallViewPath -Force)
         Expand-Archive -Path $UninstallViewPath -DestinationPath "C:\Tools\UninstallView" -Force
-		Start-Sleep 1
+        Start-Sleep 1
         Remove-Item $UninstallViewPath
     }
 
     #If Popup Form is showing, close
-    if ($PopUpForm){
+    if ($PopUpForm) {
         #Installs finished
         Start-PopUp "Done!"
         Start-Sleep 1
@@ -1117,20 +1115,20 @@ function Start-Installations {
         Close-PopUp
     }
 
-    if ($CMTrace -or $AdvancedRun -or $UninstallView){
+    if ($CMTrace -or $AdvancedRun -or $UninstallView) {
         Start-Process "C:\Tools"
     }
 }
 
 function Start-Uninstallations ($AppToUninstall) {
     #Download and run Winget-Install script if box is checked
-    if ($AppToUninstall){
+    if ($AppToUninstall) {
 
         Start-PopUp "Uninstalling applications..."
 
         #Check if Winget-Install already downloaded
         $TestPath = "$Location\*Winget-Install*\winget-install.ps1"
-        if (!(Test-Path $TestPath)){
+        if (!(Test-Path $TestPath)) {
             #If not, download
             Get-GithubRepository $WIGithubLink
         }
@@ -1151,9 +1149,9 @@ function Get-WiGuiLatestVersion {
 
     #Get latest stable info
     $WiGuiURL = 'https://api.github.com/repos/Romanitho/Winget-Install-GUI/releases/latest'
-    $WiGuiLatestVersion = ((Invoke-WebRequest $WiGuiURL -UseBasicParsing | ConvertFrom-Json)[0].tag_name).Replace("v","")
+    $WiGuiLatestVersion = ((Invoke-WebRequest $WiGuiURL -UseBasicParsing | ConvertFrom-Json)[0].tag_name).Replace("v", "")
     
-    if ([version]$WiGuiVersion -lt [version]$WiGuiLatestVersion){
+    if ([version]$WiGuiVersion -lt [version]$WiGuiLatestVersion) {
 
         ## FORM ##
         #
@@ -1223,23 +1221,23 @@ function Get-WiGuiLatestVersion {
         ## ACTIONS ##
 
         $GithubButton.add_click({
-            [System.Diagnostics.Process]::Start("https://github.com/Romanitho/Winget-Install-GUI/releases")
-        })
+                [System.Diagnostics.Process]::Start("https://github.com/Romanitho/Winget-Install-GUI/releases")
+            })
 
         $DownloadButton.add_click({
-            $response = $WiGuiSaveFile.ShowDialog() # $response can return OK or Cancel
-            if ( $response -eq 'OK' ) {
-                $WiGuiDlLink = "https://github.com/Romanitho/Winget-Install-GUI/releases/download/v$WiGuiLatestVersion/WiGui.exe"
-                Invoke-WebRequest -Uri $WiGuiDlLink -OutFile $WiGuiSaveFile.FileName
-                $WiGuiUpdate.Close()
-                $WiGuiUpdate.DialogResult = [System.Windows.Forms.DialogResult]::OK
-            }
-        })
+                $response = $WiGuiSaveFile.ShowDialog() # $response can return OK or Cancel
+                if ( $response -eq 'OK' ) {
+                    $WiGuiDlLink = "https://github.com/Romanitho/Winget-Install-GUI/releases/download/v$WiGuiLatestVersion/WiGui.exe"
+                    Invoke-WebRequest -Uri $WiGuiDlLink -OutFile $WiGuiSaveFile.FileName
+                    $WiGuiUpdate.Close()
+                    $WiGuiUpdate.DialogResult = [System.Windows.Forms.DialogResult]::OK
+                }
+            })
 
         $SkipButton.add_click({
-            $WiGuiUpdate.DialogResult = [System.Windows.Forms.DialogResult]::Cancel
-            $WiGuiUpdate.Close()
-        })
+                $WiGuiUpdate.DialogResult = [System.Windows.Forms.DialogResult]::Cancel
+                $WiGuiUpdate.Close()
+            })
 
 
         ## RETURNS ##
@@ -1250,7 +1248,7 @@ function Get-WiGuiLatestVersion {
     #Show Wait form
     Close-PopUp
 
-    if ($WiGuiUpdRespond -eq "OK"){
+    if ($WiGuiUpdRespond -eq "OK") {
         Remove-Item -Path $Location -Force -Recurse -ErrorAction SilentlyContinue
         Break
     }
@@ -1259,15 +1257,15 @@ function Get-WiGuiLatestVersion {
 
 function Get-WAUInstallStatus {
     $WAUVersion = Get-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Winget-AutoUpdate\ -ErrorAction SilentlyContinue | Select-Object -ExpandProperty DisplayVersion -ErrorAction SilentlyContinue
-    if ($WAUVersion){
+    if ($WAUVersion) {
         $WAULabelText = "WAU is currently installed (v$WAUVersion)."
         $WAUStatus = "Green"
     }
-    else{
+    else {
         $WAULabelText = "WAU is not installed."
         $WAUStatus = "Red"
     }
-    return $WAULabelText,$WAUStatus
+    return $WAULabelText, $WAUStatus
 }
 
 
@@ -1277,7 +1275,7 @@ function Get-WAUInstallStatus {
 #Temp folder
 $Script:Location = "$Env:SystemDrive\WiGui_Temp"
 #Create Temp folder
-if (!(Test-Path $Location)){
+if (!(Test-Path $Location)) {
     New-Item -ItemType Directory -Force -Path $Location | Out-Null
 }
 
