@@ -286,7 +286,7 @@ function Get-WingetInstalledAppsV2 {
     $InstalledApps = get-content $jsonFile | ConvertFrom-Json
 
     #Return app list
-    return $InstalledApps.Sources.Packages.PackageIdentifier
+    return $InstalledApps.Sources.Packages.PackageIdentifier | Sort-Object | Get-Unique
 }
 
 function Start-InstallGUI {
