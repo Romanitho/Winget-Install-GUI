@@ -109,7 +109,7 @@ function Get-WingetStatus{
     $hasAppInstaller = Get-AppXPackage -Name 'Microsoft.DesktopAppInstaller'
     [Version]$AppInstallerVers = $hasAppInstaller.version
     
-    if (!($AppInstallerVers -gt "1.18.0.0")){
+    if (!($AppInstallerVers -gt "1.18.1391.0")){
 
         #installing dependencies     
         if (!(Get-AppxPackage -Name 'Microsoft.UI.Xaml.2.7')){
