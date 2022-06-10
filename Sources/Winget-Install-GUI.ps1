@@ -109,7 +109,7 @@ function Get-WingetStatus {
     $hasAppInstaller = Get-AppXPackage -Name 'Microsoft.DesktopAppInstaller'
     [Version]$AppInstallerVers = $hasAppInstaller.version
     
-    if (!($AppInstallerVers -gt "1.18.1391.0")) {
+    if (!($AppInstallerVers -ge "1.18.1391.0")) {
 
         #installing dependencies     
         if (!(Get-AppxPackage -Name 'Microsoft.UI.Xaml.2.7')) {
@@ -184,7 +184,7 @@ function Get-WingetAppInfo ($SearchApp) {
         [string]$Id
     }
 
-    #Get list of available upgrades on winget format
+    #Search for winget apps
     $AppResult = & $Winget search $SearchApp --accept-source-agreements --source winget
 
     #Start Convertion of winget format to an array. Check if "-----" exists
@@ -212,7 +212,7 @@ function Get-WingetAppInfo ($SearchApp) {
     $versionStart = $lines[$fl].IndexOf($index[2])
 
     # Now cycle in real package and split accordingly
-    $upgradeList = @()
+    $searchList = @()
     For ($i = $fl + 2; $i -le $lines.Length; $i++) {
         $line = $lines[$i]
         if ($line.Length -gt ($sourceStart + 5)) {
@@ -220,10 +220,10 @@ function Get-WingetAppInfo ($SearchApp) {
             $software.Name = $line.Substring(0, $idStart).TrimEnd()
             $software.Id = $line.Substring($idStart, $versionStart - $idStart).TrimEnd()
             #add formated soft to list
-            $upgradeList += $software
+            $searchList += $software
         }
     }
-    return $upgradeList
+    return $searchList
 }
 
 function Get-WingetInstalledApps {
@@ -232,8 +232,8 @@ function Get-WingetInstalledApps {
         [string]$Id
     }
 
-    #Get list of available upgrades on winget format
-    $AppResult = & $Winget list $SearchApp --accept-source-agreements --source winget
+    #Get list of installed apps on winget format
+    $AppResult = & $Winget list --accept-source-agreements --source winget
 
     #Start Convertion of winget format to an array. Check if "-----" exists
     if (!($AppResult -match "-----")) {
@@ -260,7 +260,7 @@ function Get-WingetInstalledApps {
     $versionStart = $lines[$fl].IndexOf($index[2])
 
     # Now cycle in real package and split accordingly
-    $upgradeList = @()
+    $installedList = @()
     For ($i = $fl + 2; $i -le $lines.Length; $i++) {
         $line = $lines[$i]
         if ($line.Length -gt ($sourceStart + 5)) {
@@ -268,10 +268,25 @@ function Get-WingetInstalledApps {
             $software.Name = $line.Substring(0, $idStart).TrimEnd()
             $software.Id = $line.Substring($idStart, $versionStart - $idStart).TrimEnd()
             #add formated soft to list
-            $upgradeList += $software
+            $installedList += $software
         }
     }
-    return $upgradeList
+    return $installedList
+}
+
+function Get-WingetInstalledAppsV2 {
+
+    #Json File where to export install apps
+    $jsonFile = "$Location\Installed_Apps.json"
+
+    #Get list of installed Winget apps to json file
+    & $Winget export -o $jsonFile --accept-source-agreements | Out-Null
+
+    #Convert from json file
+    $InstalledApps = get-content $jsonFile | ConvertFrom-Json
+
+    #Return app list
+    return $InstalledApps.Sources.Packages.PackageIdentifier
 }
 
 function Start-InstallGUI {
@@ -866,9 +881,9 @@ function Start-InstallGUI {
     $InstalledAppButton.add_click({
             Start-PopUp "Getting installed apps..."
             $AppListBox.Items.Clear()
-            $List = Get-WingetInstalledApps
+            $List = Get-WingetInstalledAppsV2
             foreach ($L in $List) {
-                $AppListBox.Items.Add($L.ID)
+                $AppListBox.Items.Add($L)
             }
             Close-PopUp
         })
