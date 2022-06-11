@@ -10,12 +10,6 @@ This script will:
 https://github.com/Romanitho/Winget-AllinOne
 #>
 
-<# APP ARGUMENTS #>
-[CmdletBinding()]
-param(
-    [Parameter(Mandatory = $False)] [Switch] $Admin = $false
-)
-
 <# APP INFO #>
 
 $Script:WiGuiVersion = "1.6.3"
