@@ -12,10 +12,10 @@ https://github.com/Romanitho/Winget-AllinOne
 
 <# APP INFO #>
 
-$Script:WiGuiVersion = "1.6.3"
-$Script:WAUGithubLink = "https://github.com/Romanitho/Winget-AutoUpdate/archive/refs/tags/v1.11.4.zip"
+$Script:WiGuiVersion = "1.6.4"
+$Script:WAUGithubLink = "https://github.com/Romanitho/Winget-AutoUpdate/archive/refs/tags/v1.11.5.zip"
 $Script:WIGithubLink = "https://github.com/Romanitho/Winget-Install/archive/refs/tags/v1.7.4.zip"
-$Script:WingetLink = "https://github.com/microsoft/winget-cli/releases/download/v1.3.1391-preview/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
+$Script:WingetLink = "https://github.com/microsoft/winget-cli/releases/download/v.1.3.1611/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
 
 <# FUNCTIONS #>
 
@@ -103,7 +103,7 @@ function Get-WingetStatus {
     $hasAppInstaller = Get-AppXPackage -Name 'Microsoft.DesktopAppInstaller'
     [Version]$AppInstallerVers = $hasAppInstaller.version
     
-    if (!($AppInstallerVers -ge "1.18.1391.0")) {
+    if (!($AppInstallerVers -ge "1.18.1611.0")) {
 
         #installing dependencies     
         if (!(Get-AppxPackage -Name 'Microsoft.UI.Xaml.2.7')) {
