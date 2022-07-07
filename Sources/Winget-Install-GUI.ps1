@@ -12,9 +12,9 @@ https://github.com/Romanitho/Winget-AllinOne
 
 <# APP INFO #>
 
-$Script:WiGuiVersion = "1.6.4"
-$Script:WAUGithubLink = "https://github.com/Romanitho/Winget-AutoUpdate/archive/refs/tags/v1.11.5.zip"
-$Script:WIGithubLink = "https://github.com/Romanitho/Winget-Install/archive/refs/tags/v1.7.4.zip"
+$Script:WiGuiVersion = "1.7.0"
+$Script:WAUGithubLink = "https://github.com/Romanitho/Winget-AutoUpdate/archive/refs/tags/v1.13.2.zip"
+$Script:WIGithubLink = "https://github.com/Romanitho/Winget-Install/archive/refs/tags/v1.8.0.zip"
 $Script:WingetLink = "https://github.com/microsoft/winget-cli/releases/download/v.1.3.1611/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
 
 <# FUNCTIONS #>
@@ -293,6 +293,8 @@ function Start-InstallGUI {
     $WiGuiForm = New-Object System.Windows.Forms.Form
     $WiGuiTabControl = New-Object System.Windows.Forms.TabControl
     $AppsTabPage = New-Object System.Windows.Forms.TabPage
+    $InstalledAppButton = New-Object System.Windows.Forms.Button
+    $UninstallButton = New-Object System.Windows.Forms.Button
     $OpenListButton = New-Object System.Windows.Forms.Button
     $SaveListButton = New-Object System.Windows.Forms.Button
     $RemoveButton = New-Object System.Windows.Forms.Button
@@ -305,6 +307,7 @@ function Start-InstallGUI {
     $SearchTextBox = New-Object System.Windows.Forms.TextBox
     $SearchButton = New-Object System.Windows.Forms.Button
     $WAUTabPage = New-Object System.Windows.Forms.TabPage
+    $WAUStatusLabel = New-Object System.Windows.Forms.Label
     $WAUWhiteBlackGroupBox = New-Object System.Windows.Forms.GroupBox
     $WAULoadListButton = New-Object System.Windows.Forms.Button
     $WAUListFileTextBox = New-Object System.Windows.Forms.TextBox
@@ -336,9 +339,7 @@ function Start-InstallGUI {
     $SaveFileDialog = New-Object System.Windows.Forms.SaveFileDialog
     $OpenFileDialog = New-Object System.Windows.Forms.OpenFileDialog
     $WAUListOpenFile = New-Object System.Windows.Forms.OpenFileDialog
-    $WAUStatusLabel = New-Object System.Windows.Forms.Label
-    $UninstallButton = New-Object System.Windows.Forms.Button
-    $InstalledAppButton = New-Object System.Windows.Forms.Button
+    $WAUonMeteredCheckBox = New-Object System.Windows.Forms.CheckBox
     #
     # WiGuiTabControl
     #
@@ -371,6 +372,22 @@ function Start-InstallGUI {
     $AppsTabPage.Size = New-Object System.Drawing.Size(504, 474)
     $AppsTabPage.TabIndex = 0
     $AppsTabPage.Text = "Select Apps"
+    #
+    # InstalledAppButton
+    #
+    $InstalledAppButton.Location = New-Object System.Drawing.Point(394, 410)
+    $InstalledAppButton.Name = "InstalledAppButton"
+    $InstalledAppButton.Size = New-Object System.Drawing.Size(100, 23)
+    $InstalledAppButton.TabIndex = 29
+    $InstalledAppButton.Text = "&List installed"
+    #
+    # UninstallButton
+    #
+    $UninstallButton.Location = New-Object System.Drawing.Point(394, 439)
+    $UninstallButton.Name = "UninstallButton"
+    $UninstallButton.Size = New-Object System.Drawing.Size(100, 23)
+    $UninstallButton.TabIndex = 28
+    $UninstallButton.Text = "&Uninstall"
     #
     # OpenListButton
     #
@@ -444,7 +461,7 @@ function Start-InstallGUI {
     $SearchLabel.AutoSize = $true
     $SearchLabel.Location = New-Object System.Drawing.Point(6, 6)
     $SearchLabel.Name = "SearchLabel"
-    $SearchLabel.Size = New-Object System.Drawing.Size(80, 13)
+    $SearchLabel.Size = New-Object System.Drawing.Size(95, 13)
     $SearchLabel.TabIndex = 20
     $SearchLabel.Text = "Search for an app:"
     #
@@ -477,6 +494,15 @@ function Start-InstallGUI {
     $WAUTabPage.TabIndex = 1
     $WAUTabPage.Text = "Configure WAU"
     #
+    # WAUStatusLabel
+    #
+    $WAUStatusLabel.AutoSize = $true
+    $WAUStatusLabel.Location = New-Object System.Drawing.Point(15, 443)
+    $WAUStatusLabel.Name = "WAUStatusLabel"
+    $WAUStatusLabel.Size = New-Object System.Drawing.Size(105, 13)
+    $WAUStatusLabel.TabIndex = 25
+    $WAUStatusLabel.Text = "WAU installed status"
+    #
     # WAUWhiteBlackGroupBox
     #
     $WAUWhiteBlackGroupBox.Controls.Add($WAULoadListButton)
@@ -485,7 +511,7 @@ function Start-InstallGUI {
     $WAUWhiteBlackGroupBox.Controls.Add($BlackRadioBut)
     $WAUWhiteBlackGroupBox.Controls.Add($DefaultRadioBut)
     $WAUWhiteBlackGroupBox.Enabled = $false
-    $WAUWhiteBlackGroupBox.Location = New-Object System.Drawing.Point(31, 232)
+    $WAUWhiteBlackGroupBox.Location = New-Object System.Drawing.Point(31, 257)
     $WAUWhiteBlackGroupBox.Name = "WAUWhiteBlackGroupBox"
     $WAUWhiteBlackGroupBox.Size = New-Object System.Drawing.Size(445, 72)
     $WAUWhiteBlackGroupBox.TabIndex = 24
@@ -546,7 +572,7 @@ function Start-InstallGUI {
     $WAUFreqGroupBox.Controls.Add($WAUFreqLayoutPanel)
     $WAUFreqGroupBox.Controls.Add($UpdAtLogonCheckBox)
     $WAUFreqGroupBox.Enabled = $false
-    $WAUFreqGroupBox.Location = New-Object System.Drawing.Point(31, 152)
+    $WAUFreqGroupBox.Location = New-Object System.Drawing.Point(31, 174)
     $WAUFreqGroupBox.Name = "WAUFreqGroupBox"
     $WAUFreqGroupBox.Size = New-Object System.Drawing.Size(284, 69)
     $WAUFreqGroupBox.TabIndex = 23
@@ -616,6 +642,7 @@ function Start-InstallGUI {
     #
     # WAUConfGroupBox
     #
+    $WAUConfGroupBox.Controls.Add($WAUonMeteredCheckBox)
     $WAUConfGroupBox.Controls.Add($NotifLevelLabel)
     $WAUConfGroupBox.Controls.Add($NotifLevelComboBox)
     $WAUConfGroupBox.Controls.Add($WAUDisableAUCheckBox)
@@ -623,7 +650,7 @@ function Start-InstallGUI {
     $WAUConfGroupBox.Enabled = $false
     $WAUConfGroupBox.Location = New-Object System.Drawing.Point(31, 46)
     $WAUConfGroupBox.Name = "WAUConfGroupBox"
-    $WAUConfGroupBox.Size = New-Object System.Drawing.Size(214, 94)
+    $WAUConfGroupBox.Size = New-Object System.Drawing.Size(214, 114)
     $WAUConfGroupBox.TabIndex = 20
     $WAUConfGroupBox.TabStop = $false
     $WAUConfGroupBox.Text = "WAU Configurations"
@@ -631,7 +658,7 @@ function Start-InstallGUI {
     # NotifLevelLabel
     #
     $NotifLevelLabel.AutoSize = $true
-    $NotifLevelLabel.Location = New-Object System.Drawing.Point(6, 68)
+    $NotifLevelLabel.Location = New-Object System.Drawing.Point(6, 89)
     $NotifLevelLabel.Name = "NotifLevelLabel"
     $NotifLevelLabel.Size = New-Object System.Drawing.Size(85, 13)
     $NotifLevelLabel.TabIndex = 22
@@ -640,8 +667,8 @@ function Start-InstallGUI {
     # NotifLevelComboBox
     #
     $NotifLevelComboBox.DropDownStyle = [System.Windows.Forms.ComboBoxStyle]::DropDownList
-    $NotifLevelComboBox.Items.AddRange(@("Full", "SuccessOnly", "None"))
-    $NotifLevelComboBox.Location = New-Object System.Drawing.Point(97, 65)
+    $NotifLevelComboBox.Items.AddRange(@("Full","SuccessOnly","None"))
+    $NotifLevelComboBox.Location = New-Object System.Drawing.Point(97, 86)
     $NotifLevelComboBox.Name = "NotifLevelComboBox"
     $NotifLevelComboBox.Size = New-Object System.Drawing.Size(100, 21)
     $NotifLevelComboBox.TabIndex = 21
@@ -651,9 +678,9 @@ function Start-InstallGUI {
     $WAUDisableAUCheckBox.AutoSize = $true
     $WAUDisableAUCheckBox.Location = New-Object System.Drawing.Point(6, 42)
     $WAUDisableAUCheckBox.Name = "WAUDisableAUCheckBox"
-    $WAUDisableAUCheckBox.Size = New-Object System.Drawing.Size(151, 17)
+    $WAUDisableAUCheckBox.Size = New-Object System.Drawing.Size(149, 17)
     $WAUDisableAUCheckBox.TabIndex = 20
-    $WAUDisableAUCheckBox.Text = "Disable WAU Auto-update"
+    $WAUDisableAUCheckBox.Text = "Disable WAU Self-Update"
     #
     # WAUDoNotUpdateCheckBox
     #
@@ -706,7 +733,7 @@ function Start-InstallGUI {
     # AdvancedRunCheckBox
     #
     $AdvancedRunCheckBox.AutoSize = $true
-    $AdvancedRunCheckBox.Location = New-Object System.Drawing.Point(15, 12)
+    $AdvancedRunCheckBox.Location = New-Object System.Drawing.Point(18, 15)
     $AdvancedRunCheckBox.Name = "AdvancedRunCheckBox"
     $AdvancedRunCheckBox.Size = New-Object System.Drawing.Size(160, 17)
     $AdvancedRunCheckBox.TabIndex = 21
@@ -715,7 +742,7 @@ function Start-InstallGUI {
     # UninstallViewCheckBox
     #
     $UninstallViewCheckBox.AutoSize = $true
-    $UninstallViewCheckBox.Location = New-Object System.Drawing.Point(15, 35)
+    $UninstallViewCheckBox.Location = New-Object System.Drawing.Point(18, 38)
     $UninstallViewCheckBox.Name = "UninstallViewCheckBox"
     $UninstallViewCheckBox.Size = New-Object System.Drawing.Size(154, 17)
     $UninstallViewCheckBox.TabIndex = 20
@@ -724,7 +751,7 @@ function Start-InstallGUI {
     # CMTraceCheckBox
     #
     $CMTraceCheckBox.AutoSize = $true
-    $CMTraceCheckBox.Location = New-Object System.Drawing.Point(15, 58)
+    $CMTraceCheckBox.Location = New-Object System.Drawing.Point(18, 61)
     $CMTraceCheckBox.Name = "CMTraceCheckBox"
     $CMTraceCheckBox.Size = New-Object System.Drawing.Size(288, 17)
     $CMTraceCheckBox.TabIndex = 19
@@ -768,30 +795,14 @@ function Start-InstallGUI {
     #
     $WAUListOpenFile.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*"
     #
-    # WAUStatusLabel
+    # WAUonMeteredCheckBox
     #
-    $WAUStatusLabel.AutoSize = $true
-    $WAUStatusLabel.Location = New-Object System.Drawing.Point(15, 443)
-    $WAUStatusLabel.Name = "WAUStatusLabel"
-    $WAUStatusLabel.Size = New-Object System.Drawing.Size(217, 13)
-    $WAUStatusLabel.TabIndex = 25
-    $WAUStatusLabel.Text = "WAU installed status"
-    #
-    # UninstallButton
-    #
-    $UninstallButton.Location = New-Object System.Drawing.Point(394, 439)
-    $UninstallButton.Name = "UninstallButton"
-    $UninstallButton.Size = New-Object System.Drawing.Size(100, 23)
-    $UninstallButton.TabIndex = 28
-    $UninstallButton.Text = "Uninstall"
-    #
-    # InstalledAppButton
-    #
-    $InstalledAppButton.Location = New-Object System.Drawing.Point(394, 410)
-    $InstalledAppButton.Name = "InstalledAppButton"
-    $InstalledAppButton.Size = New-Object System.Drawing.Size(100, 23)
-    $InstalledAppButton.TabIndex = 29
-    $InstalledAppButton.Text = "List installed"
+    $WAUonMeteredCheckBox.AutoSize = $true
+    $WAUonMeteredCheckBox.Location = New-Object System.Drawing.Point(6, 65)
+    $WAUonMeteredCheckBox.Name = "WAUonMeteredCheckBox"
+    $WAUonMeteredCheckBox.Size = New-Object System.Drawing.Size(183, 17)
+    $WAUonMeteredCheckBox.TabIndex = 23
+    $WAUonMeteredCheckBox.Text = "Run WAU on metered connexion"
     #
     # WiGuiForm
     #
@@ -806,15 +817,6 @@ function Start-InstallGUI {
     $WiGuiForm.Name = "WiGuiForm"
     $WiGuiForm.StartPosition = [System.Windows.Forms.FormStartPosition]::CenterScreen
     $WiGuiForm.Text = "WiGui $WiGuiVersion"
-    #
-    # Custom
-    #
-    $WiGuiForm.Add_Shown({ $SearchTextBox.Select() })
-    $WiGuiForm.Icon = [System.Drawing.Icon]::FromHandle(([System.Drawing.Bitmap]::new($stream).GetHIcon()))
-    $NotifLevelComboBox.Text = "Full"
-    $WAUInstallStatus = Get-WAUInstallStatus
-    $WAUStatusLabel.Text = $WAUInstallStatus[0]
-    $WAUStatusLabel.ForeColor = $WAUInstallStatus[1]
 
 
     ## ACTIONS ##
@@ -987,6 +989,7 @@ function Start-InstallGUI {
             $Script:AdvancedRun = $AdvancedRunCheckBox.Checked
             $Script:UninstallView = $UninstallViewCheckBox.Checked
             $Script:CMTrace = $CMTraceCheckBox.Checked
+            $Script:WAUonMetered = $WAUonMeteredCheckBox.Checked
             Start-Installations
             $WAUCheckBox.Checked = $false
             $WAUConfGroupBox.Enabled = $false
@@ -1063,6 +1066,9 @@ function Start-Installations {
         }
         if ($WAUAtUserLogon) {
             $WAUParameters += "-UpdatesAtLogon "
+        }
+        if ($WAUonMetered) {
+            $WAUParameters += "-RunOnMetered "
         }
         if ($WAUUseWhiteList) {
             $WAUParameters += "-UseWhiteList "
