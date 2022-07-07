@@ -12,7 +12,7 @@ https://github.com/Romanitho/Winget-AllinOne
 
 <# APP INFO #>
 
-$Script:WiGuiVersion = "1.7.0"
+$Script:WiGuiVersion = "1.7.1"
 $Script:WAUGithubLink = "https://github.com/Romanitho/Winget-AutoUpdate/archive/refs/tags/v1.13.2.zip"
 $Script:WIGithubLink = "https://github.com/Romanitho/Winget-Install/archive/refs/tags/v1.8.0.zip"
 $Script:WingetLink = "https://github.com/microsoft/winget-cli/releases/download/v.1.3.1611/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
