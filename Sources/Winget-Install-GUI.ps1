@@ -817,6 +817,15 @@ function Start-InstallGUI {
     $WiGuiForm.Name = "WiGuiForm"
     $WiGuiForm.StartPosition = [System.Windows.Forms.FormStartPosition]::CenterScreen
     $WiGuiForm.Text = "WiGui $WiGuiVersion"
+    #
+    # Custom
+    #
+    $WiGuiForm.Add_Shown({ $SearchTextBox.Select() })
+    $WiGuiForm.Icon = [System.Drawing.Icon]::FromHandle(([System.Drawing.Bitmap]::new($stream).GetHIcon()))
+    $NotifLevelComboBox.Text = "Full"
+    $WAUInstallStatus = Get-WAUInstallStatus
+    $WAUStatusLabel.Text = $WAUInstallStatus[0]
+    $WAUStatusLabel.ForeColor = $WAUInstallStatus[1]
 
 
     ## ACTIONS ##
