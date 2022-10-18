@@ -13,8 +13,8 @@ https://github.com/Romanitho/Winget-AllinOne
 <# APP INFO #>
 
 $Script:WiGuiVersion = "1.7.1"
-$Script:WAUGithubLink = "https://github.com/Romanitho/Winget-AutoUpdate/archive/refs/tags/v1.13.2.zip"
-$Script:WIGithubLink = "https://github.com/Romanitho/Winget-Install/archive/refs/tags/v1.8.0.zip"
+$Script:WAUGithubLink = "https://github.com/Romanitho/Winget-AutoUpdate/archive/refs/tags/v1.15.0.zip"
+$Script:WIGithubLink = "https://github.com/Romanitho/Winget-Install/archive/refs/tags/v1.8.1.zip"
 $Script:WingetLink = "https://github.com/microsoft/winget-cli/releases/download/v.1.3.1611/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
 
 <# FUNCTIONS #>
@@ -220,54 +220,6 @@ function Get-WingetAppInfo ($SearchApp) {
     return $searchList
 }
 
-function Get-WingetInstalledApps {
-    class Software {
-        [string]$Name
-        [string]$Id
-    }
-
-    #Get list of installed apps on winget format
-    $AppResult = & $Winget list --accept-source-agreements --source winget
-
-    #Start Convertion of winget format to an array. Check if "-----" exists
-    if (!($AppResult -match "-----")) {
-        Write-Host "No application found."
-        return
-    }
-
-    #Split winget output to lines
-    $lines = $AppResult.Split([Environment]::NewLine) | Where-Object { $_ }
-
-    # Find the line that starts with "------"
-    $fl = 0
-    while (-not $lines[$fl].StartsWith("-----")) {
-        $fl++
-    }
-
-    $fl = $fl - 1
-
-    #Get header titles
-    $index = $lines[$fl] -split '\s+'
-
-    # Line $fl has the header, we can find char where we find ID and Version
-    $idStart = $lines[$fl].IndexOf($index[1])
-    $versionStart = $lines[$fl].IndexOf($index[2])
-
-    # Now cycle in real package and split accordingly
-    $installedList = @()
-    For ($i = $fl + 2; $i -le $lines.Length; $i++) {
-        $line = $lines[$i]
-        if ($line.Length -gt ($sourceStart + 5)) {
-            $software = [Software]::new()
-            $software.Name = $line.Substring(0, $idStart).TrimEnd()
-            $software.Id = $line.Substring($idStart, $versionStart - $idStart).TrimEnd()
-            #add formated soft to list
-            $installedList += $software
-        }
-    }
-    return $installedList
-}
-
 function Get-WingetInstalledAppsV2 {
 
     #Json File where to export install apps
@@ -307,6 +259,9 @@ function Start-InstallGUI {
     $SearchTextBox = New-Object System.Windows.Forms.TextBox
     $SearchButton = New-Object System.Windows.Forms.Button
     $WAUTabPage = New-Object System.Windows.Forms.TabPage
+    $WAUShortcutsGroupBox = New-Object System.Windows.Forms.GroupBox
+    $DesktopCheckBox = New-Object System.Windows.Forms.CheckBox
+    $StartMenuCheckBox = New-Object System.Windows.Forms.CheckBox
     $WAUStatusLabel = New-Object System.Windows.Forms.Label
     $WAUWhiteBlackGroupBox = New-Object System.Windows.Forms.GroupBox
     $WAULoadListButton = New-Object System.Windows.Forms.Button
@@ -320,8 +275,10 @@ function Start-InstallGUI {
     $WeeklyRadioBut = New-Object System.Windows.Forms.RadioButton
     $BiweeklyRadioBut = New-Object System.Windows.Forms.RadioButton
     $MonthlyRatioBut = New-Object System.Windows.Forms.RadioButton
+    $NeverRatioBut = New-Object System.Windows.Forms.RadioButton
     $UpdAtLogonCheckBox = New-Object System.Windows.Forms.CheckBox
     $WAUConfGroupBox = New-Object System.Windows.Forms.GroupBox
+    $WAUonMeteredCheckBox = New-Object System.Windows.Forms.CheckBox
     $NotifLevelLabel = New-Object System.Windows.Forms.Label
     $NotifLevelComboBox = New-Object System.Windows.Forms.ComboBox
     $WAUDisableAUCheckBox = New-Object System.Windows.Forms.CheckBox
@@ -339,7 +296,6 @@ function Start-InstallGUI {
     $SaveFileDialog = New-Object System.Windows.Forms.SaveFileDialog
     $OpenFileDialog = New-Object System.Windows.Forms.OpenFileDialog
     $WAUListOpenFile = New-Object System.Windows.Forms.OpenFileDialog
-    $WAUonMeteredCheckBox = New-Object System.Windows.Forms.CheckBox
     #
     # WiGuiTabControl
     #
@@ -482,6 +438,7 @@ function Start-InstallGUI {
     #
     # WAUTabPage
     #
+    $WAUTabPage.Controls.Add($WAUShortcutsGroupBox)
     $WAUTabPage.Controls.Add($WAUStatusLabel)
     $WAUTabPage.Controls.Add($WAUWhiteBlackGroupBox)
     $WAUTabPage.Controls.Add($WAUFreqGroupBox)
@@ -493,6 +450,40 @@ function Start-InstallGUI {
     $WAUTabPage.Size = New-Object System.Drawing.Size(504, 474)
     $WAUTabPage.TabIndex = 1
     $WAUTabPage.Text = "Configure WAU"
+    #
+    # WAUShortcutsGroupBox
+    #
+    $WAUShortcutsGroupBox.Controls.Add($DesktopCheckBox)
+    $WAUShortcutsGroupBox.Controls.Add($StartMenuCheckBox)
+    $WAUShortcutsGroupBox.Enabled = $false
+    $WAUShortcutsGroupBox.Location = New-Object System.Drawing.Point(31, 343)
+    $WAUShortcutsGroupBox.Name = "WAUShortcutsGroupBox"
+    $WAUShortcutsGroupBox.Size = New-Object System.Drawing.Size(445, 69)
+    $WAUShortcutsGroupBox.TabIndex = 27
+    $WAUShortcutsGroupBox.TabStop = $false
+    $WAUShortcutsGroupBox.Text = "Shortcuts"
+    #
+    # DesktopCheckBox
+    #
+    $DesktopCheckBox.AutoSize = $true
+    $DesktopCheckBox.Checked = $true
+    $DesktopCheckBox.CheckState = [System.Windows.Forms.CheckState]::Checked
+    $DesktopCheckBox.Location = New-Object System.Drawing.Point(7, 20)
+    $DesktopCheckBox.Name = "DesktopCheckBox"
+    $DesktopCheckBox.Size = New-Object System.Drawing.Size(66, 17)
+    $DesktopCheckBox.TabIndex = 22
+    $DesktopCheckBox.Text = "Desktop"
+    #
+    # StartMenuCheckBox
+    #
+    $StartMenuCheckBox.AutoSize = $true
+    $StartMenuCheckBox.Checked = $true
+    $StartMenuCheckBox.CheckState = [System.Windows.Forms.CheckState]::Checked
+    $StartMenuCheckBox.Location = New-Object System.Drawing.Point(7, 43)
+    $StartMenuCheckBox.Name = "StartMenuCheckBox"
+    $StartMenuCheckBox.Size = New-Object System.Drawing.Size(78, 17)
+    $StartMenuCheckBox.TabIndex = 21
+    $StartMenuCheckBox.Text = "Start Menu"
     #
     # WAUStatusLabel
     #
@@ -516,7 +507,7 @@ function Start-InstallGUI {
     $WAUWhiteBlackGroupBox.Size = New-Object System.Drawing.Size(445, 72)
     $WAUWhiteBlackGroupBox.TabIndex = 24
     $WAUWhiteBlackGroupBox.TabStop = $false
-    $WAUWhiteBlackGroupBox.Text = "WAU White / Black List"
+    $WAUWhiteBlackGroupBox.Text = "White / Black List"
     #
     # WAULoadListButton
     #
@@ -574,10 +565,10 @@ function Start-InstallGUI {
     $WAUFreqGroupBox.Enabled = $false
     $WAUFreqGroupBox.Location = New-Object System.Drawing.Point(31, 174)
     $WAUFreqGroupBox.Name = "WAUFreqGroupBox"
-    $WAUFreqGroupBox.Size = New-Object System.Drawing.Size(284, 69)
+    $WAUFreqGroupBox.Size = New-Object System.Drawing.Size(445, 69)
     $WAUFreqGroupBox.TabIndex = 23
     $WAUFreqGroupBox.TabStop = $false
-    $WAUFreqGroupBox.Text = "WAU Update Frequency"
+    $WAUFreqGroupBox.Text = "Update Frequency"
     #
     # WAUFreqLayoutPanel
     #
@@ -585,22 +576,20 @@ function Start-InstallGUI {
     $WAUFreqLayoutPanel.Controls.Add($WeeklyRadioBut)
     $WAUFreqLayoutPanel.Controls.Add($BiweeklyRadioBut)
     $WAUFreqLayoutPanel.Controls.Add($MonthlyRatioBut)
+    $WAUFreqLayoutPanel.Controls.Add($NeverRatioBut)
     $WAUFreqLayoutPanel.Location = New-Object System.Drawing.Point(4, 18)
     $WAUFreqLayoutPanel.Name = "WAUFreqLayoutPanel"
-    $WAUFreqLayoutPanel.Size = New-Object System.Drawing.Size(275, 24)
+    $WAUFreqLayoutPanel.Size = New-Object System.Drawing.Size(334, 24)
     $WAUFreqLayoutPanel.TabIndex = 26
     #
     # DailyRadioBut
     #
     $DailyRadioBut.AutoSize = $true
-    $DailyRadioBut.Checked = $true
     $DailyRadioBut.Location = New-Object System.Drawing.Point(3, 3)
     $DailyRadioBut.Name = "DailyRadioBut"
     $DailyRadioBut.Size = New-Object System.Drawing.Size(48, 17)
     $DailyRadioBut.TabIndex = 22
-    $DailyRadioBut.TabStop = $true
     $DailyRadioBut.Text = "Daily"
-    $DailyRadioBut.TextAlign = [System.Drawing.ContentAlignment]::MiddleCenter
     #
     # WeeklyRadioBut
     #
@@ -629,6 +618,17 @@ function Start-InstallGUI {
     $MonthlyRatioBut.TabIndex = 25
     $MonthlyRatioBut.Text = "Monthly"
     #
+    # NeverRatioBut
+    #
+    $NeverRatioBut.AutoSize = $true
+    $NeverRatioBut.Checked = $true
+    $NeverRatioBut.Location = New-Object System.Drawing.Point(265, 3)
+    $NeverRatioBut.Name = "NeverRatioBut"
+    $NeverRatioBut.Size = New-Object System.Drawing.Size(54, 17)
+    $NeverRatioBut.TabIndex = 26
+    $NeverRatioBut.TabStop = $true
+    $NeverRatioBut.Text = "Never"
+    #
     # UpdAtLogonCheckBox
     #
     $UpdAtLogonCheckBox.AutoSize = $true
@@ -650,10 +650,19 @@ function Start-InstallGUI {
     $WAUConfGroupBox.Enabled = $false
     $WAUConfGroupBox.Location = New-Object System.Drawing.Point(31, 46)
     $WAUConfGroupBox.Name = "WAUConfGroupBox"
-    $WAUConfGroupBox.Size = New-Object System.Drawing.Size(214, 114)
+    $WAUConfGroupBox.Size = New-Object System.Drawing.Size(445, 114)
     $WAUConfGroupBox.TabIndex = 20
     $WAUConfGroupBox.TabStop = $false
-    $WAUConfGroupBox.Text = "WAU Configurations"
+    $WAUConfGroupBox.Text = "Configurations"
+    #
+    # WAUonMeteredCheckBox
+    #
+    $WAUonMeteredCheckBox.AutoSize = $true
+    $WAUonMeteredCheckBox.Location = New-Object System.Drawing.Point(6, 65)
+    $WAUonMeteredCheckBox.Name = "WAUonMeteredCheckBox"
+    $WAUonMeteredCheckBox.Size = New-Object System.Drawing.Size(183, 17)
+    $WAUonMeteredCheckBox.TabIndex = 23
+    $WAUonMeteredCheckBox.Text = "Run WAU on metered connexion"
     #
     # NotifLevelLabel
     #
@@ -667,7 +676,10 @@ function Start-InstallGUI {
     # NotifLevelComboBox
     #
     $NotifLevelComboBox.DropDownStyle = [System.Windows.Forms.ComboBoxStyle]::DropDownList
-    $NotifLevelComboBox.Items.AddRange(@("Full","SuccessOnly","None"))
+    $NotifLevelComboBox.Items.AddRange(@(
+            "Full",
+            "SuccessOnly",
+            "None"))
     $NotifLevelComboBox.Location = New-Object System.Drawing.Point(97, 86)
     $NotifLevelComboBox.Name = "NotifLevelComboBox"
     $NotifLevelComboBox.Size = New-Object System.Drawing.Size(100, 21)
@@ -753,9 +765,9 @@ function Start-InstallGUI {
     $CMTraceCheckBox.AutoSize = $true
     $CMTraceCheckBox.Location = New-Object System.Drawing.Point(18, 61)
     $CMTraceCheckBox.Name = "CMTraceCheckBox"
-    $CMTraceCheckBox.Size = New-Object System.Drawing.Size(288, 17)
+    $CMTraceCheckBox.Size = New-Object System.Drawing.Size(100, 17)
     $CMTraceCheckBox.TabIndex = 19
-    $CMTraceCheckBox.Text = "Install ConfigMgr Toolkit (With CMTrace log viewer tool)"
+    $CMTraceCheckBox.Text = "Install CMTrace"
     #
     # InstallButton
     #
@@ -794,15 +806,6 @@ function Start-InstallGUI {
     # WAUListOpenFile
     #
     $WAUListOpenFile.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*"
-    #
-    # WAUonMeteredCheckBox
-    #
-    $WAUonMeteredCheckBox.AutoSize = $true
-    $WAUonMeteredCheckBox.Location = New-Object System.Drawing.Point(6, 65)
-    $WAUonMeteredCheckBox.Name = "WAUonMeteredCheckBox"
-    $WAUonMeteredCheckBox.Size = New-Object System.Drawing.Size(183, 17)
-    $WAUonMeteredCheckBox.TabIndex = 23
-    $WAUonMeteredCheckBox.Text = "Run WAU on metered connexion"
     #
     # WiGuiForm
     #
@@ -915,12 +918,14 @@ function Start-InstallGUI {
                 $WAUConfGroupBox.Enabled = $true
                 $WAUFreqGroupBox.Enabled = $true
                 $WAUWhiteBlackGroupBox.Enabled = $true
+                $WAUShortcutsGroupBox.Enabled = $true
             }
             elseif ($WAUCheckBox.Checked -eq $false) {
                 $WAUConfGroupBox.Enabled = $false
                 $WAUFreqGroupBox.Enabled = $false
                 $WAUWhiteBlackGroupBox.Enabled = $false
-            } 
+                $WAUShortcutsGroupBox.Enabled = $false
+            }
         })
     #
     $WAUMoreInfoLabel.add_click({
@@ -999,10 +1004,13 @@ function Start-InstallGUI {
             $Script:UninstallView = $UninstallViewCheckBox.Checked
             $Script:CMTrace = $CMTraceCheckBox.Checked
             $Script:WAUonMetered = $WAUonMeteredCheckBox.Checked
+            $Script:WAUDesktopShortcut = $DesktopCheckBox.Checked
+            $Script:WAUStartMenuShortcut = $StartMenuCheckBox.Checked
             Start-Installations
             $WAUCheckBox.Checked = $false
             $WAUConfGroupBox.Enabled = $false
             $WAUFreqGroupBox.Enabled = $false
+            $WAUShortcutsGroupBox.Enabled =$false
             $WAUWhiteBlackGroupBox.Enabled = $false
             $AdvancedRunCheckBox.Checked = $false
             $UninstallViewCheckBox.Checked = $false
@@ -1086,6 +1094,13 @@ function Start-Installations {
         else {
             if ($WAUListPath) { Copy-Item $WAUListPath -Destination "$WAUInstallFolder\excluded_apps.txt" -Force -ErrorAction SilentlyContinue }
         }
+        if ($WAUDesktopShortcut) {
+            $WAUParameters += "-DesktopShortcut "
+        }
+        if ($WAUStartMenuShortcut) {
+            $WAUParameters += "-StartMenuShortcut "
+        }
+
 
         #Install Winget-Autoupdate
         Start-Process "powershell.exe" -Argument "-NoProfile -ExecutionPolicy Bypass -Command `"$WAUInstallFile $WAUParameters`"" -Wait -Verb RunAs
@@ -1094,20 +1109,11 @@ function Start-Installations {
     ## ADMIN PART ##
 
     if ($CMTrace) {
-        Start-PopUp "Installing ConfigMgr 2012 Toolkit..."
-        $CMToolkitLink = "https://download.microsoft.com/download/5/0/8/508918E1-3627-4383-B7D8-AA07B3490D21/ConfigMgrTools.msi"
-        $CMToolkitPath = "C:\Tools\ConfigMgrTools.msi"
+        Start-PopUp "Installing CMTrace..."
+        $CMToolkitLink = "https://github.com/Romanitho/Winget-Install-GUI/raw/main/Tools/cmtrace.exe"
+        $CMToolkitPath = "C:\Tools\CMTrace.exe"
         Invoke-WebRequest $CMToolkitLink -OutFile (New-Item -Path $CMToolkitPath -Force)
-        msiexec.exe /I $CMToolkitPath /passive
-        Start-Sleep 3
-        #Create CMTrace Shortcut to C:\Tools
-        $WScriptShell = New-Object -ComObject WScript.Shell
-        $TargetFile = "${env:ProgramFiles(x86)}\ConfigMgr 2012 Toolkit R2\ClientTools\CMTrace.exe"
-        $ShortcutFile = "C:\Tools\CMTrace.lnk"
-        $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-        $Shortcut.TargetPath = $TargetFile
-        $Shortcut.Save()
-        Remove-Item $CMToolkitPath
+        Start-Sleep 1
     }
 
     if ($AdvancedRun) {
