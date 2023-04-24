@@ -28,7 +28,9 @@ All In One GUI :)
 ## Install via Winget
 
 WiGui is also on Winget:  
-`winget install Romanitho.WiGUI`
+`winget install Romanitho.WiGUI` (to default Winget portable location path)  
+or something like this:  
+`winget install wigui --location desktop`
 
 ## Run without download
 
