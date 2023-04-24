@@ -1,4 +1,4 @@
-# Winget-Install-GUI (WiGui)
+# Winget-Install-GUI (aka WiGui)
 
 ## Intro
 
@@ -24,6 +24,11 @@ GUI to search, select and install Apps at once with Winget package manager behin
 
 
 All In One GUI :)
+
+## Install via Winget
+
+WiGui is also on Winget:  
+`winget install Romanitho.WiGUI`
 
 ## Run without download
 
