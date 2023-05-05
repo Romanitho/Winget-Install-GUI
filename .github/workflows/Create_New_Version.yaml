@@ -1,0 +1,84 @@
+---
+name: Create New Version
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        type: choice
+        default: "Patch"
+        description: Select next release type
+        options:
+          - Patch
+          - Minor
+          - Major
+        required: true
+      pre-release:
+        type: boolean
+        description: Set as Pre-release version
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Create Release Asset
+    runs-on: ubuntu-latest
+    outputs:
+      Build_Version: ${{ steps.versioning.outputs.version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Auto Increment Semver Action
+        uses: MCKanpolat/auto-semver-action@1.0.10
+        id: versioning
+        with:
+          releaseType: ${{ github.event.inputs.version }}
+          incrementPerCommit: false
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Update Powershell Version
+        run: sed -i '20s/.*/$Script:WiGuiVersion = "${{ steps.versioning.outputs.version }}"/g' Sources/Winget-Install-GUI.ps1
+
+      - name: Commit & Push
+        uses: actions-js/push@v1.4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: main
+          force: true
+          message: "Changed version to ${{ steps.versioning.outputs.version }}"
+
+  Packaging:
+    runs-on: windows-latest
+    needs: [build]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }} #needed to get latest commit
+        
+      - name: Compile EXE
+        env:
+          Version: ${{needs.build.outputs.Build_Version}}
+        shell: powershell
+        working-directory: .
+        run: |
+          'Setting Version Number'
+          [String]$Version="$env:Version"
+          "Version is $Version"
+          'Installing Module PS2EXE'
+          Install-Module -Name ps2exe -force
+          'Impoting Module PS2EXE'
+          Import-Module -Name ps2exe
+          'Creating EXE'
+          Invoke-PS2EXE -inputFile .\Sources\Winget-Install-GUI.ps1 -outputFile .\WiGui.exe -iconFile .\Sources\WiGui.ico  -title 'Winget Intune Packager' -version $Version -copyright 'Romanitho' -noConsole -noerror -Verbose -ErrorAction Stop
+
+      - name: Create release
+        uses: "ncipollo/release-action@v1.12.0"
+        with:
+          tag: "v${{needs.build.outputs.Build_Version}}"
+          prerelease: ${{ github.event.inputs.pre-release }}
+          generateReleaseNotes: true
+          name: "v${{needs.build.outputs.Build_Version}}"
+          artifacts: WiGui.exe
