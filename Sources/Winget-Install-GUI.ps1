@@ -18,9 +18,9 @@ if ( $psversionTable.PSEdition -eq "core" ) {
 }
 
 $Script:WiGuiVersion = "1.8.0"
-$Script:WAUGithubLink = "https://github.com/Romanitho/Winget-AutoUpdate/archive/refs/tags/v1.15.0.zip"
-$Script:WIGithubLink = "https://github.com/Romanitho/Winget-Install/archive/refs/tags/v1.8.1.zip"
-$Script:WingetLink = "https://github.com/microsoft/winget-cli/releases/download/v1.3.2691/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
+$Script:WAUGithubLink = "https://github.com/Romanitho/Winget-AutoUpdate/releases/download/v1.17.4/WAU.zip"
+$Script:WIGithubLink = "https://github.com/Romanitho/Winget-Install/archive/refs/tags/v1.10.1.zip"
+$Script:WingetLink = "https://github.com/microsoft/winget-cli/releases/download/v1.4.10173/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
 
 <# FUNCTIONS #>
 
@@ -56,19 +56,19 @@ Function Close-PopUp {
     }
 }
 
-function Get-GithubRepository ($Url) {
-     
-    # Force to create a zip file 
+function Get-GithubRepository ($Url, $SubFolder) {
+
+    # Force to create a zip file
     $ZipFile = "$Location\temp.zip"
     New-Item $ZipFile -ItemType File -Force | Out-Null
 
-    # Download the zip 
+    # Download the zip
     Invoke-RestMethod -Uri $Url -OutFile $ZipFile
 
     # Extract Zip File
-    Expand-Archive -Path $ZipFile -DestinationPath $Location -Force
-    Get-ChildItem -Path $Location -Recurse | Unblock-File
-     
+    Expand-Archive -Path $ZipFile -DestinationPath "$Location\$SubFolder" -Force
+    Get-ChildItem -Path "$Location\$SubFolder" -Recurse | Unblock-File
+
     # remove the zip file
     Remove-Item -Path $ZipFile -Force
 }
@@ -107,10 +107,10 @@ function Get-WingetStatus {
 
     $hasAppInstaller = Get-AppXPackage -Name 'Microsoft.DesktopAppInstaller'
     [Version]$AppInstallerVers = $hasAppInstaller.version
-    
-    if (!($AppInstallerVers -ge "1.18.1611.0")) {
 
-        #installing dependencies     
+    if (!($AppInstallerVers -ge "1.19.10173.0")) {
+
+        #installing dependencies
         if (!(Get-AppxPackage -Name 'Microsoft.UI.Xaml.2.7')) {
             #Update Form
             Start-PopUp "Installing prerequisites:`nMicrosoft UI Xaml 2.7.0"
@@ -857,7 +857,7 @@ function Start-InstallGUI {
             $AddAppToList = $SubmitComboBox.Text
             if ($AddAppToList -ne "" -and $AppListBox.Items -notcontains $AddAppToList) {
                 $AppListBox.Items.Add($AddAppToList)
-            }  
+            }
         })
     #
     $RemoveButton.add_click({
@@ -886,7 +886,7 @@ function Start-InstallGUI {
                 foreach ($App in $FileContent) {
                     if ($App -ne "" -and $AppListBox.Items -notcontains $App) {
                         $AppListBox.Items.Add($App)
-                    } 
+                    }
                 }
             }
         })
@@ -1015,7 +1015,7 @@ function Start-InstallGUI {
             $WAUCheckBox.Checked = $false
             $WAUConfGroupBox.Enabled = $false
             $WAUFreqGroupBox.Enabled = $false
-            $WAUShortcutsGroupBox.Enabled =$false
+            $WAUShortcutsGroupBox.Enabled = $false
             $WAUWhiteBlackGroupBox.Enabled = $false
             $AdvancedRunCheckBox.Checked = $false
             $UninstallViewCheckBox.Checked = $false
@@ -1032,7 +1032,7 @@ function Start-InstallGUI {
 }
 
 function Start-Installations {
-    
+
     ## WINGET-INSTALL PART ##
 
     #Download and run Winget-Install script if box is checked
@@ -1041,10 +1041,10 @@ function Start-Installations {
         Start-PopUp "Installing applications..."
 
         #Check if Winget-Install already downloaded
-        $TestPath = "$Location\*Winget-Install*\winget-install.ps1"
+        $TestPath = "$Location\Winget-Install\Winget-Install*\winget-install.ps1"
         if (!(Test-Path $TestPath)) {
             #If not, download
-            Get-GithubRepository $WIGithubLink
+            Get-GithubRepository $WIGithubLink "Winget-Install"
         }
 
         #Run Winget-Install
@@ -1058,12 +1058,12 @@ function Start-Installations {
     if ($InstallWAU) {
 
         Start-PopUp "Installing WAU..."
-        
+
         #Check if WAU already downloaded
-        $TestPath = "$Location\*Winget-AutoUpdate*\Winget-AutoUpdate-Install.ps1"
+        $TestPath = "$Location\WAU\Winget-AutoUpdate-Install.ps1"
         if (!(Test-Path $TestPath)) {
             #If not, download
-            Get-GithubRepository $WAUGithubLink
+            Get-GithubRepository $WAUGithubLink "WAU"
         }
 
         #Get install file
@@ -1162,10 +1162,10 @@ function Start-Uninstallations ($AppToUninstall) {
         Start-PopUp "Uninstalling applications..."
 
         #Check if Winget-Install already downloaded
-        $TestPath = "$Location\*Winget-Install*\winget-install.ps1"
+        $TestPath = "$Location\Winget-Install\Winget-Install*\winget-install.ps1"
         if (!(Test-Path $TestPath)) {
             #If not, download
-            Get-GithubRepository $WIGithubLink
+            Get-GithubRepository $WIGithubLink "Winget-Install"
         }
 
         #Run Winget-Install -Uninstall
@@ -1185,7 +1185,7 @@ function Get-WiGuiLatestVersion {
     #Get latest stable info
     $WiGuiURL = 'https://api.github.com/repos/Romanitho/Winget-Install-GUI/releases/latest'
     $WiGuiLatestVersion = ((Invoke-WebRequest $WiGuiURL -UseBasicParsing | ConvertFrom-Json)[0].tag_name).Replace("v", "")
-    
+
     if ([version]$WiGuiVersion -lt [version]$WiGuiLatestVersion) {
 
         ## FORM ##
@@ -1308,7 +1308,7 @@ function Get-WAUInstallStatus {
 <# MAIN #>
 
 #Temp folder
-$Script:Location = "$Env:SystemDrive\WiGui_Temp"
+$Script:Location = "$Env:Temp\WiGui"
 #Create Temp folder
 if (!(Test-Path $Location)) {
     New-Item -ItemType Directory -Force -Path $Location | Out-Null
