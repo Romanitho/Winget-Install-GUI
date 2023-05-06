@@ -71,7 +71,7 @@ Function Close-PopUp {
     $Script:PopUpWindow = $null
 }
 
-function Get-GithubRepository ($Url,$SubFolder) {
+function Get-GithubRepository ($Url, $SubFolder) {
 
     # Force to create a zip file
     $ZipFile = "$Location\temp.zip"
@@ -320,10 +320,14 @@ function Start-Installations {
         }
         if ($WAUUseWhiteList) {
             $WAUParameters += "-UseWhiteList "
-            if ($WAUListPath) { Copy-Item $WAUListPath -Destination "$WAUInstallFolder\included_apps.txt" -Force -ErrorAction SilentlyContinue }
+            if ($WAUListPath) {
+                Copy-Item $WAUListPath -Destination "$WAUInstallFolder\included_apps.txt" -Force -ErrorAction SilentlyContinue
+            }
         }
         else {
-            if ($WAUListPath) { Copy-Item $WAUListPath -Destination "$WAUInstallFolder\excluded_apps.txt" -Force -ErrorAction SilentlyContinue }
+            if ($WAUListPath) {
+                Copy-Item $WAUListPath -Destination "$WAUInstallFolder\excluded_apps.txt" -Force -ErrorAction SilentlyContinue
+            }
         }
         if ($WAUDesktopShortcut) {
             $WAUParameters += "-DesktopShortcut "
@@ -463,12 +467,15 @@ function Get-WiGuiLatestVersion {
 
         ## ACTIONS ##
 
-        $GithubButton.add_click({
+        $GithubButton.add_click(
+            {
                 $UpdateWindow.Topmost = $false
                 [System.Diagnostics.Process]::Start("https://github.com/Romanitho/Winget-Install-GUI/releases")
-            })
+            }
+        )
 
-        $DownloadButton.add_click({
+        $DownloadButton.add_click(
+            {
                 $WiGuiSaveFile = New-Object System.Windows.Forms.SaveFileDialog
                 $WiGuiSaveFile.Filter = "Exe file (*.exe)|*.exe"
                 $WiGuiSaveFile.FileName = "WiGui_$WiGuiLatestVersion.exe"
@@ -485,12 +492,15 @@ function Get-WiGuiLatestVersion {
                     Close-PopUp
                     Exit 0
                 }
-            })
+            }
+        )
 
-        $SkipButton.add_click({
+        $SkipButton.add_click(
+            {
                 $UpdateWindow.DialogResult = [System.Windows.Forms.DialogResult]::Cancel
                 $UpdateWindow.Close()
-            })
+            }
+        )
 
 
         ## RETURNS ##
@@ -605,7 +615,7 @@ function Start-InstallGUI {
 "@
 
     #Create window
-    [xml]$XAML = ($inputXML -replace 'mc:Ignorable="d"','' -replace "x:N",'N' -replace '^<Win.*', '<Window') -f $WiGuiVersion
+    [xml]$XAML = ($inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window') -f $WiGuiVersion
 
     #Read the form
     $Reader = (New-Object System.Xml.XmlNodeReader $xaml)
@@ -613,7 +623,7 @@ function Start-InstallGUI {
 
     #Store Form Objects In PowerShell
     $FormObjects = $xaml.SelectNodes("//*[@Name]")
-    $FormObjects | foreach {
+    $FormObjects | ForEach-Object {
         Set-Variable -Name "$($_.Name)" -Value $WiGuiForm.FindName($_.Name) -Scope Script
     }
 
@@ -636,7 +646,8 @@ function Start-InstallGUI {
     ##
     # "Select Apps" Tab
     ##
-    $SearchButton.add_click({
+    $SearchButton.add_click(
+        {
             if ($SearchTextBox.Text) {
                 Start-PopUp "Searching..."
                 $SubmitComboBox.Items.Clear()
@@ -647,16 +658,20 @@ function Start-InstallGUI {
                 $SubmitComboBox.SelectedIndex = 0
                 Close-PopUp
             }
-        })
+        }
+    )
 
-    $SubmitButton.add_click({
+    $SubmitButton.add_click(
+        {
             $AddAppToList = $SubmitComboBox.Text
             if ($AddAppToList -ne "" -and $AppListBox.Items -notcontains $AddAppToList) {
                 $AppListBox.Items.Add($AddAppToList)
             }
-        })
+        }
+    )
 
-    $RemoveButton.add_click({
+    $RemoveButton.add_click(
+        {
             if (!$AppListBox.SelectedItems) {
                 Start-PopUp "Please select apps to remove..."
                 Start-Sleep 2
@@ -665,17 +680,21 @@ function Start-InstallGUI {
             while ($AppListBox.SelectedItems) {
                 $AppListBox.Items.Remove($AppListBox.SelectedItems[0])
             }
-        })
+        }
+    )
 
-    $SaveListButton.add_click({
+    $SaveListButton.add_click(
+        {
             $response = $SaveFileDialog.ShowDialog() # $response can return OK or Cancel
             if ( $response -eq 'OK' ) {
                 $AppListBox.Items | Out-File $SaveFileDialog.FileName -Append
                 Write-Host "File saved to:`n$($SaveFileDialog.FileName)"
             }
-        })
+        }
+    )
 
-    $OpenListButton.add_click({
+    $OpenListButton.add_click(
+        {
             $response = $OpenFileDialog.ShowDialog() # $response can return OK or Cancel
             if ( $response -eq 'OK' ) {
                 $FileContent = Get-Content $OpenFileDialog.FileName
@@ -685,9 +704,11 @@ function Start-InstallGUI {
                     }
                 }
             }
-        })
+        }
+    )
 
-    $InstalledAppButton.add_click({
+    $InstalledAppButton.add_click(
+        {
             Start-PopUp "Getting installed apps..."
             $AppListBox.Items.Clear()
             $List = Get-WingetInstalledApps
@@ -695,75 +716,93 @@ function Start-InstallGUI {
                 $AppListBox.Items.Add($L)
             }
             Close-PopUp
-        })
+        }
+    )
 
-    $UninstallButton.add_click({
-        if ($AppListBox.SelectedItems) {
-            Start-Uninstallations $AppListBox.SelectedItems
-            $WAUInstallStatus = Get-WAUInstallStatus
-            $WAUStatusLabel.Text = $WAUInstallStatus[0]
-            $WAUStatusLabel.Foreground = $WAUInstallStatus[1]
-            $AppListBox.Items.Clear()
+    $UninstallButton.add_click(
+        {
+            if ($AppListBox.SelectedItems) {
+                Start-Uninstallations $AppListBox.SelectedItems
+                $WAUInstallStatus = Get-WAUInstallStatus
+                $WAUStatusLabel.Text = $WAUInstallStatus[0]
+                $WAUStatusLabel.Foreground = $WAUInstallStatus[1]
+                $AppListBox.Items.Clear()
+            }
+            else {
+                Start-PopUp "Please select apps to uninstall..."
+                Start-Sleep 1
+                Close-PopUp
+            }
         }
-        else {
-            Start-PopUp "Please select apps to uninstall..."
-            Start-Sleep 1
-            Close-PopUp
-        }
-    })
+    )
 
     ##
     # "Configure WAU" Tab
     ##
-    $WAUCheckBox.add_click({
-        if ($WAUCheckBox.IsChecked -eq $true) {
-            $WAUConfGroupBox.IsEnabled = $true
-            $WAUFreqGroupBox.IsEnabled = $true
-            $WAUWhiteBlackGroupBox.IsEnabled = $true
-            $WAUShortcutsGroupBox.IsEnabled = $true
+    $WAUCheckBox.add_click(
+        {
+            if ($WAUCheckBox.IsChecked -eq $true) {
+                $WAUConfGroupBox.IsEnabled = $true
+                $WAUFreqGroupBox.IsEnabled = $true
+                $WAUWhiteBlackGroupBox.IsEnabled = $true
+                $WAUShortcutsGroupBox.IsEnabled = $true
+            }
+            elseif ($WAUCheckBox.IsChecked -eq $false) {
+                $WAUConfGroupBox.IsEnabled = $false
+                $WAUFreqGroupBox.IsEnabled = $false
+                $WAUWhiteBlackGroupBox.IsEnabled = $false
+                $WAUShortcutsGroupBox.IsEnabled = $false
+            }
         }
-        elseif ($WAUCheckBox.IsChecked -eq $false) {
-            $WAUConfGroupBox.IsEnabled = $false
-            $WAUFreqGroupBox.IsEnabled = $false
-            $WAUWhiteBlackGroupBox.IsEnabled = $false
-            $WAUShortcutsGroupBox.IsEnabled = $false
+    )
+
+    $WAUMoreInfoLabel.Add_PreviewMouseDown(
+        {
+            [System.Diagnostics.Process]::Start("https://github.com/Romanitho/Winget-AutoUpdate")
         }
-    })
+    )
 
-    $WAUMoreInfoLabel.Add_PreviewMouseDown({
-        [System.Diagnostics.Process]::Start("https://github.com/Romanitho/Winget-AutoUpdate")
-    })
-
-    $BlackRadioBut.add_click({
+    $BlackRadioBut.add_click(
+        {
             $WAULoadListButton.IsEnabled = $true
-        })
+        }
+    )
 
-    $WhiteRadioBut.add_click({
+    $WhiteRadioBut.add_click(
+        {
             $WAULoadListButton.IsEnabled = $true
-        })
+        }
+    )
 
-    $DefaultRadioBut.add_click({
+    $DefaultRadioBut.add_click(
+        {
             $WAULoadListButton.IsEnabled = $false
             $WAUListFileTextBox.Clear()
-        })
-
-    $WAULoadListButton.add_click({
-        $response = $WAUListOpenFile.ShowDialog() # $response can return OK or Cancel
-        if ( $response -eq 'OK' ) {
-            $WAUListFileTextBox.Text = $WAUListOpenFile.FileName
         }
-    })
+    )
+
+    $WAULoadListButton.add_click(
+        {
+            $response = $WAUListOpenFile.ShowDialog() # $response can return OK or Cancel
+            if ( $response -eq 'OK' ) {
+                $WAUListFileTextBox.Text = $WAUListOpenFile.FileName
+            }
+        }
+    )
 
     ##
-    # "Admin Tool" Tab (by hitting F9 Key)
+    # "Admin Tool" Tab by hitting F9 Key (Replacing F10 used by default by Windows)
     ##
-    $WiGuiForm.Add_KeyDown({
-        if ($_.Key -eq "F9") {
-            $AdminTabPage.Visibility = "Visible"
+    $WiGuiForm.Add_KeyDown(
+        {
+            if ($_.Key -eq "F9") {
+                $AdminTabPage.Visibility = "Visible"
+            }
         }
-    })
+    )
 
-    $LogButton.add_click({
+    $LogButton.add_click(
+        {
             if (Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Winget-AutoUpdate\") {
                 $LogPath = Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Winget-AutoUpdate\" -Name InstallLocation
                 Start-Process "$LogPath\Logs"
@@ -774,54 +813,61 @@ function Start-InstallGUI {
             else {
                 Write-Host "Log location not found."
             }
-        })
+        }
+    )
 
     ##
     # Global Form
     ##
-    $WiGuiLinkLabel.Add_PreviewMouseDown({
-        [System.Diagnostics.Process]::Start("https://github.com/Romanitho/Winget-Install-GUI")
-    })
-
-    $InstallButton.add_click({
-        if ($AppListBox.Items) {
-            $Script:AppToInstall = "'$($AppListBox.Items -join "','")'"
+    $WiGuiLinkLabel.Add_PreviewMouseDown(
+        {
+            [System.Diagnostics.Process]::Start("https://github.com/Romanitho/Winget-Install-GUI")
         }
-        else {
-            $Script:AppToInstall = $null
-        }
-        $Script:InstallWAU = $WAUCheckBox.IsChecked
-        $Script:WAUDoNotUpdate = $WAUDoNotUpdateCheckBox.IsChecked
-        $Script:WAUDisableAU = $WAUDisableAUCheckBox.IsChecked
-        $Script:WAUAtUserLogon = $UpdAtLogonCheckBox.IsChecked
-        $Script:WAUNotificationLevel = $NotifLevelComboBox.Text
-        $Script:WAUUseWhiteList = $WhiteRadioBut.IsChecked
-        $Script:WAUListPath = $WAUListFileTextBox.Text
-        $Script:WAUFreqUpd = $WAUFreqLayoutPanel.Children.Where({ $_.IsChecked -eq $true}).content
-        $Script:AdvancedRun = $AdvancedRunCheckBox.IsChecked
-        $Script:UninstallView = $UninstallViewCheckBox.IsChecked
-        $Script:CMTrace = $CMTraceCheckBox.IsChecked
-        $Script:WAUonMetered = $WAUonMeteredCheckBox.IsChecked
-        $Script:WAUDesktopShortcut = $DesktopCheckBox.IsChecked
-        $Script:WAUStartMenuShortcut = $StartMenuCheckBox.IsChecked
-        Start-Installations
-        $WAUCheckBox.IsChecked = $false
-        $WAUConfGroupBox.IsEnabled = $false
-        $WAUFreqGroupBox.IsEnabled = $false
-        $WAUShortcutsGroupBox.IsEnabled =$false
-        $WAUWhiteBlackGroupBox.IsEnabled = $false
-        $AdvancedRunCheckBox.IsChecked = $false
-        $UninstallViewCheckBox.IsChecked = $false
-        $CMTraceCheckBox.IsChecked = $false
-        $WAUInstallStatus = Get-WAUInstallStatus
-        $WAUStatusLabel.Text = $WAUInstallStatus[0]
-        $WAUStatusLabel.Foreground = $WAUInstallStatus[1]
-    })
+    )
 
-    $CloseButton.add_click({
-        $WiguiForm.DialogResult = [System.Windows.Forms.DialogResult]::Cancel
-        $WiguiForm.Close()
-    })
+    $InstallButton.add_click(
+        {
+            if ($AppListBox.Items) {
+                $Script:AppToInstall = "'$($AppListBox.Items -join "','")'"
+            }
+            else {
+                $Script:AppToInstall = $null
+            }
+            $Script:InstallWAU = $WAUCheckBox.IsChecked
+            $Script:WAUDoNotUpdate = $WAUDoNotUpdateCheckBox.IsChecked
+            $Script:WAUDisableAU = $WAUDisableAUCheckBox.IsChecked
+            $Script:WAUAtUserLogon = $UpdAtLogonCheckBox.IsChecked
+            $Script:WAUNotificationLevel = $NotifLevelComboBox.Text
+            $Script:WAUUseWhiteList = $WhiteRadioBut.IsChecked
+            $Script:WAUListPath = $WAUListFileTextBox.Text
+            $Script:WAUFreqUpd = $WAUFreqLayoutPanel.Children.Where({ $_.IsChecked -eq $true }).content
+            $Script:AdvancedRun = $AdvancedRunCheckBox.IsChecked
+            $Script:UninstallView = $UninstallViewCheckBox.IsChecked
+            $Script:CMTrace = $CMTraceCheckBox.IsChecked
+            $Script:WAUonMetered = $WAUonMeteredCheckBox.IsChecked
+            $Script:WAUDesktopShortcut = $DesktopCheckBox.IsChecked
+            $Script:WAUStartMenuShortcut = $StartMenuCheckBox.IsChecked
+            Start-Installations
+            $WAUCheckBox.IsChecked = $false
+            $WAUConfGroupBox.IsEnabled = $false
+            $WAUFreqGroupBox.IsEnabled = $false
+            $WAUShortcutsGroupBox.IsEnabled = $false
+            $WAUWhiteBlackGroupBox.IsEnabled = $false
+            $AdvancedRunCheckBox.IsChecked = $false
+            $UninstallViewCheckBox.IsChecked = $false
+            $CMTraceCheckBox.IsChecked = $false
+            $WAUInstallStatus = Get-WAUInstallStatus
+            $WAUStatusLabel.Text = $WAUInstallStatus[0]
+            $WAUStatusLabel.Foreground = $WAUInstallStatus[1]
+        }
+    )
+
+    $CloseButton.add_click(
+        {
+            $WiguiForm.DialogResult = [System.Windows.Forms.DialogResult]::Cancel
+            $WiguiForm.Close()
+        }
+    )
 
     # Shows the form
     $Script:FormReturn = $WiGuiForm.ShowDialog()
