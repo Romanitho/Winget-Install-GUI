@@ -2,6 +2,7 @@
 
 # Winget-Install-GUI (aka WiGui)
 [![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/Romanitho/Winget-Install-GUI?label=Latest%20version&style=flat-square)](https://github.com/Romanitho/Winget-Install-GUI/releases)
+[![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/downloads-pre/Romanitho/Winget-Install-GUI/latest/total?label=Downloads&style=flat-square)](https://github.com/Romanitho/Winget-Install-GUI/releases)
 
 </div>
 
@@ -37,9 +38,8 @@ WiGui is also on Winget:
 or something like this:
 `winget install wigui --location desktop`
 
-## Run without download
+<div align="center">
 
-Start CMD as admin and run this command:
-```
-Powershell.exe Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/Romanitho/Winget-Install-GUI/main/Sources/Winget-Install-GUI.ps1'))
-```
+[![GitHub all releases](https://img.shields.io/github/downloads/Romanitho/Winget-Install-GUI/total?label=Total%20WiGui%20downloads&style=flat-square)](https://tooomm.github.io/github-release-stats/?username=Romanitho&repository=Winget-Install-GUI)
+
+</div>
