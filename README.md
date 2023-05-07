@@ -40,6 +40,10 @@ or something like this:
 
 <div align="center">
 
+---
+
+### WiGui - GitHub
+
 [![GitHub all releases](https://img.shields.io/github/downloads/Romanitho/Winget-Install-GUI/total?label=Total%20WiGui%20downloads&style=flat-square)](https://tooomm.github.io/github-release-stats/?username=Romanitho&repository=Winget-Install-GUI)
 
 </div>
