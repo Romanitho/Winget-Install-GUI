@@ -48,8 +48,8 @@ Function Start-PopUp ($Message) {
         [xml]$XAML = ($inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window') -f $WiGuiVersion
 
         #Read the form
-        $Reader = (New-Object System.Xml.XmlNodeReader $xaml)
-        $Script:PopUpWindow = [Windows.Markup.XamlReader]::Load($reader)
+        $Reader = (New-Object System.Xml.XmlNodeReader $XAML)
+        $Script:PopUpWindow = [Windows.Markup.XamlReader]::Load($Reader)
         $PopUpWindow.Icon = $IconBase64
 
         #Store Form Objects In PowerShell
@@ -335,7 +335,9 @@ function Start-Installations {
         if ($WAUStartMenuShortcut) {
             $WAUParameters += "-StartMenuShortcut "
         }
-
+        if ($WAUInstallUserContext) {
+            $WAUParameters += "-InstallUserContext "
+        }
 
         #Install Winget-Autoupdate
         Start-Process "powershell.exe" -Argument "-NoProfile -ExecutionPolicy Bypass -Command `"$WAUInstallFile $WAUParameters`"" -Wait -Verb RunAs
@@ -516,101 +518,102 @@ function Start-InstallGUI {
     # GUI XAML file
     $inputXML = @"
 <Window x:Name="WiGuiForm" x:Class="WiGui_v3.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:WiGui_v3"
-        mc:Ignorable="d"
-        Title="WiGui {0}" Height="700" Width="540" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen">
-    <Grid>
-        <Grid.Background>
-            <SolidColorBrush Color="#FFF0F0F0"/>
-        </Grid.Background>
-        <TabControl x:Name="WiGuiTabControl" Margin="10,10,10,44">
-            <TabItem x:Name="AppsTabPage" Header="Select Apps">
-                <Grid>
-                    <Label x:Name="SearchLabel" Content="Search for an app:" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,10,0,0"/>
-                    <TextBox x:Name="SearchTextBox" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,36,0,0" Width="380" Height="24" VerticalContentAlignment="Center"/>
-                    <Button x:Name="SearchButton" Content="Search" HorizontalAlignment="Right" VerticalAlignment="Top" Width="90" Height="24" Margin="0,36,10,0" IsDefault="True"/>
-                    <Label x:Name="SubmitLabel" Content="Select the matching Winget AppID:" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,70,0,0"/>
-                    <Button x:Name="SubmitButton" Content="Add to list" HorizontalAlignment="Right" VerticalAlignment="Top" Width="90" Height="24" Margin="0,96,10,0"/>
-                    <Label x:Name="AppListLabel" Content="Current Application list:" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,130,0,0"/>
-                    <Button x:Name="SaveListButton" Content="Save list to file" HorizontalAlignment="Right" VerticalAlignment="Top" Width="90" Height="24" Margin="0,156,10,0"/>
-                    <Button x:Name="OpenListButton" Content="Import from file" HorizontalAlignment="Right" VerticalAlignment="Top" Width="90" Height="24" Margin="0,185,10,0"/>
-                    <Button x:Name="RemoveButton" Content="Remove" HorizontalAlignment="Right" VerticalAlignment="Top" Width="90" Height="24" Margin="0,214,10,0"/>
-                    <Button x:Name="UninstallButton" Content="Uninstall" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="90" Height="24" Margin="0,0,10,39"/>
-                    <Button x:Name="InstalledAppButton" Content="List installed" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="90" Height="24" Margin="0,0,10,10"/>
-                    <ListBox x:Name="AppListBox" HorizontalAlignment="Left" Margin="10,156,0,10" Width="380" SelectionMode="Extended"/>
-                    <ComboBox x:Name="SubmitComboBox" HorizontalAlignment="Left" Margin="10,96,0,0" VerticalAlignment="Top" Width="380" Height="24" IsEditable="True"/>
-                </Grid>
-            </TabItem>
-            <TabItem x:Name="WAUTabPage" Header="Configure WAU">
-                <Grid>
-                    <CheckBox x:Name="WAUCheckBox" Content="Install WAU (Winget-AutoUpdate)" Margin="10,20,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"/>
-                    <GroupBox x:Name="WAUConfGroupBox" Header="Configurations" VerticalAlignment="Top" Margin="10,46,10,0" Height="134" IsEnabled="False">
-                        <Grid>
-                            <CheckBox x:Name="WAUDoNotUpdateCheckBox" Content="Do not run WAU just after install" Margin="10,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                            <CheckBox x:Name="WAUDisableAUCheckBox" Content="Disable WAU Self-Update" Margin="10,34,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                            <CheckBox x:Name="WAUonMeteredCheckBox" Content="Run WAU on metered connexion" Margin="10,58,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                            <TextBlock x:Name="NotifLevelLabel" HorizontalAlignment="Left" Margin="10,85,0,0" TextWrapping="Wrap" Text="Notification level" VerticalAlignment="Top"/>
-                            <ComboBox x:Name="NotifLevelComboBox" HorizontalAlignment="Left" Margin="120,82,0,0" VerticalAlignment="Top" Width="120">
-                                <ComboBoxItem Content="Full" IsSelected="True"/>
-                                <ComboBoxItem Content="SuccessOnly"/>
-                                <ComboBoxItem Content="None"/>
-                            </ComboBox>
-                        </Grid>
-                    </GroupBox>
-                    <GroupBox x:Name="WAUFreqGroupBox" Header="Update Frequency" VerticalAlignment="Top" Margin="10,185,10,0" Height="84" IsEnabled="False">
-                        <Grid>
-                            <StackPanel x:Name="WAUFreqLayoutPanel" VerticalAlignment="Top" Orientation="Horizontal">
-                                <RadioButton Content="Daily" Margin="10"/>
-                                <RadioButton Content="Weekly" Margin="10"/>
-                                <RadioButton Content="Biweekly" Margin="10"/>
-                                <RadioButton Content="Monthly" Margin="10"/>
-                                <RadioButton Content="Never" Margin="10" IsChecked="True"/>
-                            </StackPanel>
-                            <CheckBox x:Name="UpdAtLogonCheckBox" Content="Run WAU at user logon" Margin="10,40,0,0" IsChecked="True"/>
-                        </Grid>
-                    </GroupBox>
-                    <GroupBox x:Name="WAUWhiteBlackGroupBox" Header="White / Black List" VerticalAlignment="Top" Margin="10,274,10,0" Height="88" IsEnabled="False">
-                        <Grid>
-                            <StackPanel x:Name="WAUListLayoutPanel" VerticalAlignment="Top" Orientation="Horizontal">
-                                <RadioButton x:Name="DefaultRadioBut" Content="Default" Margin="10" IsChecked="True"/>
-                                <RadioButton x:Name="BlackRadioBut" Content="BlackList" Margin="10"/>
-                                <RadioButton x:Name="WhiteRadioBut" Content="WhiteList" Margin="10"/>
-                            </StackPanel>
-                            <TextBox x:Name="WAUListFileTextBox" VerticalAlignment="Top" Margin="10,36,106,0" Height="24" VerticalContentAlignment="Center" IsEnabled="False"/>
-                            <Button x:Name="WAULoadListButton" Content="Load list" Width="90" Height="24" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,36,10,0" IsEnabled="False"/>
-                        </Grid>
-                    </GroupBox>
-                    <GroupBox x:Name="WAUShortcutsGroupBox" Header="Shortcuts" VerticalAlignment="Top" Margin="10,367,10,0" Height="80" IsEnabled="False">
-                        <Grid>
-                            <CheckBox x:Name="DesktopCheckBox" Content="Desktop" Margin="10,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="True"/>
-                            <CheckBox x:Name="StartMenuCheckBox" Content="Start Menu" Margin="10,34,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="True"/>
-                        </Grid>
-                    </GroupBox>
-                    <TextBlock x:Name="WAUStatusLabel" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10" Text="WAU installed status"/>
-                    <TextBlock x:Name="WAUMoreInfoLabel" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="10">
-                        <Hyperlink NavigateUri="https://github.com/Romanitho/Winget-AutoUpdate">More Info about WAU</Hyperlink>
-                    </TextBlock>
-                </Grid>
-            </TabItem>
-            <TabItem x:Name="AdminTabPage" Header="Admin Tools" Visibility="Hidden">
-                <Grid>
-                    <CheckBox x:Name="AdvancedRunCheckBox" Content="Install NirSoft AdvancedRun" Margin="10,20,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                    <CheckBox x:Name="UninstallViewCheckBox" Content="Install NirSoft UninstallView" Margin="10,44,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                    <CheckBox x:Name="CMTraceCheckBox" Content="Install CMTrace" Margin="10,68,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                    <Button x:Name="LogButton" Content="Open Log Folder" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="110" Height="24" Margin="0,0,10,10"/>
-                </Grid>
-            </TabItem>
-        </TabControl>
-        <Button x:Name="CloseButton" Content="Close" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,10,10" Width="90" Height="24"/>
-        <Button x:Name="InstallButton" Content="Install" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,105,10" Width="90" Height="24"/>
-        <TextBlock x:Name="WiGuiLinkLabel" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,0,14">
-            <Hyperlink NavigateUri="https://github.com/Romanitho/Winget-Install-GUI">WiGui is on GitHub</Hyperlink>
-        </TextBlock>
-    </Grid>
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:WiGui_v3"
+    mc:Ignorable="d"
+    Title="WiGui {0}" Height="700" Width="540" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen">
+<Grid>
+    <Grid.Background>
+        <SolidColorBrush Color="#FFF0F0F0"/>
+    </Grid.Background>
+    <TabControl x:Name="WiGuiTabControl" Margin="10,10,10,44">
+        <TabItem x:Name="AppsTabPage" Header="Select Apps">
+            <Grid>
+                <Label x:Name="SearchLabel" Content="Search for an app:" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,10,0,0"/>
+                <TextBox x:Name="SearchTextBox" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,36,0,0" Width="380" Height="24" VerticalContentAlignment="Center"/>
+                <Button x:Name="SearchButton" Content="Search" HorizontalAlignment="Right" VerticalAlignment="Top" Width="90" Height="24" Margin="0,36,10,0" IsDefault="True"/>
+                <Label x:Name="SubmitLabel" Content="Select the matching Winget AppID:" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,70,0,0"/>
+                <Button x:Name="SubmitButton" Content="Add to list" HorizontalAlignment="Right" VerticalAlignment="Top" Width="90" Height="24" Margin="0,96,10,0"/>
+                <Label x:Name="AppListLabel" Content="Current Application list:" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,130,0,0"/>
+                <Button x:Name="SaveListButton" Content="Save list to file" HorizontalAlignment="Right" VerticalAlignment="Top" Width="90" Height="24" Margin="0,156,10,0"/>
+                <Button x:Name="OpenListButton" Content="Import from file" HorizontalAlignment="Right" VerticalAlignment="Top" Width="90" Height="24" Margin="0,185,10,0"/>
+                <Button x:Name="RemoveButton" Content="Remove" HorizontalAlignment="Right" VerticalAlignment="Top" Width="90" Height="24" Margin="0,214,10,0"/>
+                <Button x:Name="UninstallButton" Content="Uninstall" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="90" Height="24" Margin="0,0,10,39"/>
+                <Button x:Name="InstalledAppButton" Content="List installed" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="90" Height="24" Margin="0,0,10,10"/>
+                <ListBox x:Name="AppListBox" HorizontalAlignment="Left" Margin="10,156,0,10" Width="380" SelectionMode="Extended"/>
+                <ComboBox x:Name="SubmitComboBox" HorizontalAlignment="Left" Margin="10,96,0,0" VerticalAlignment="Top" Width="380" Height="24" IsEditable="True"/>
+            </Grid>
+        </TabItem>
+        <TabItem x:Name="WAUTabPage" Header="Configure WAU">
+            <Grid>
+                <CheckBox x:Name="WAUCheckBox" Content="Install WAU (Winget-AutoUpdate)" Margin="10,20,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" ToolTip="Install WAU with system and user context executions. Applications installed in system context will be ignored under user context."/>
+                <GroupBox x:Name="WAUConfGroupBox" Header="Configurations" VerticalAlignment="Top" Margin="10,46,10,0" Height="134" IsEnabled="False">
+                    <Grid>
+                        <CheckBox x:Name="WAUDoNotUpdateCheckBox" Content="Do not run WAU just after install" Margin="10,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" ToolTip="Do not run Winget-AutoUpdate after installation. By default, Winget-AutoUpdate is run just after installation."/>
+                        <CheckBox x:Name="WAUDisableAUCheckBox" Content="Disable WAU Self-Update" Margin="10,34,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" ToolTip="Disable WAU update checking. By default, WAU auto updates if new version is available on Github."/>
+                        <CheckBox x:Name="WAUonMeteredCheckBox" Content="Run WAU on metered connexion" Margin="10,58,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" ToolTip="Force WAU to run on metered connections. Not recommanded on connection sharing for instance as it might consume cellular data."/>
+                        <TextBlock x:Name="NotifLevelLabel" HorizontalAlignment="Left" Margin="10,85,0,0" TextWrapping="Wrap" Text="Notification level" VerticalAlignment="Top" ToolTip="Specify the Notification level: Full (Default, displays all notification), SuccessOnly (Only displays notification for success) or None (Does not show any popup)."/>
+                        <ComboBox x:Name="NotifLevelComboBox" HorizontalAlignment="Left" Margin="120,82,0,0" VerticalAlignment="Top" Width="110" ToolTip="Specify the Notification level: Full (Default, displays all notification), SuccessOnly (Only displays notification for success) or None (Does not show any popup).">
+                            <ComboBoxItem Content="Full" IsSelected="True"/>
+                            <ComboBoxItem Content="SuccessOnly"/>
+                            <ComboBoxItem Content="None"/>
+                        </ComboBox>
+                        <CheckBox x:Name="WAUInstallUserContextCheckBox" Margin="250,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Content="Run WAU in user context too" ToolTip="Install WAU with system and user context executions (by default, only system for admin rights purpose). Applications installed in system context will be ignored under user context."/>
+                    </Grid>
+                </GroupBox>
+                <GroupBox x:Name="WAUFreqGroupBox" Header="Update Frequency" VerticalAlignment="Top" Margin="10,185,10,0" Height="84" IsEnabled="False">
+                    <Grid>
+                        <StackPanel x:Name="WAUFreqLayoutPanel" VerticalAlignment="Top" Orientation="Horizontal">
+                            <RadioButton Content="Daily" Margin="10"/>
+                            <RadioButton Content="Weekly" Margin="10"/>
+                            <RadioButton Content="Biweekly" Margin="10"/>
+                            <RadioButton Content="Monthly" Margin="10"/>
+                            <RadioButton Content="Never" Margin="10" IsChecked="True"/>
+                        </StackPanel>
+                        <CheckBox x:Name="UpdAtLogonCheckBox" Content="Run WAU at user logon" Margin="10,40,0,0" IsChecked="True"/>
+                    </Grid>
+                </GroupBox>
+                <GroupBox x:Name="WAUWhiteBlackGroupBox" Header="White / Black List" VerticalAlignment="Top" Margin="10,274,10,0" Height="88" IsEnabled="False">
+                    <Grid>
+                        <StackPanel x:Name="WAUListLayoutPanel" VerticalAlignment="Top" Orientation="Horizontal">
+                            <RadioButton x:Name="DefaultRadioBut" Content="Default" Margin="10" IsChecked="True"/>
+                            <RadioButton x:Name="BlackRadioBut" Content="BlackList" Margin="10" ToolTip="Exclude apps from update job (for instance, apps to keep at a specific version or apps with built-in auto-update)"/>
+                            <RadioButton x:Name="WhiteRadioBut" Content="WhiteList" Margin="10" ToolTip="Update only selected apps"/>
+                        </StackPanel>
+                        <TextBox x:Name="WAUListFileTextBox" VerticalAlignment="Top" Margin="10,36,106,0" Height="24" VerticalContentAlignment="Center" IsEnabled="False"/>
+                        <Button x:Name="WAULoadListButton" Content="Load list" Width="90" Height="24" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,36,10,0" IsEnabled="False"/>
+                    </Grid>
+                </GroupBox>
+                <GroupBox x:Name="WAUShortcutsGroupBox" Header="Shortcuts" VerticalAlignment="Top" Margin="10,367,10,0" Height="80" IsEnabled="False">
+                    <Grid>
+                        <CheckBox x:Name="DesktopCheckBox" Content="Desktop" Margin="10,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="True"/>
+                        <CheckBox x:Name="StartMenuCheckBox" Content="Start Menu" Margin="10,34,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="True"/>
+                    </Grid>
+                </GroupBox>
+                <TextBlock x:Name="WAUStatusLabel" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10" Text="WAU installed status"/>
+                <TextBlock x:Name="WAUMoreInfoLabel" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="10">
+                    <Hyperlink NavigateUri="https://github.com/Romanitho/Winget-AutoUpdate">More Info about WAU</Hyperlink>
+                </TextBlock>
+            </Grid>
+        </TabItem>
+        <TabItem x:Name="AdminTabPage" Header="Admin Tools" Visibility="Hidden">
+            <Grid>
+                <CheckBox x:Name="AdvancedRunCheckBox" Content="Install NirSoft AdvancedRun" Margin="10,20,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                <CheckBox x:Name="UninstallViewCheckBox" Content="Install NirSoft UninstallView" Margin="10,44,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                <CheckBox x:Name="CMTraceCheckBox" Content="Install CMTrace" Margin="10,68,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                <Button x:Name="LogButton" Content="Open Log Folder" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="110" Height="24" Margin="0,0,10,10"/>
+            </Grid>
+        </TabItem>
+    </TabControl>
+    <Button x:Name="CloseButton" Content="Close" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,10,10" Width="90" Height="24"/>
+    <Button x:Name="InstallButton" Content="Install" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,105,10" Width="90" Height="24"/>
+    <TextBlock x:Name="WiGuiLinkLabel" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,0,14">
+        <Hyperlink NavigateUri="https://github.com/Romanitho/Winget-Install-GUI">WiGui is on GitHub</Hyperlink>
+    </TextBlock>
+</Grid>
 </Window>
 "@
 
@@ -847,6 +850,7 @@ function Start-InstallGUI {
             $Script:WAUonMetered = $WAUonMeteredCheckBox.IsChecked
             $Script:WAUDesktopShortcut = $DesktopCheckBox.IsChecked
             $Script:WAUStartMenuShortcut = $StartMenuCheckBox.IsChecked
+            $Script:WAUInstallUserContext = $WAUInstallUserContextCheckBox.IsChecked
             Start-Installations
             $WAUCheckBox.IsChecked = $false
             $WAUConfGroupBox.IsEnabled = $false
