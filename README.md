@@ -1,4 +1,9 @@
+<div align="center">
+
 # Winget-Install-GUI (aka WiGui)
+[![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/Romanitho/Winget-Install-GUI?label=Latest%20version&style=flat-square)](https://github.com/Romanitho/Winget-Install-GUI/releases)
+
+</div>
 
 ## Intro
 
@@ -27,14 +32,14 @@ All In One GUI :)
 
 ## Install via Winget
 
-WiGui is also on Winget:  
-`winget install Romanitho.WiGUI` (to default Winget portable location path)  
-or something like this:  
+WiGui is also on Winget:
+`winget install Romanitho.WiGUI` (to default Winget portable location path)
+or something like this:
 `winget install wigui --location desktop`
 
 ## Run without download
 
-Start CMD as admin and run this command:  
+Start CMD as admin and run this command:
 ```
 Powershell.exe Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/Romanitho/Winget-Install-GUI/main/Sources/Winget-Install-GUI.ps1'))
 ```
