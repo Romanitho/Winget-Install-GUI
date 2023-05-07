@@ -10,10 +10,11 @@
 
 GUI to search, select and install Apps at once with Winget package manager behind
 
-<img src="https://user-images.githubusercontent.com/96626929/167912661-86014091-1d7c-478b-a836-421ec9f307a8.png" width="400"> <img src="https://user-images.githubusercontent.com/96626929/167912772-de5a55fe-68a8-44ed-91fb-fcf5b34d891f.png" width="400">
+![image](https://user-images.githubusercontent.com/96626929/236701989-cdadcfae-00b1-4a18-984d-c73d355c404a.png)
+![image](https://user-images.githubusercontent.com/96626929/236701991-8a3bf2a3-efb7-4ac6-8688-fb4550cbef8f.png)
 
-1. Download [latest](https://github.com/Romanitho/Winget-Install-GUI/releases/) `WiGui.exe` and run (Or run `Winget-Install-GUI.ps1` from sources directly, as WiGui.exe is not signed and can be untrusted from antivirus. Exe is built to simplify execution)
-3. Search for an app, select your app in the droplist and submit it to the list. You can remove an app if wrong one submited.
+1. Download [latest](https://github.com/Romanitho/Winget-Install-GUI/releases/) `WiGui.exe` and run (Or run `Winget-Install-GUI.ps1` from sources directly)
+3. Search for an app, select your app in the droplist and submit it to the list.
 4. Once the list is complete, click "Install" to launch the installations or "Save list to File" if you want to create app list that can be used with WAU for example
 5. Optionally, you can install WAU in the same time.
 
@@ -24,7 +25,9 @@ GUI to search, select and install Apps at once with Winget package manager behin
   - Export/Import app list
 - Install [WAU](https://github.com/Romanitho/Winget-AutoUpdate)
   - Install and configure WAU
+  - Choose install options
   - Select Update frequency
+  - ...
 
 ![animation](https://user-images.githubusercontent.com/96626929/168034491-4dfe7ccd-55d7-4082-8bd7-e8b3d56d34f8.gif)
 
