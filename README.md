@@ -46,6 +46,6 @@ or something like this:
 
 ### WiGui - GitHub
 
-[![GitHub all releases](https://img.shields.io/github/downloads/Romanitho/Winget-Install-GUI/total?label=Total%20WiGui%20downloads&style=flat-square)](https://tooomm.github.io/github-release-stats/?username=Romanitho&repository=Winget-Install-GUI)
+[![GitHub all releases](https://img.shields.io/github/downloads/Romanitho/Winget-Install-GUI/total?label=Total%20WiGui%20downloads&style=flat-square)](https://somsubhra.github.io/github-release-stats/?username=Romanitho&repository=Winget-Install-GUI&page=1&per_page=1000)
 
 </div>
