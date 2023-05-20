@@ -275,7 +275,7 @@ function Start-Installations {
 
         #Run Winget-Install
         $WIInstallFile = (Resolve-Path $TestPath)[0].Path
-        Start-Process "powershell.exe" -Argument "-NoProfile -ExecutionPolicy Bypass -Command `"$WIInstallFile -AppIDs $AppToInstall`"" -Wait -Verb RunAs
+        Start-Process "powershell.exe" -Argument "-NoProfile -ExecutionPolicy Bypass -Command `"$WIInstallFile -AppIDs $AppToInstall`"" -Wait #-Verb RunAs -> Removing admin rights for user context apps
     }
 
     ## WAU PART ##
