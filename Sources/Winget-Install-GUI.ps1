@@ -490,7 +490,7 @@ function Get-WiGuiLatestVersion {
                     $UpdateWindow.Close()
                     Start-PopUp "Starting WiGui $WiGuiLatestVersion..."
                     Start-Process -FilePath $WiGuiSaveFile.FileName
-                    Start-Sleep 4
+                    Start-Sleep 3
                     Close-PopUp
                     Exit 0
                 }
