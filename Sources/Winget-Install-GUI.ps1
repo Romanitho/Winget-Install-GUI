@@ -7,7 +7,7 @@ This script will:
  - Install Winget if not present
  - Install apps with Winget from a custom list file (apps.txt) or directly from popped up default list.
  - Install Winget-AutoUpdate to get apps daily updated
-https://github.com/Romanitho/Winget-AllinOne
+https://github.com/Romanitho/Winget-Install-GUI
 #>
 
 <# APP INFO #>
@@ -18,7 +18,7 @@ if ( $psversionTable.PSEdition -eq "core" ) {
 }
 
 $Script:WiGuiVersion = "1.9.0"
-$Script:WAUGithubLink = "https://github.com/Romanitho/Winget-AutoUpdate/releases/download/v1.17.4/WAU.zip"
+$Script:WAUGithubLink = "https://github.com/Romanitho/Winget-AutoUpdate/releases/download/v1.17.5/WAU.zip"
 $Script:WIGithubLink = "https://github.com/Romanitho/Winget-Install/archive/refs/tags/v1.10.1.zip"
 $Script:WingetLink = "https://github.com/microsoft/winget-cli/releases/download/v1.4.10173/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
 
