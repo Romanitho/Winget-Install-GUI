@@ -17,7 +17,7 @@ if ( $psversionTable.PSEdition -eq "core" ) {
     import-Module -name Appx -UseWIndowsPowershell -WarningAction:SilentlyContinue
 }
 
-$Script:WiGuiVersion = "1.9.0"
+$Script:WiGuiVersion = "1.9.1"
 $Script:WAUGithubLink = "https://github.com/Romanitho/Winget-AutoUpdate/releases/download/v1.17.5/WAU.zip"
 $Script:WIGithubLink = "https://github.com/Romanitho/Winget-Install/archive/refs/tags/v1.10.1.zip"
 $Script:WingetLink = "https://github.com/microsoft/winget-cli/releases/download/v1.4.10173/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
