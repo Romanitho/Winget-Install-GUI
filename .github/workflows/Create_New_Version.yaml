@@ -78,7 +78,7 @@ jobs:
           $Title = "WiGui"
           $Description = "Install Winget Apps and configure WAU"
           "Creating EXE"
-          Invoke-PS2EXE -inputFile $Input -outputFile $Output -iconFile $Icon  -title $Title -version $Version -description $Description -copyright 'Romanitho' -noConsole -noerror -Verbose -ErrorAction Stop
+          Invoke-PS2EXE -inputFile $Input -outputFile $Output -iconFile $Icon  -product $Title -version $Version -title $Description -copyright 'Romanitho' -noConsole -noerror -Verbose -ErrorAction Stop
 
       - name: Create release
         uses: "ncipollo/release-action@v1.12.0"
