@@ -18,9 +18,9 @@ if ( $psversionTable.PSEdition -eq "core" ) {
 }
 
 $Script:WiGuiVersion = "1.9.1"
-$Script:WAUGithubLink = "https://github.com/Romanitho/Winget-AutoUpdate/releases/download/v1.17.5/WAU.zip"
-$Script:WIGithubLink = "https://github.com/Romanitho/Winget-Install/archive/refs/tags/v1.10.1.zip"
-$Script:WingetLink = "https://github.com/microsoft/winget-cli/releases/download/v1.4.10173/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
+$Script:WAUGithubLink = "https://github.com/Romanitho/Winget-AutoUpdate/releases/download/v1.18.0/WAU.zip"
+$Script:WIGithubLink = "https://github.com/Romanitho/Winget-Install/archive/refs/tags/v1.11.0.zip"
+$Script:WingetLink = "https://github.com/microsoft/winget-cli/releases/download/v1.6.2771/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
 
 <# FUNCTIONS #>
 
@@ -104,7 +104,11 @@ function Get-WingetStatus {
 
         #Install
         try {
-            if ((Get-CimInStance Win32_OperatingSystem).OSArchitecture -like "*64*") {
+            #Get proc architecture
+            if ($env:PROCESSOR_ARCHITECTURE -eq "ARM64") {
+                $OSArch = "arm64"
+            }
+            elseif ($env:PROCESSOR_ARCHITECTURE -like "*64*") {
                 $OSArch = "x64"
             }
             else {
@@ -112,7 +116,7 @@ function Get-WingetStatus {
             }
             $SourceURL = "https://aka.ms/vs/17/release/VC_redist.$OSArch.exe"
             $Installer = "$Location\VC_redist.$OSArch.exe"
-            Invoke-WebRequest $SourceURL -OutFile (New-Item -Path $Installer -Force)
+            Invoke-WebRequest $SourceURL -UseBasicParsing -OutFile (New-Item -Path $Installer -Force)
             Start-Process -FilePath $Installer -Args "/passive /norestart" -Wait
             Remove-Item $Installer -ErrorAction Ignore
         }
@@ -125,7 +129,7 @@ function Get-WingetStatus {
     $hasAppInstaller = Get-AppXPackage -Name 'Microsoft.DesktopAppInstaller'
     [Version]$AppInstallerVers = $hasAppInstaller.version
 
-    if (!($AppInstallerVers -ge "1.19.10173.0")) {
+    if (!($AppInstallerVers -ge "1.21.2771.0")) {
 
         #installing dependencies
         if (!(Get-AppxPackage -Name 'Microsoft.UI.Xaml.2.7')) {
@@ -173,25 +177,23 @@ function Get-WingetStatus {
 
 function Get-WingetCmd {
 
-    #WinGet Path (if User/Admin context)
-    $UserWingetPath = Get-Command winget.exe -ErrorAction SilentlyContinue
-    #WinGet Path (if system context)
-    $SystemWingetPath = Resolve-Path "C:\Program Files\WindowsApps\Microsoft.DesktopAppInstaller_*_x64__8wekyb3d8bbwe\winget.exe"
+    $WingetCmd = $null
 
-    #Get Winget Location in User/Admin context
-    if ($UserWingetPath) {
-        $Script:Winget = $UserWingetPath.Source
+    #Get WinGet Path
+    try {
+        #Get Admin Context Winget Location
+        $WingetInfo = (Get-Item "$env:ProgramFiles\WindowsApps\Microsoft.DesktopAppInstaller_*_8wekyb3d8bbwe\winget.exe").VersionInfo | Sort-Object -Property FileVersionRaw
+        #If multiple versions, pick most recent one
+        $WingetCmd = $WingetInfo[-1].FileName
     }
-    #Get Winget Location in System context
-    elseif ($SystemWingetPath) {
-        #If multiple version, pick last one
-        $Script:Winget = $SystemWingetPath[-1].Path
-    }
-    else {
-        Write-Host "WinGet is not installed. It is mandatory to run WiGui"
-        break
+    catch {
+        #Get User context Winget Location
+        if (Test-Path "$env:LocalAppData\Microsoft\WindowsApps\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe\winget.exe") {
+            $WingetCmd = "$env:LocalAppData\Microsoft\WindowsApps\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe\winget.exe"
+        }
     }
 
+    return $WingetCmd
 }
 
 function Get-WingetAppInfo ($SearchApp) {
@@ -895,6 +897,7 @@ Add-Type -AssemblyName System.Drawing
 Add-Type -AssemblyName PresentationFramework
 
 #Set some variables
+$null = cmd /c ''
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $ProgressPreference = "SilentlyContinue"
 $Script:AppToInstall = $null
@@ -909,7 +912,7 @@ Get-WiGuiLatestVersion
 Get-WingetStatus
 
 #Get WinGet cmd
-Get-WingetCmd
+$Script:Winget = Get-WingetCmd
 
 #Run WiGui
 Start-InstallGUI
