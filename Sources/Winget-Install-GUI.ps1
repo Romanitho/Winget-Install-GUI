@@ -19,7 +19,7 @@ if ( $psversionTable.PSEdition -eq "core" ) {
 
 $Script:WiGuiVersion = "1.9.1"
 $Script:WAUGithubLink = "https://github.com/Romanitho/Winget-AutoUpdate/releases/download/v1.18.0/WAU.zip"
-$Script:WIGithubLink = "https://github.com/Romanitho/Winget-Install/archive/refs/tags/v1.11.0.zip"
+$Script:WIGithubLink = "https://github.com/Romanitho/Winget-Install/archive/refs/tags/v1.11.1.zip"
 $Script:WingetLink = "https://github.com/microsoft/winget-cli/releases/download/v1.6.2771/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
 
 <# FUNCTIONS #>
