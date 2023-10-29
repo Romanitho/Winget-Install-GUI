@@ -28,7 +28,7 @@ jobs:
       Build_Version: ${{ steps.versioning.outputs.version }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Auto Increment Semver Action
         uses: MCKanpolat/auto-semver-action@1.0.10
@@ -54,7 +54,7 @@ jobs:
     needs: [build]
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.ref }} #needed to get latest commit
         
@@ -81,7 +81,7 @@ jobs:
           Invoke-PS2EXE -inputFile $Input -outputFile $Output -iconFile $Icon  -product $Title -version $Version -title $Description -copyright 'Romanitho' -noConsole -noerror -Verbose -ErrorAction Stop
 
       - name: Create release
-        uses: "ncipollo/release-action@v1.12.0"
+        uses: "ncipollo/release-action@v1"
         with:
           tag: "v${{needs.build.outputs.Build_Version}}"
           prerelease: ${{ github.event.inputs.pre-release }}
